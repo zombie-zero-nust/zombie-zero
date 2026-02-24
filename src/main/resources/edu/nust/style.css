@@ -1,0 +1,26 @@
+.root {
+    -fx-padding: 40;
+    -fx-background-color: #1e1e1e;
+}
+
+.title-label {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+}
+
+.primary-button {
+    -fx-background-color: #2d89ef;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16 8 16;
+}
+
+.primary-button:hover {
+    -fx-background-color: #4aa3ff;
+    -fx-cursor: hand;
+}
+
+.primary-button:pressed {
+    -fx-background-color: #1b5fbf;
+}
