@@ -1,43 +1,19 @@
 package edu.nust;
 
+import edu.nust.engine.core.GameWorld;
+import edu.nust.game.MainWorld;
+import edu.nust.game.scenes.TestScene;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.net.URL;
 
 public class Main extends Application
 {
     @Override
     public void start(Stage stage) throws Exception
     {
-        URL fxmlUrl = getUrl("/edu/nust/main.fxml");
-        URL cssUrl = getUrl("/edu/nust/style.css");
-
-        FXMLLoader loader = new FXMLLoader(fxmlUrl);
-
-        Scene scene = new Scene(loader.load());
-        scene.getStylesheets().add(cssUrl.toExternalForm());
-
-        stage.setTitle("JavaFX Example");
-        stage.setScene(scene);
-
-        stage.setWidth(300);
-        stage.setHeight(200);
-        stage.centerOnScreen();
-
-        stage.show();
-    }
-
-    private static URL getUrl(String name)
-    {
-        URL fxmlUrl = Main.class.getResource(name);
-        if (fxmlUrl == null)
-        {
-            throw new RuntimeException("File not found: " + name);
-        }
-        return fxmlUrl;
+        GameWorld world = new MainWorld(stage);
+        world.setCurrentScene(new TestScene());
+        world.showStage();
     }
 
     public static void main(String[] args)
