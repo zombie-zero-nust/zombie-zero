@@ -7,11 +7,14 @@ import java.util.List;
 
 public abstract class GameScene
 {
+    private final GameWorld world;
+
     protected final List<GameObject> gameObjects = new ArrayList<GameObject>();
     protected Parent root;
 
-    public GameScene()
+    public GameScene(GameWorld world)
     {
+        this.world = world;
         initScene();
         if (root == null)
         {
@@ -27,6 +30,11 @@ public abstract class GameScene
     }
 
     /* GETTERS AND SETTERS */
+
+    public GameWorld getWorld()
+    {
+        return world;
+    }
 
     public Parent getRoot()
     {

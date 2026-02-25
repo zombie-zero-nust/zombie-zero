@@ -1,6 +1,8 @@
 package edu.nust.game.scene;
 
 import edu.nust.engine.core.GameScene;
+import edu.nust.engine.core.GameWorld;
+import edu.nust.game.scene.controller.SceneBController;
 import javafx.fxml.FXMLLoader;
 
 import java.io.IOException;
@@ -8,6 +10,11 @@ import java.net.URL;
 
 public class SceneB extends GameScene
 {
+    public SceneB(GameWorld world)
+    {
+        super(world);
+    }
+
     @Override
     public String getName()
     {
@@ -25,6 +32,9 @@ public class SceneB extends GameScene
         try
         {
             this.root = loader.load();
+
+            SceneBController controller = loader.getController();
+            controller.setWorld(this.getWorld());
         }
         catch (IOException e)
         {

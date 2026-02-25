@@ -11,7 +11,7 @@ public class Main extends Application
     public void start(Stage stage)
     {
         MainWorld world = new MainWorld(stage);
-        world.setCurrentGameScene(new SceneA());
+        world.setCurrentGameScene(new SceneA(world));
         world.start();
     }
 
