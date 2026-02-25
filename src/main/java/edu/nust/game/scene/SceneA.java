@@ -1,4 +1,4 @@
-package edu.nust.game.scenes;
+package edu.nust.game.scene;
 
 import edu.nust.engine.core.GameScene;
 import javafx.fxml.FXMLLoader;
@@ -7,18 +7,13 @@ import javafx.scene.Scene;
 import java.io.IOException;
 import java.net.URL;
 
-public class TestScene extends GameScene
+public class SceneA extends GameScene
 {
-    public TestScene()
-    {
-        super();
-    }
-
     @Override
     protected void initScene()
     {
-        URL fxmlUrl = getClass().getResource("TestScene/main.fxml");
-        URL cssUrl = getClass().getResource("TestScene/style.css");
+        URL fxmlUrl = getClass().getResource("SceneA/layout.fxml");
+        URL cssUrl = getClass().getResource("SceneA/style.css");
 
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
 

@@ -5,16 +5,23 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="edu.nust.MainController"
+      fx:controller="edu.nust.game.scene.controller.SceneAController"
       spacing="20"
       alignment="CENTER">
 
+    <Label fx:id="titleLabel"
+           text="Scene A"
+           styleClass="title-label"/>
+
     <Label fx:id="messageLabel"
            text="Hello JavaFX"
-           styleClass="title-label"/>
+           styleClass="message-label"/>
 
     <Button text="Click Me"
             onAction="#handleClick"
             styleClass="primary-button"/>
 
+    <Button text="Goto Scene B"
+            onAction="#switchToSceneB"
+            styleClass="primary-button"/>
 </VBox>

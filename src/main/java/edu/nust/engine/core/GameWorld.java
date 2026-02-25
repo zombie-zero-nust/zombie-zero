@@ -4,8 +4,7 @@ import javafx.stage.Stage;
 
 public abstract class GameWorld
 {
-    private GameScene currentScene;
-
+    private GameScene currentGameScene;
     protected final Stage stage;
 
     public GameWorld(Stage stage)
@@ -19,20 +18,22 @@ public abstract class GameWorld
         stage.show();
     }
 
+    /* SINGLETON */
+
     /* HELPERS */
 
     protected abstract void initStage();
 
     /* GETTERS AND SETTERS */
 
-    public GameScene getCurrentScene()
+    public GameScene getCurrentGameScene()
     {
-        return currentScene;
+        return currentGameScene;
     }
 
-    public void setCurrentScene(GameScene scene)
+    public void setCurrentGameScene(GameScene scene)
     {
         stage.setScene(scene.getScene());
-        this.currentScene = scene;
+        this.currentGameScene = scene;
     }
 }
