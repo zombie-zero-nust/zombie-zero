@@ -10,7 +10,7 @@ public class SceneBController
     @FXML
     private Label messageLabel;
 
-    private static int clickedTimes = 0;
+    private int clickedTimes = 0;
 
     @FXML
     private void handleClick()

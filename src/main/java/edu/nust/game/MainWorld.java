@@ -30,5 +30,4 @@ public class MainWorld extends GameWorld
         stage.setHeight(300);
         stage.centerOnScreen();
     }
-
 }

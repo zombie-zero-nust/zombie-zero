@@ -2,13 +2,18 @@ package edu.nust.game.scene;
 
 import edu.nust.engine.core.GameScene;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 
 import java.io.IOException;
 import java.net.URL;
 
 public class SceneB extends GameScene
 {
+    @Override
+    public String getName()
+    {
+        return "Scene B";
+    }
+
     @Override
     protected void initScene()
     {
@@ -19,7 +24,7 @@ public class SceneB extends GameScene
 
         try
         {
-            this.scene = new Scene(loader.load());
+            this.root = loader.load();
         }
         catch (IOException e)
         {
@@ -31,6 +36,6 @@ public class SceneB extends GameScene
             throw new RuntimeException("CSS file not found");
         }
 
-        scene.getStylesheets().add(cssUrl.toExternalForm());
+        root.getStylesheets().add(cssUrl.toExternalForm());
     }
 }

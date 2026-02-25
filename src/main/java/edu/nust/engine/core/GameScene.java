@@ -1,6 +1,6 @@
 package edu.nust.engine.core;
 
-import javafx.scene.Scene;
+import javafx.scene.Parent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +8,14 @@ import java.util.List;
 public abstract class GameScene
 {
     protected final List<GameObject> gameObjects = new ArrayList<GameObject>();
-    protected Scene scene;
+    protected Parent root;
 
     public GameScene()
     {
         initScene();
-        if (scene == null)
+        if (root == null)
         {
-            throw new RuntimeException("Scene not initialized");
+            throw new RuntimeException("Root not initialized");
         }
     }
 
@@ -28,12 +28,14 @@ public abstract class GameScene
 
     /* GETTERS AND SETTERS */
 
-    public Scene getScene()
+    public Parent getRoot()
     {
-        return scene;
+        return root;
     }
 
     /* ABSTRACT METHODS */
+
+    public abstract String getName();
 
     /**
      * <b>TODO:</b> Implement

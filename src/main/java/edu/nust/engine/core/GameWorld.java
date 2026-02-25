@@ -1,24 +1,39 @@
 package edu.nust.engine.core;
 
+import edu.nust.Main;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+import java.net.URL;
 
 public abstract class GameWorld
 {
-    private GameScene currentGameScene;
     protected final Stage stage;
+    /// When changing "scenes", we just change root
+    protected final Scene scene;
+
+    private GameScene currentGameScene;
 
     public GameWorld(Stage stage)
     {
         this.stage = stage;
+        this.scene = new Scene(new StackPane());
+        this.stage.setScene(this.scene);
+
+        URL commonCssUrl = Main.class.getResource("/edu/nust/game/scene/common.css");
+        if (commonCssUrl != null)
+        {
+            this.scene.getStylesheets().add(commonCssUrl.toExternalForm());
+        }
+
         initStage();
     }
 
-    public void showStage()
+    public void start()
     {
         stage.show();
     }
-
-    /* SINGLETON */
 
     /* HELPERS */
 
@@ -33,7 +48,8 @@ public abstract class GameWorld
 
     public void setCurrentGameScene(GameScene scene)
     {
-        stage.setScene(scene.getScene());
         this.currentGameScene = scene;
+        this.scene.setRoot(scene.getRoot());
+        this.stage.setTitle(scene.getName());
     }
 }

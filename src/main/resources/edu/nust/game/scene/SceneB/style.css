@@ -1,29 +1,9 @@
-.root {
-    -fx-padding: 40;
-    -fx-background-color: #1e1e1e;
-}
-
-.title-label {
-    -fx-text-fill: white;
-    -fx-font-size: 20px;
-}
-
-.message-label {
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-}
-
 .button {
     -fx-background-color: #892def;
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-background-radius: 6;
-    -fx-padding: 8 16 8 16;
 }
 
 .button:hover {
     -fx-background-color: #a34aff;
-    -fx-cursor: hand;
 }
 
 .button:pressed {
