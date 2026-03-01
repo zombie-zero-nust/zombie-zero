@@ -21,8 +21,8 @@
             width="400"
             height="300"/>
 
-    <Button text="Draw Image"
-            onAction="#drawImage"
+    <Button text="Animate Canvas"
+            onAction="#animateCanvas"
             styleClass="primary-button"/>
 
     <Button text="Goto Scene A"

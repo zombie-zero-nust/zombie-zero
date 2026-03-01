@@ -63,7 +63,7 @@ public class SceneB extends GameScene
     /* FXML Button Callbacks */
 
     @FXML
-    private void drawImage()
+    private void animateCanvas()
     {
         isAnimating = !isAnimating;
         messageLabel.setText(isAnimating ? "Animating..." : "Stopped");
