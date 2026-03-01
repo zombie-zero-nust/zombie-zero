@@ -25,10 +25,6 @@
             onAction="#drawImage"
             styleClass="primary-button"/>
 
-    <Button text="Click Me"
-            onAction="#handleClick"
-            styleClass="button"/>
-
     <Button text="Goto Scene A"
             onAction="#switchToSceneA"
             styleClass="button"/>

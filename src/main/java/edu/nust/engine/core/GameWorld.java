@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 
 /// The core of the game engine
+/// - Manages Window
 /// - Manages Application lifetime
 /// - Manages the all `GameScene`s
 ///
@@ -16,7 +17,7 @@ import java.net.URL;
 public abstract class GameWorld
 {
     protected final Stage stage;
-    /// When changing "scenes", we just change root
+    // When changing "scenes", we just change root
     protected final Scene scene;
 
     private GameScene currentGameScene;
@@ -67,9 +68,16 @@ public abstract class GameWorld
         gameLoop.start();
     }
 
-    /* HELPERS */
+    /* ABSTRACT */
 
     protected abstract void initStage();
+
+    /* HELPERS */
+
+    public void setWindowTitle(String title)
+    {
+        stage.setTitle(title);
+    }
 
     /* GETTERS AND SETTERS */
 
@@ -82,6 +90,5 @@ public abstract class GameWorld
     {
         this.currentGameScene = scene;
         this.scene.setRoot(scene.getRoot());
-        this.stage.setTitle(scene.getName());
     }
 }

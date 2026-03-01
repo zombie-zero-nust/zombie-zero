@@ -14,8 +14,8 @@ public class MainWorld extends GameWorld
     protected void initStage()
     {
         stage.setTitle("Test World");
-        stage.setWidth(300);
-        stage.setHeight(300);
+        stage.setWidth(1280);
+        stage.setHeight(768);
         stage.centerOnScreen();
     }
 }

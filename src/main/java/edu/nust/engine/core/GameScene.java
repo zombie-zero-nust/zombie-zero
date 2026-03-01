@@ -59,12 +59,9 @@ public abstract class GameScene
         String sceneName = getClass().getSimpleName();
         String basePath = "/edu/nust/game/scenes/" + sceneName + "/";
 
+        // FXML
         URL fxmlUrl = GameScene.class.getResource(basePath + "layout.fxml");
-        URL cssUrl = GameScene.class.getResource(basePath + "style.css");
-
         if (fxmlUrl == null) throw new RuntimeException("Missing FXML: " + basePath + "layout.fxml");
-
-        if (cssUrl == null) throw new RuntimeException("Missing CSS: " + basePath + "style.css");
 
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         loader.setController(this);
@@ -78,6 +75,9 @@ public abstract class GameScene
             throw new RuntimeException("Failed to load FXML: " + sceneName, e);
         }
 
-        root.getStylesheets().add(cssUrl.toExternalForm());
+        // CSS
+        URL cssUrl = GameScene.class.getResource(basePath + "style.css");
+        if (cssUrl == null) System.out.println("Missing CSS: " + basePath + "style.css");
+        else root.getStylesheets().add(cssUrl.toExternalForm());
     }
 }

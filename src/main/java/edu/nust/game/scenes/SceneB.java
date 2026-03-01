@@ -10,8 +10,6 @@ import javafx.scene.paint.Color;
 
 public class SceneB extends GameScene
 {
-    private int clickedTimes = 0;
-
     private boolean isAnimating = false;
     private double time = 0.0;
     private static final double CYCLE_DURATION = 3.0; // seconds (R->G->B)
@@ -60,8 +58,6 @@ public class SceneB extends GameScene
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.setFill(color);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
-        messageLabel.setText(isAnimating ? "Animating..." : "Stopped");
     }
 
     /* FXML Button Callbacks */
@@ -70,12 +66,7 @@ public class SceneB extends GameScene
     private void drawImage()
     {
         isAnimating = !isAnimating;
-    }
-
-    @FXML
-    private void handleClick()
-    {
-        messageLabel.setText("Button clicked " + ++clickedTimes + " times.");
+        messageLabel.setText(isAnimating ? "Animating..." : "Stopped");
     }
 
     @FXML
