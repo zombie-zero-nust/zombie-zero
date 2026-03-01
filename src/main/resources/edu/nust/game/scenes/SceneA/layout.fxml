@@ -5,12 +5,11 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="edu.nust.game.scene.controller.SceneBController"
       spacing="20"
       alignment="CENTER">
 
     <Label fx:id="titleLabel"
-           text="Scene B"
+           text="Scene A"
            styleClass="title-label"/>
 
     <Label fx:id="messageLabel"
@@ -19,9 +18,9 @@
 
     <Button text="Click Me"
             onAction="#handleClick"
-            styleClass="button"/>
+            styleClass="primary-button"/>
 
-    <Button text="Goto Scene A"
-            onAction="#switchToSceneA"
-            styleClass="button"/>
+    <Button text="Goto Scene B"
+            onAction="#switchToSceneB"
+            styleClass="primary-button"/>
 </VBox>

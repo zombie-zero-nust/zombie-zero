@@ -1,7 +1,7 @@
 package edu.nust;
 
 import edu.nust.game.MainWorld;
-import edu.nust.game.scene.SceneA;
+import edu.nust.game.scenes.SceneA;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

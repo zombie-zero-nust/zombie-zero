@@ -1,33 +1,44 @@
 package edu.nust.engine.core;
 
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.net.URL;
 
+/// Represents a "scene" in the game, which can contain multiple `GameObject`s and has its own UI layout (root).
+///
+/// Can be used to represent different screen such as:
+/// - Main Menu
+/// - Game
+/// - Settings Menus
+///
+/// Same as `Scene` in unity
+///
+/// @see GameObject
+/// @see GameWorld
 public abstract class GameScene
 {
     private final GameWorld world;
-
-    protected final List<GameObject> gameObjects = new ArrayList<GameObject>();
     protected Parent root;
 
     public GameScene(GameWorld world)
     {
         this.world = world;
-        initScene();
-        if (root == null)
-        {
-            throw new RuntimeException("Root not initialized");
-        }
+
+        loadFXMLScene();
+        if (root == null) throw new RuntimeException("Root not initialized");
+
+        onStart();
     }
 
     /* CHILD METHODS */
 
-    protected void initScene()
-    {
-        throw new RuntimeException("initScene() not implemented");
-    }
+    public abstract String getName();
+
+    protected abstract void onStart();
+
+    protected abstract void onUpdate(double deltaTime);
 
     /* GETTERS AND SETTERS */
 
@@ -41,16 +52,32 @@ public abstract class GameScene
         return root;
     }
 
-    /* ABSTRACT METHODS */
+    /* FXML AND CSS */
 
-    public abstract String getName();
-
-    /**
-     * <b>TODO:</b> Implement
-     * <br>
-     * Will be called each frame
-     **/
-    void update()
+    protected void loadFXMLScene()
     {
+        String sceneName = getClass().getSimpleName();
+        String basePath = "/edu/nust/game/scenes/" + sceneName + "/";
+
+        URL fxmlUrl = GameScene.class.getResource(basePath + "layout.fxml");
+        URL cssUrl = GameScene.class.getResource(basePath + "style.css");
+
+        if (fxmlUrl == null) throw new RuntimeException("Missing FXML: " + basePath + "layout.fxml");
+
+        if (cssUrl == null) throw new RuntimeException("Missing CSS: " + basePath + "style.css");
+
+        FXMLLoader loader = new FXMLLoader(fxmlUrl);
+        loader.setController(this);
+
+        try
+        {
+            this.root = loader.load();
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException("Failed to load FXML: " + sceneName, e);
+        }
+
+        root.getStylesheets().add(cssUrl.toExternalForm());
     }
 }
