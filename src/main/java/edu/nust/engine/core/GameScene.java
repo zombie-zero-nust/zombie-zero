@@ -16,15 +16,15 @@ import java.net.URL;
 /// Same as `Scene` in unity
 ///
 /// @see GameObject
-/// @see GameWorld
+/// @see GameWindow
 public abstract class GameScene
 {
-    private final GameWorld world;
+    private final GameWindow window;
     protected Parent root;
 
-    public GameScene(GameWorld world)
+    public GameScene(GameWindow window)
     {
-        this.world = world;
+        this.window = window;
 
         loadFXMLScene();
         if (root == null) throw new RuntimeException("Root not initialized");
@@ -42,9 +42,9 @@ public abstract class GameScene
 
     /* GETTERS AND SETTERS */
 
-    public GameWorld getWorld()
+    public GameWindow getWindow()
     {
-        return world;
+        return window;
     }
 
     public Parent getRoot()

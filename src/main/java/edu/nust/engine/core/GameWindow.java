@@ -14,7 +14,7 @@ import java.net.URL;
 /// - Manages the all `GameScene`s
 ///
 /// @see GameScene
-public abstract class GameWorld
+public abstract class GameWindow
 {
     protected final Stage stage;
     // When changing "scenes", we just change root
@@ -24,7 +24,7 @@ public abstract class GameWorld
 
     private final AnimationTimer gameLoop;
 
-    public GameWorld(Stage stage)
+    public GameWindow(Stage stage)
     {
         this.stage = stage;
         this.scene = new Scene(new StackPane());

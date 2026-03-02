@@ -1,7 +1,7 @@
 package edu.nust.game.scenes;
 
 import edu.nust.engine.core.GameScene;
-import edu.nust.engine.core.GameWorld;
+import edu.nust.engine.core.GameWindow;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -21,7 +21,7 @@ public class SceneB extends GameScene
 
     /* CONSTRUCTOR */
 
-    public SceneB(GameWorld world)
+    public SceneB(GameWindow world)
     {
         super(world);
     }
@@ -72,7 +72,7 @@ public class SceneB extends GameScene
     @FXML
     private void switchToSceneA()
     {
-        this.getWorld().setCurrentGameScene(new SceneA(this.getWorld()));
+        this.getWindow().setCurrentGameScene(new SceneA(this.getWindow()));
     }
 
     /* UTILS */
