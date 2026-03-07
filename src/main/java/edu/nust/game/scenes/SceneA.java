@@ -1,5 +1,6 @@
 package edu.nust.game.scenes;
 
+import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWindow;
 import javafx.fxml.FXML;
@@ -20,18 +21,12 @@ public class SceneA extends GameScene
         super(world);
     }
 
-    @Override
-    public String getName()
-    {
-        return "Scene A";
-    }
-
     /* LIFETIME */
 
     @Override
     protected void onStart()
     {
-
+        this.addGameObject(new GameObject(this));
     }
 
     @Override

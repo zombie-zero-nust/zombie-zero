@@ -27,12 +27,6 @@ public class SceneB extends GameScene
     }
 
     @Override
-    public String getName()
-    {
-        return "Scene B";
-    }
-
-    @Override
     protected void onStart()
     {
         drawCurrentColor(Color.RED);

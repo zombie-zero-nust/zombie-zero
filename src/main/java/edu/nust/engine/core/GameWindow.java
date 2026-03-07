@@ -3,6 +3,8 @@ package edu.nust.engine.core;
 import edu.nust.Main;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -57,6 +59,20 @@ public abstract class GameWindow
                 if (currentGameScene != null)
                 {
                     currentGameScene.onUpdate(deltaTime);
+
+                    currentGameScene.gameObjects.forEach(GameObject::onUpdate);
+
+                    if (currentGameScene.hasCanvas())
+                    {
+                        Canvas canvas = currentGameScene.getCanvas();
+                        assert canvas != null; // checked by hasCanvas()
+
+                        GraphicsContext context = canvas.getGraphicsContext2D();
+
+                        context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+                        currentGameScene.gameObjects.forEach(obj -> obj.onRender(context));
+                    }
                 }
             }
         };
