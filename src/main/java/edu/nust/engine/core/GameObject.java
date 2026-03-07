@@ -1,6 +1,6 @@
 package edu.nust.engine.core;
 
-import edu.nust.engine.core.math.Vector2;
+import edu.nust.engine.math.Vector2;
 
 public class GameObject
 {

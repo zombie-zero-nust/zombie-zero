@@ -1,4 +1,4 @@
-package edu.nust.engine.core.math;
+package edu.nust.engine.math;
 
 /**
  * A container for holding 2 variables, x, y.
