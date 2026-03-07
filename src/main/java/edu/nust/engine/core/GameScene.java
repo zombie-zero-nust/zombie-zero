@@ -1,5 +1,6 @@
 package edu.nust.engine.core;
 
+import edu.nust.engine.resources.Resources;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
@@ -57,11 +58,10 @@ public abstract class GameScene
     protected void loadFXMLScene()
     {
         String sceneName = getClass().getSimpleName();
-        String basePath = "/edu/nust/game/scenes/" + sceneName + "/";
 
         // FXML
-        URL fxmlUrl = GameScene.class.getResource(basePath + "layout.fxml");
-        if (fxmlUrl == null) throw new RuntimeException("Missing FXML: " + basePath + "layout.fxml");
+        URL fxmlUrl = Resources.tryGetResource("scenes", sceneName, "layout.fxml");
+        if (fxmlUrl == null) throw new RuntimeException("Missing FXML for: " + sceneName);
 
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         loader.setController(this);
@@ -76,8 +76,8 @@ public abstract class GameScene
         }
 
         // CSS
-        URL cssUrl = GameScene.class.getResource(basePath + "style.css");
-        if (cssUrl == null) System.out.println("Missing CSS: " + basePath + "style.css");
+        URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
+        if (cssUrl == null) System.out.println("Missing CSS for: " + sceneName);
         else root.getStylesheets().add(cssUrl.toExternalForm());
     }
 }
