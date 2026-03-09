@@ -1,8 +1,8 @@
 package edu.nust.game.scenes;
 
-import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWindow;
+import edu.nust.game.gameobjects.GameObjectA;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -26,7 +26,7 @@ public class SceneA extends GameScene
     @Override
     protected void onStart()
     {
-        this.addGameObject(new GameObject(this));
+        this.addGameObject(GameObjectA::new);
     }
 
     @Override

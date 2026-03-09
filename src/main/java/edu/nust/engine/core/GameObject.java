@@ -1,32 +1,85 @@
 package edu.nust.engine.core;
 
-import edu.nust.engine.math.Vector2;
+import edu.nust.engine.components.Transform;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class GameObject
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class GameObject
 {
-    public Vector2 position = new Vector2();
-    protected GameScene scene;
+    private GameScene scene;
+    private final List<Component> components = new ArrayList<>();
 
-    public GameObject(GameScene scene)
+    public GameObject()
+    {
+        this.addComponent(new Transform());
+    }
+
+    protected void setScene(GameScene scene)
     {
         this.scene = scene;
     }
 
+    public GameScene getScene()
+    {
+        return scene;
+    }
+
+    /* COMPONENT */
+
+    public <T extends Component> T addComponent(T component)
+    {
+        component.setGameObject(this);
+        components.add(component);
+        component.onInit();
+        return component;
+    }
+
+    public <T extends Component> @Nullable T getComponent(Class<T> type)
+    {
+        for (Component component : components)
+        {
+            if (type.isInstance(component))
+            {
+                return type.cast(component);
+            }
+        }
+        return null;
+    }
+
+    public @NotNull Transform getTransform()
+    {
+        Transform transform = getComponent(Transform.class);
+        assert transform != null : "Transform component is required for every GameObject";
+        return transform;
+    }
+
+    /* LIFETIME */
+
     void onInit()
     {
-        System.out.println("GameObject initialized at position: " + position.getX() + ", " + position.getY());
+        for (Component component : components)
+        {
+            component.onInit();
+        }
     }
 
     void onUpdate()
     {
+        for (Component component : components)
+        {
+            component.onUpdate();
+        }
     }
 
     void onRender(GraphicsContext context)
     {
-        // TODO: Add rendering logic from Components
-        context.setFill(Color.BLUE);
-        context.fillRect(position.getX(), position.getY(), 10, 10);
+        for (Component component : components)
+        {
+            component.onRender(context);
+        }
     }
 }

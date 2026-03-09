@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /// Represents a "scene" in the game, which can contain multiple `GameObject`s and has its own UI layout (root).
 ///
@@ -79,9 +80,11 @@ public abstract class GameScene
 
     /* CHILDREN */
 
-    public void addGameObject(GameObject gameObject)
+    public void addGameObject(Supplier<GameObject> gameObject)
     {
-        gameObjects.add(gameObject);
+        GameObject object = gameObject.get();
+        object.setScene(this);
+        gameObjects.add(object);
     }
 
     /* GETTERS AND SETTERS */
