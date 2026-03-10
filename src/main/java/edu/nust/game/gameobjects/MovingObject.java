@@ -1,6 +1,6 @@
 package edu.nust.game.gameobjects;
 
-import edu.nust.engine.components.renderers.SpriteRenderer;
+import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.math.Angle;
 import edu.nust.engine.math.Vector2D;
@@ -9,9 +9,9 @@ import edu.nust.engine.math.Vector2UI;
 import edu.nust.engine.resources.Resources;
 import javafx.scene.image.Image;
 
-public class GameObjectA extends GameObject
+public class MovingObject extends GameObject
 {
-    public GameObjectA()
+    public MovingObject()
     {
         this.getTransform().setPosition(new Vector2D(100, 100));
         this.getTransform().setAnchor(new Vector2UI(0, 0));
