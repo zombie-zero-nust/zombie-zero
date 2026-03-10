@@ -30,6 +30,7 @@ public abstract class GameObject
 
     /* COMPONENT */
 
+    @SuppressWarnings("UnusedReturnValue")
     public <T extends Component> T addComponent(T component)
     {
         component.setGameObject(this);
@@ -38,6 +39,7 @@ public abstract class GameObject
         return component;
     }
 
+    // getComponent(Transform.class)
     public <T extends Component> @Nullable T getComponent(Class<T> type)
     {
         for (Component component : components)
@@ -53,13 +55,13 @@ public abstract class GameObject
     public @NotNull Transform getTransform()
     {
         Transform transform = getComponent(Transform.class);
-        assert transform != null : "Transform component is required for every GameObject";
+        assert transform != null : "Transform component not present in GameObject";
         return transform;
     }
 
     /* LIFETIME */
 
-    void onInit()
+    protected void onInit()
     {
         for (Component component : components)
         {
@@ -67,7 +69,7 @@ public abstract class GameObject
         }
     }
 
-    void onUpdate()
+    protected void onUpdate()
     {
         for (Component component : components)
         {
@@ -75,7 +77,7 @@ public abstract class GameObject
         }
     }
 
-    void onRender(GraphicsContext context)
+    protected void onRender(GraphicsContext context)
     {
         for (Component component : components)
         {

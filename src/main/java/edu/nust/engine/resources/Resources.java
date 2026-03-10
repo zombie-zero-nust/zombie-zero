@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.Objects;
 
 public final class Resources
 {
@@ -107,8 +106,8 @@ public final class Resources
 
     /* TYPES */
 
-    public static Image loadImage(String path)
+    public static Image loadImage(String... path)
     {
-        return new Image(Objects.requireNonNull(getResource(path)).toExternalForm());
+        return new Image(getResource(path).toExternalForm());
     }
 }

@@ -42,4 +42,26 @@ public class Transform extends Component
     {
         this.rotation = rotation;
     }
+
+    /* HELPERS */
+
+    public Vector2UI forward()
+    {
+        return new Vector2UI(Math.cos(rotation.getRadians()), Math.sin(rotation.getRadians()));
+    }
+
+    public void translate(Vector2D translation)
+    {
+        this.position = this.position.add(translation);
+    }
+
+    public void translateForward(double distance)
+    {
+        translate(forward().multiply(distance));
+    }
+
+    public void rotate(Angle rotation)
+    {
+        this.rotation = this.rotation.add(rotation);
+    }
 }
