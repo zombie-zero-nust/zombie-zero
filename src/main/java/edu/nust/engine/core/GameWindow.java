@@ -27,6 +27,7 @@ public abstract class GameWindow
     private GameScene currentGameScene;
 
     private final AnimationTimer gameLoop;
+    private boolean updatesPaused = false;
 
     public GameWindow(Stage stage)
     {
@@ -60,9 +61,8 @@ public abstract class GameWindow
 
                 if (currentGameScene != null)
                 {
-                    currentGameScene.onUpdate(deltaTime);
-
-                    currentGameScene.gameObjects.forEach(GameObject::onUpdate);
+                    if (!updatesPaused) currentGameScene.onUpdate(deltaTime);
+                    if (!updatesPaused) currentGameScene.gameObjects.forEach(GameObject::onUpdate);
 
                     if (currentGameScene.hasCanvas())
                     {
@@ -133,5 +133,19 @@ public abstract class GameWindow
             assert canvas != null; // checked by hasCanvas()
             canvas.requestFocus();
         }
+
+        this.setUpdatesPaused(false);
+    }
+
+    /* PAUSE */
+
+    public void setUpdatesPaused(boolean state)
+    {
+        updatesPaused = state;
+    }
+
+    public boolean isUpdatesPaused()
+    {
+        return updatesPaused;
     }
 }

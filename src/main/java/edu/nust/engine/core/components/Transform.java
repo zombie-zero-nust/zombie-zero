@@ -45,9 +45,9 @@ public class Transform extends Component
 
     /* HELPERS */
 
-    public Vector2UI forward()
+    public Vector2D forward()
     {
-        return new Vector2UI(Math.cos(rotation.getRadians()), Math.sin(rotation.getRadians()));
+        return new Vector2D(Math.cos(rotation.getRadians()), Math.sin(rotation.getRadians()));
     }
 
     public void translate(Vector2D translation)

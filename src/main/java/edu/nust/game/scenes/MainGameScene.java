@@ -25,7 +25,9 @@ public class MainGameScene extends GameScene
     @Override
     protected void onStart()
     {
-        this.addGameObject(MovingObject::new).getTransform().setPosition(new Vector2D(0, 0));
+        this.addGameObject(MovingObject::new)
+                .getTransform()
+                .setPosition(new Vector2D(400, 400));
     }
 
     @Override
@@ -48,6 +50,7 @@ public class MainGameScene extends GameScene
             isPaused = !isPaused;
             pauseOverlay.setVisible(isPaused);
             pauseOverlay.setManaged(isPaused);
+            this.getWindow().setUpdatesPaused(isPaused);
         }
     }
 

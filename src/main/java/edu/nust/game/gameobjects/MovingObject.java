@@ -12,7 +12,7 @@ public class MovingObject extends GameObject
     {
         this.getTransform().setPosition(new Vector2D(100, 100));
         this.getTransform().setRotation(new Angle(25));
-        this.addComponent(new BoxRenderer(50, 50, Color.BLUE));
+        this.addComponent(new BoxRenderer(50, 50, Color.AQUA));
     }
 
     @Override
