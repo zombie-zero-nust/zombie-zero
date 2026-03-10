@@ -4,33 +4,78 @@ package edu.nust.engine.math;
  * A container for holding 2 variables of type int, x, y.
  * <br>
  * <br>
- * Can be used to represent pixel coordinates, grid coordinates, etc.
+ * Can be used to represent grid coordinates, frame indices, etc.
  */
-public class Vector2I extends Vector2D
+public class Vector2I
 {
+    private int x;
+    private int y;
+
     public Vector2I()
     {
-        this.setX(0);
-        this.setY(0);
+        this.x = 0;
+        this.y = 0;
     }
 
     public Vector2I(int x, int y)
     {
-        this.setX(x);
-        this.setY(y);
+        this.x = x;
+        this.y = y;
     }
 
     /* GETTERS AND SETTERS */
 
-    @Override
-    public void setX(double x)
+    public int getX()
     {
-        super.setX((int) x);
+        return x;
     }
 
-    @Override
-    public void setY(double y)
+    public int getY()
     {
-        super.setY((int) y);
+        return y;
+    }
+
+    public void setX(int x)
+    {
+        this.x = x;
+    }
+
+    public void setY(int y)
+    {
+        this.y = y;
+    }
+
+    /* OPERATORS */
+
+    public Vector2I add(Vector2I other)
+    {
+        return new Vector2I(this.x + other.x, this.y + other.y);
+    }
+
+    public Vector2I subtract(Vector2I other)
+    {
+        return new Vector2I(this.x - other.x, this.y - other.y);
+    }
+
+    public Vector2I multiply(int scalar)
+    {
+        return new Vector2I(this.x * scalar, this.y * scalar);
+    }
+
+    public int dot(Vector2I other)
+    {
+        return this.x * other.x + this.y * other.y;
+    }
+
+    public double magnitude()
+    {
+        return Math.sqrt(x * x + y * y);
+    }
+
+    public Vector2D normalize()
+    {
+        double mag = magnitude();
+        if (mag == 0) return new Vector2D(0, 0);
+        return new Vector2D(x / mag, y / mag);
     }
 }
