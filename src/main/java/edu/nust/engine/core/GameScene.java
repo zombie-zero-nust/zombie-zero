@@ -83,11 +83,12 @@ public abstract class GameScene
 
     /* CHILDREN */
 
-    public void addGameObject(Supplier<GameObject> gameObject)
+    public GameObject addGameObject(Supplier<GameObject> gameObject)
     {
         GameObject object = gameObject.get();
         object.setScene(this);
         gameObjects.add(object);
+        return object;
     }
 
     /* GETTERS AND SETTERS */

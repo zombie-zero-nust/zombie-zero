@@ -2,6 +2,7 @@ package edu.nust.game.scenes;
 
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWindow;
+import edu.nust.engine.math.Vector2D;
 import edu.nust.game.gameobjects.MovingObject;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -24,7 +25,7 @@ public class MainGameScene extends GameScene
     @Override
     protected void onStart()
     {
-        this.addGameObject(MovingObject::new);
+        this.addGameObject(MovingObject::new).getTransform().setPosition(new Vector2D(0, 0));
     }
 
     @Override
