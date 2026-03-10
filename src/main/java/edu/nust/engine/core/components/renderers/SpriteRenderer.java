@@ -1,6 +1,6 @@
-package edu.nust.engine.components.renderers;
+package edu.nust.engine.core.components.renderers;
 
-import edu.nust.engine.components.Transform;
+import edu.nust.engine.core.components.Transform;
 import edu.nust.engine.core.Component;
 import edu.nust.engine.math.Vector2I;
 import javafx.scene.canvas.GraphicsContext;

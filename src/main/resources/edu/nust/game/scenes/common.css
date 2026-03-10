@@ -6,6 +6,7 @@
 .title-label {
     -fx-text-fill: white;
     -fx-font-size: 20px;
+    -fx-font-weight: bold;
 }
 
 .message-label {
@@ -14,12 +15,15 @@
 }
 
 .button {
+    -fx-background-color: #2d89ef;
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-background-radius: 6;
     -fx-padding: 8 16 8 16;
+    -fx-min-width: 200px;
 }
 
 .button:hover {
+    -fx-background-color: #1c5fb8;
     -fx-cursor: hand;
 }

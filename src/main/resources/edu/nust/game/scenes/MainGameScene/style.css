@@ -1,3 +1,7 @@
+.root {
+    -fx-padding: 0;
+}
+
 .button {
     -fx-background-color: #892def;
 }
@@ -8,4 +12,10 @@
 
 .button:pressed {
     -fx-background-color: #5f1bbf;
+}
+
+#pauseOverlay {
+    -fx-margin: 0px;
+    -fx-padding: 0px;
+    -fx-background-color: #000000aa;
 }

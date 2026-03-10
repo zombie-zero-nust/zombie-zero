@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      spacing="20"
+      alignment="CENTER">
+
+    <Label text="Start Scene"
+           styleClass="title-label"/>
+
+    <Button text="Game"
+            onAction="#switchToGameScene"
+            styleClass="primary-button"/>
+
+    <Button text="Exit"
+            onAction="#exitApplication"
+            styleClass="primary-button"/>
+</VBox>

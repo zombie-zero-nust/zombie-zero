@@ -6,7 +6,7 @@ public abstract class Component
 {
     protected GameObject gameObject;
 
-    public void setGameObject(GameObject gameObject)
+    protected void setGameObject(GameObject gameObject)
     {
         this.gameObject = gameObject;
     }
@@ -18,15 +18,9 @@ public abstract class Component
 
     /* LIFETIME */
 
-    public void onInit()
-    {
-    }
+    public void onInit() {}
 
-    public void onUpdate()
-    {
-    }
+    public void onUpdate() {}
 
-    public void onRender(GraphicsContext context)
-    {
-    }
+    public void onRender(GraphicsContext context) {}
 }

@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -53,9 +54,11 @@ public abstract class GameScene
 
         onStart();
         gameObjects.forEach(GameObject::onInit);
+
+        this.getRoot().setOnKeyPressed(this::onKeyPressed);
     }
 
-    /* ABSTRACT METHODS */
+    /* LIFETIME */
 
     protected abstract void onStart();
 
@@ -101,7 +104,7 @@ public abstract class GameScene
 
     /* FXML AND CSS */
 
-    protected void loadFXMLScene()
+    private void loadFXMLScene()
     {
         String sceneName = this.getClass().getSimpleName();
 
@@ -125,5 +128,12 @@ public abstract class GameScene
         URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
         if (cssUrl == null) System.out.println("Missing CSS for: " + sceneName);
         else root.getStylesheets().add(cssUrl.toExternalForm());
+    }
+
+    /* EVENTS */
+
+    protected void onKeyPressed(KeyEvent event)
+    {
+        // Override in subclasses if needed
     }
 }

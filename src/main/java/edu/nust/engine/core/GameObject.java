@@ -1,6 +1,6 @@
 package edu.nust.engine.core;
 
-import edu.nust.engine.components.Transform;
+import edu.nust.engine.core.components.Transform;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

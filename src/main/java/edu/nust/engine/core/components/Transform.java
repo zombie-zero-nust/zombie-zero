@@ -1,4 +1,4 @@
-package edu.nust.engine.components;
+package edu.nust.engine.core.components;
 
 import edu.nust.engine.core.Component;
 import edu.nust.engine.math.Angle;

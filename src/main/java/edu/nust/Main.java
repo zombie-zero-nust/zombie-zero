@@ -1,9 +1,13 @@
 package edu.nust;
 
 import edu.nust.game.MainWindow;
-import edu.nust.game.scenes.SceneA;
+import edu.nust.game.scenes.StartScene;
 import javafx.application.Application;
 import javafx.stage.Stage;
+
+// ------------------------------------------------------------------------- //
+//                                DO NOT TOUCH                               //
+// ------------------------------------------------------------------------- //
 
 public class Main extends Application
 {
@@ -11,7 +15,7 @@ public class Main extends Application
     public void start(Stage stage)
     {
         MainWindow window = new MainWindow(stage);
-        window.setCurrentGameScene(new SceneA(window));
+        window.setCurrentGameScene(new StartScene(window));
         window.start();
     }
 
