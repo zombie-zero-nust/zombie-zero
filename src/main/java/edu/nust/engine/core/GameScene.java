@@ -2,12 +2,12 @@ package edu.nust.engine.core;
 
 import edu.nust.engine.resources.Resources;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
-import org.jetbrains.annotations.Nullable;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
@@ -30,32 +30,42 @@ public abstract class GameScene
 {
     private final GameWindow window;
 
-    protected Parent root;
+    protected StackPane root;
+    protected Parent uiRoot;
+    protected Canvas drawCanvas;
 
-    protected static final String DRAW_CANVAS_SELECTOR = "#drawCanvas";
-    protected @Nullable Canvas drawCanvas;
+    public final Color backgroundColor;
 
     protected final List<GameObject> gameObjects = new ArrayList<>();
 
-    public GameScene(GameWindow window)
+    public GameScene(GameWindow window, Color backgroundColor)
     {
         this.window = window;
+        this.backgroundColor = backgroundColor;
 
-        loadFXMLScene();
-        if (root == null) throw new RuntimeException("Root not initialized");
+        // initialize layers
+        this.uiRoot = initUIRoot();
+        this.drawCanvas = initCanvas();
 
-        // try to find a canvas in the scene for drawing
-        Node node = root.lookup(DRAW_CANVAS_SELECTOR);
+        // add to root
+        this.root = new StackPane();
+        this.root.getChildren().addAll(drawCanvas, uiRoot);
 
-        if (node instanceof Canvas canvas)
-        {
-            drawCanvas = canvas;
-        }
+        // make canvas resize with window
+        this.drawCanvas.widthProperty().bind(this.root.widthProperty());
+        this.drawCanvas.heightProperty().bind(this.root.heightProperty());
 
+        // start the scene
         onStart();
         gameObjects.forEach(GameObject::onInit);
 
+        // add events
         this.getRoot().setOnKeyPressed(this::onKeyPressed);
+    }
+
+    public GameScene(GameWindow window)
+    {
+        this(window, Color.BLACK);
     }
 
     /* LIFETIME */
@@ -63,23 +73,6 @@ public abstract class GameScene
     protected abstract void onStart();
 
     protected abstract void onUpdate(double deltaTime);
-
-    /* DRAW CANVAS */
-
-    public boolean hasCanvas()
-    {
-        return drawCanvas != null;
-    }
-
-    public @Nullable Canvas getCanvas()
-    {
-        return drawCanvas;
-    }
-
-    public @Nullable GraphicsContext getCanvasContext()
-    {
-        return drawCanvas != null ? drawCanvas.getGraphicsContext2D() : null;
-    }
 
     /* CHILDREN */
 
@@ -89,6 +82,67 @@ public abstract class GameScene
         object.setScene(this);
         gameObjects.add(object);
         return object;
+    }
+
+    /* UI LAYER */
+
+    private Parent initUIRoot()
+    {
+        Parent root;
+
+        String sceneName = this.getClass().getSimpleName();
+
+        // FXML
+        URL fxmlUrl = Resources.tryGetResource("scenes", sceneName, "layout.fxml");
+        if (fxmlUrl == null) throw new RuntimeException("Missing FXML for: " + sceneName);
+
+        FXMLLoader loader = new FXMLLoader(fxmlUrl);
+        loader.setController(this);
+
+        try
+        {
+            root = loader.load();
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException("Failed to load FXML: " + sceneName, e);
+        }
+
+        // CSS
+        URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
+        if (cssUrl == null) System.out.println("Missing CSS for: " + sceneName);
+        else root.getStylesheets().add(cssUrl.toExternalForm());
+
+        return root;
+    }
+
+    /* CANVAS LAYER */
+
+    private Canvas initCanvas()
+    {
+        Canvas canvas = new Canvas();
+        canvas.setFocusTraversable(true);
+        return canvas;
+    }
+
+    public void clearCanvas()
+    {
+        GraphicsContext context = getCanvasContext();
+        context.clearRect(0, 0, drawCanvas.getWidth(), drawCanvas.getHeight());
+        context.setFill(backgroundColor);
+        context.fillRect(0, 0, drawCanvas.getWidth(), drawCanvas.getHeight());
+    }
+
+    public GraphicsContext getCanvasContext()
+    {
+        return drawCanvas.getGraphicsContext2D();
+    }
+
+    /* EVENTS */
+
+    protected void onKeyPressed(KeyEvent event)
+    {
+        // Override in subclasses if needed
     }
 
     /* GETTERS AND SETTERS */
@@ -103,38 +157,8 @@ public abstract class GameScene
         return root;
     }
 
-    /* FXML AND CSS */
-
-    private void loadFXMLScene()
+    public Canvas getCanvas()
     {
-        String sceneName = this.getClass().getSimpleName();
-
-        // FXML
-        URL fxmlUrl = Resources.tryGetResource("scenes", sceneName, "layout.fxml");
-        if (fxmlUrl == null) throw new RuntimeException("Missing FXML for: " + sceneName);
-
-        FXMLLoader loader = new FXMLLoader(fxmlUrl);
-        loader.setController(this);
-
-        try
-        {
-            this.root = loader.load();
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException("Failed to load FXML: " + sceneName, e);
-        }
-
-        // CSS
-        URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
-        if (cssUrl == null) System.out.println("Missing CSS for: " + sceneName);
-        else root.getStylesheets().add(cssUrl.toExternalForm());
-    }
-
-    /* EVENTS */
-
-    protected void onKeyPressed(KeyEvent event)
-    {
-        // Override in subclasses if needed
+        return drawCanvas;
     }
 }

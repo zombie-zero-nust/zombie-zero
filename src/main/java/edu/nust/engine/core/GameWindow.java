@@ -4,11 +4,8 @@ import edu.nust.Main;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 
@@ -22,7 +19,7 @@ public abstract class GameWindow
 {
     protected final Stage stage;
     // When changing "scenes", we just change root
-    protected final Scene scene;
+    private final Scene scene;
 
     private GameScene currentGameScene;
 
@@ -64,30 +61,9 @@ public abstract class GameWindow
                     if (!updatesPaused) currentGameScene.onUpdate(deltaTime);
                     if (!updatesPaused) currentGameScene.gameObjects.forEach(GameObject::onUpdate);
 
-                    if (currentGameScene.hasCanvas())
-                    {
-                        GraphicsContext context = initializeContext();
-                        currentGameScene.gameObjects.forEach(obj -> obj.onRender(context));
-                    }
+                    currentGameScene.clearCanvas();
+                    currentGameScene.gameObjects.forEach(obj -> obj.onRender(currentGameScene.getCanvasContext()));
                 }
-            }
-
-            private @NotNull GraphicsContext initializeContext()
-            {
-                Canvas canvas = currentGameScene.getCanvas();
-                assert canvas != null; // checked by hasCanvas()
-
-                // canvas config
-                canvas.setFocusTraversable(true);
-                canvas.setWidth(scene.getWidth());
-                canvas.setHeight(scene.getHeight());
-
-                GraphicsContext context = canvas.getGraphicsContext2D();
-
-                context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-                context.setFill(Color.BLACK);
-                context.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-                return context;
             }
         };
     }
@@ -127,12 +103,8 @@ public abstract class GameWindow
         this.currentGameScene = scene;
         this.scene.setRoot(scene.getRoot());
 
-        if (scene.hasCanvas())
-        {
-            Canvas canvas = scene.getCanvas();
-            assert canvas != null; // checked by hasCanvas()
-            canvas.requestFocus();
-        }
+        Canvas canvas = scene.getCanvas();
+        canvas.requestFocus();
 
         this.setUpdatesPaused(false);
     }

@@ -21,5 +21,7 @@ public class MovingObject extends GameObject
         super.onUpdate();
         this.getTransform().translateForward(2);
         this.getTransform().rotate(new Angle(1));
+
+//        this.getScene().getCamera().setPosition(this.getTransform().getPosition());
     }
 }
