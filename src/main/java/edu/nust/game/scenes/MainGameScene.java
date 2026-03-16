@@ -5,15 +5,13 @@ import edu.nust.engine.core.GameWindow;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.gameobjects.MovingObject;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 public class MainGameScene extends GameScene
 {
-    @FXML private Canvas drawCanvas;
-    @FXML private StackPane pauseOverlay;
+    @FXML private VBox pauseOverlay;
 
     private boolean isPaused = false;
 
@@ -25,21 +23,16 @@ public class MainGameScene extends GameScene
     @Override
     protected void onStart()
     {
-        this.addGameObject(MovingObject::new)
-                .getTransform()
-                .setPosition(new Vector2D(400, 400));
+        this.addGameObject(MovingObject::new).getTransform().setPosition(new Vector2D(400, 400));
+        this.pauseOverlay.prefWidthProperty().bind(this.root.widthProperty());
     }
 
     @Override
     protected void onUpdate(double deltaTime)
     {
-        if (isPaused)
-        {
-            // skip game updates if paused
-            return;
-        }
+        if (isPaused) return; // skip game updates if paused
 
-        // Game rendering logic here using drawCanvas.getGraphicsContext2D()
+
     }
 
     @Override
@@ -47,17 +40,28 @@ public class MainGameScene extends GameScene
     {
         if (event.getCode() == KeyCode.ESCAPE)
         {
-            isPaused = !isPaused;
-            pauseOverlay.setVisible(isPaused);
-            pauseOverlay.setManaged(isPaused);
-            this.getWindow().setUpdatesPaused(isPaused);
+            setPaused(!isPaused);
         }
+    }
+
+    private void setPaused(boolean newState)
+    {
+        this.isPaused = newState;
+        pauseOverlay.setVisible(newState);
+        pauseOverlay.setManaged(newState);
+        this.getWindow().setUpdatesPaused(newState);
     }
 
     /* FXML Button Callbacks */
 
     @FXML
-    private void backToMainMenu()
+    private void resumeGame()
+    {
+        setPaused(false);
+    }
+
+    @FXML
+    private void exitToMainMenu()
     {
         this.getWindow().setCurrentGameScene(new StartScene(this.getWindow()));
     }

@@ -5,19 +5,25 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns:fx="http://javafx.com/fxml" fx:id="root">
+<StackPane xmlns:fx="http://javafx.com/fxml">
 
-    <!-- Fullscreen canvas -->
-    <Canvas fx:id="drawCanvas"/>
+    <VBox fx:id="pauseOverlay"
+          alignment="CENTER"
+          spacing="20"
+          visible="false"
+          managed="false"
+          maxWidth="Infinity"
+          maxHeight="Infinity"
+          styleClass="pause-overlay">
 
-    <!-- Pause overlay-->
-    <StackPane fx:id="pauseOverlay"
-               visible="false"
-               maxWidth="Infinity"
-               maxHeight="Infinity">
-        <Button text="Back to Main Menu"
-                onAction="#backToMainMenu"
+        <Button text="Resume"
+                onAction="#resumeGame"
                 styleClass="primary-button"/>
-    </StackPane>
+
+        <Button text="Exit to Main Menu"
+                onAction="#exitToMainMenu"
+                styleClass="primary-button"/>
+
+    </VBox>
 
 </StackPane>
