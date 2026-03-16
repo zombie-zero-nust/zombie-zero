@@ -7,7 +7,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,14 +33,11 @@ public abstract class GameScene
     protected Parent uiRoot;
     protected Canvas drawCanvas;
 
-    public final Color backgroundColor;
-
     protected final List<GameObject> gameObjects = new ArrayList<>();
 
-    public GameScene(GameWindow window, Color backgroundColor)
+    public GameScene(GameWindow window)
     {
         this.window = window;
-        this.backgroundColor = backgroundColor;
 
         // initialize layers
         this.uiRoot = initUIRoot();
@@ -61,11 +57,6 @@ public abstract class GameScene
 
         // add events
         this.getRoot().setOnKeyPressed(this::onKeyPressed);
-    }
-
-    public GameScene(GameWindow window)
-    {
-        this(window, Color.BLACK);
     }
 
     /* LIFETIME */
@@ -129,8 +120,6 @@ public abstract class GameScene
     {
         GraphicsContext context = getCanvasContext();
         context.clearRect(0, 0, drawCanvas.getWidth(), drawCanvas.getHeight());
-        context.setFill(backgroundColor);
-        context.fillRect(0, 0, drawCanvas.getWidth(), drawCanvas.getHeight());
     }
 
     public GraphicsContext getCanvasContext()
@@ -152,7 +141,7 @@ public abstract class GameScene
         return window;
     }
 
-    public Parent getRoot()
+    public StackPane getRoot()
     {
         return root;
     }
