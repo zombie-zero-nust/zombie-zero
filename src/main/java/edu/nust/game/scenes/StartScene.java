@@ -1,6 +1,7 @@
 package edu.nust.game.scenes;
 
 import edu.nust.engine.core.GameWindow;
+import edu.nust.engine.math.TimeSpan;
 import edu.nust.game.gameobjects.MovingObject;
 import javafx.fxml.FXML;
 
@@ -20,7 +21,7 @@ public class StartScene extends edu.nust.engine.core.GameScene
     }
 
     @Override
-    protected void onUpdate(double deltaTime)
+    protected void onUpdate(TimeSpan deltaTime)
     {
 
     }

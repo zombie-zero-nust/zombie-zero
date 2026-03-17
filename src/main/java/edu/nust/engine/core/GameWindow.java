@@ -1,5 +1,6 @@
 package edu.nust.engine.core;
 
+import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.resources.Resources;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
@@ -47,23 +48,18 @@ public abstract class GameWindow
             @Override
             public void handle(long now)
             {
+                // if first frame, initialize lastTime and skip update
                 if (lastTime == 0)
                 {
                     lastTime = now;
                     return;
                 }
 
-                double deltaTime = (now - lastTime) / 1_000_000_000.0;
-                lastTime = now;
+                // calculate time between this frame and last frame
+                long deltaTimeNs = now - lastTime;
+                lastTime = now; // update lastTime for next frame
 
-                if (currentGameScene != null)
-                {
-                    if (!updatesPaused) currentGameScene.onUpdate(deltaTime);
-                    if (!updatesPaused) currentGameScene.gameObjects.forEach(GameObject::onUpdate);
-
-                    currentGameScene.clearCanvas();
-                    currentGameScene.gameObjects.forEach(obj -> obj.onRender(currentGameScene.getCanvasContext()));
-                }
+                if (currentGameScene != null) currentGameScene.invokeUpdate(TimeSpan.fromNanoseconds(deltaTimeNs));
             }
         };
     }

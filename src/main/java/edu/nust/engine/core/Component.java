@@ -1,5 +1,6 @@
 package edu.nust.engine.core;
 
+import edu.nust.engine.math.TimeSpan;
 import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Component
@@ -20,7 +21,7 @@ public abstract class Component
 
     public void onInit() {}
 
-    public void onUpdate() {}
+    public void onUpdate(TimeSpan deltaTime) {}
 
     public void onRender(GraphicsContext context) {}
 }

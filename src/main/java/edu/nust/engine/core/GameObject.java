@@ -1,6 +1,7 @@
 package edu.nust.engine.core;
 
 import edu.nust.engine.core.components.Transform;
+import edu.nust.engine.math.TimeSpan;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,17 +64,14 @@ public abstract class GameObject
 
     protected void onInit()
     {
-        for (Component component : components)
-        {
-            component.onInit();
-        }
+        // INFO: components are initialized when added
     }
 
-    protected void onUpdate()
+    protected void onUpdate(TimeSpan deltaTime)
     {
         for (Component component : components)
         {
-            component.onUpdate();
+            component.onUpdate(deltaTime);
         }
     }
 

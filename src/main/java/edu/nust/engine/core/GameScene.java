@@ -1,5 +1,6 @@
 package edu.nust.engine.core;
 
+import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.resources.Resources;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
@@ -64,11 +65,24 @@ public abstract class GameScene
         this.getRoot().setOnKeyPressed(this::onKeyPressed);
     }
 
+    // package-private so classes outside package cannot call it, neither can subclasses override it
+    void invokeUpdate(TimeSpan deltaTime)
+    {
+        if (!window.isUpdatesPaused())
+        {
+            this.onUpdate(deltaTime);
+            this.gameObjects.forEach(obj -> obj.onUpdate(deltaTime));
+        }
+
+        this.clearCanvas();
+        this.gameObjects.forEach(obj -> obj.onRender(this.getCanvasContext()));
+    }
+
     /* LIFETIME */
 
     protected abstract void onStart();
 
-    protected abstract void onUpdate(double deltaTime);
+    protected abstract void onUpdate(TimeSpan deltaTime);
 
     /* CHILDREN */
 
