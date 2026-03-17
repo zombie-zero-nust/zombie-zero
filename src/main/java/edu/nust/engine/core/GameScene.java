@@ -46,6 +46,12 @@ public abstract class GameScene
         this.root = new StackPane();
         this.root.getChildren().addAll(drawCanvas, uiRoot);
 
+        // add CSS
+        String sceneName = this.getClass().getSimpleName();
+        URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
+        if (cssUrl == null) System.out.println("Missing CSS for: " + sceneName);
+        else this.root.getStylesheets().add(cssUrl.toExternalForm());
+
         // make canvas resize with window
         this.drawCanvas.widthProperty().bind(this.root.widthProperty());
         this.drawCanvas.heightProperty().bind(this.root.heightProperty());
@@ -97,11 +103,6 @@ public abstract class GameScene
         {
             throw new RuntimeException("Failed to load FXML: " + sceneName, e);
         }
-
-        // CSS
-        URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
-        if (cssUrl == null) System.out.println("Missing CSS for: " + sceneName);
-        else root.getStylesheets().add(cssUrl.toExternalForm());
 
         return root;
     }
