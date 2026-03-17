@@ -7,11 +7,11 @@ import edu.nust.game.gameobjects.MovingObject;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 
 public class MainGameScene extends GameScene
 {
-    @FXML private VBox pauseOverlay;
+    @FXML private StackPane pauseOverlay;
 
     private boolean isPaused = false;
 
@@ -24,7 +24,6 @@ public class MainGameScene extends GameScene
     protected void onStart()
     {
         this.addGameObject(MovingObject::new).getTransform().setPosition(new Vector2D(400, 400));
-        this.pauseOverlay.prefWidthProperty().bind(this.root.widthProperty());
     }
 
     @Override

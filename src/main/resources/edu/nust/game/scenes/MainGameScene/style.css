@@ -1,5 +1,6 @@
-.root {
+.ui-root {
     -fx-padding: 0;
+    -fx-background-color: #00000000;
 }
 
 .button {
@@ -14,8 +15,8 @@
     -fx-background-color: #5f1bbf;
 }
 
-#pauseOverlay {
+.pauseOverlay {
     -fx-margin: 0px;
     -fx-padding: 0px;
-    -fx-background-color: #000000aa;
+    -fx-background-color: #00ff00aa;
 }

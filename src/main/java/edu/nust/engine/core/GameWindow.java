@@ -1,6 +1,6 @@
 package edu.nust.engine.core;
 
-import edu.nust.Main;
+import edu.nust.engine.resources.Resources;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -32,7 +32,7 @@ public abstract class GameWindow
         this.scene = new Scene(new StackPane());
         this.stage.setScene(this.scene);
 
-        URL commonCssUrl = Main.class.getResource("/edu/nust/game/scenes/common.css");
+        URL commonCssUrl = Resources.tryGetResource("scenes", "common.css");
         if (commonCssUrl != null)
         {
             this.scene.getStylesheets().add(commonCssUrl.toExternalForm());

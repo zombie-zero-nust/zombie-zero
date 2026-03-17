@@ -2,10 +2,10 @@ package edu.nust.engine.core;
 
 import edu.nust.engine.resources.Resources;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
@@ -29,9 +29,8 @@ public abstract class GameScene
 {
     private final GameWindow window;
 
-    protected StackPane root;
-    protected Parent uiRoot;
-    protected Canvas drawCanvas;
+    protected final StackPane root;
+    private final Canvas drawCanvas;
 
     protected final List<GameObject> gameObjects = new ArrayList<>();
 
@@ -40,8 +39,8 @@ public abstract class GameScene
         this.window = window;
 
         // initialize layers
-        this.uiRoot = initUIRoot();
-        this.drawCanvas = initCanvas();
+        Region uiRoot = loadFXMLUI();       // contains the elements defined in FXML
+        this.drawCanvas = initCanvas();     // only contains the canvas itself
 
         // add to root
         this.root = new StackPane();
@@ -77,9 +76,9 @@ public abstract class GameScene
 
     /* UI LAYER */
 
-    private Parent initUIRoot()
+    private Region loadFXMLUI()
     {
-        Parent root;
+        Region root;
 
         String sceneName = this.getClass().getSimpleName();
 

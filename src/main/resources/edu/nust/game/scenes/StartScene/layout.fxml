@@ -4,9 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      spacing="20"
-      alignment="CENTER">
+<VBox xmlns:fx="http://javafx.com/fxml" spacing="20" alignment="CENTER" styleClass="ui-root">
 
     <Label text="Start Scene"
            styleClass="title-label"/>
