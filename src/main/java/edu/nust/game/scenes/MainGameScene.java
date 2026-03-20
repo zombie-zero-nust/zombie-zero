@@ -2,20 +2,18 @@ package edu.nust.game.scenes;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
-import edu.nust.engine.core.GameWindow;
+import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.core.components.renderers.BoxRenderer;
-import edu.nust.engine.core.components.renderers.CircleRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.gameobjects.MovingObject;
 import edu.nust.game.gameobjects.MovingTag;
 import javafx.fxml.FXML;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-
-import javax.sound.sampled.BooleanControl;
 
 public class MainGameScene extends GameScene
 {
@@ -23,7 +21,7 @@ public class MainGameScene extends GameScene
 
     private boolean isPaused = false;
 
-    public MainGameScene(GameWindow world)
+    public MainGameScene(GameWorld world)
     {
         super(world);
     }
@@ -51,8 +49,19 @@ public class MainGameScene extends GameScene
             @Override
             protected void onInit()
             {
-                super.onInit();
                 this.addComponent(new BoxRenderer(100, 100, Color.GREEN));
+            }
+
+            @Override
+            protected void onUpdate(TimeSpan deltaTime)
+            {
+
+            }
+
+            @Override
+            protected void onRender(GraphicsContext context)
+            {
+
             }
         }).getTransform().setPosition(new Vector2D(0, 0));
     }
@@ -64,7 +73,7 @@ public class MainGameScene extends GameScene
 
         GameObject trackedObject = this.getFirstWithTag(MovingTag.class);
         if (trackedObject == null) return;
-        
+
         double posX = trackedObject.getTransform().getPosition().getX();
         double posY = trackedObject.getTransform().getPosition().getY();
 
@@ -86,7 +95,7 @@ public class MainGameScene extends GameScene
         this.isPaused = newState;
         pauseOverlay.setVisible(newState);
         pauseOverlay.setManaged(newState);
-        this.getWindow().setUpdatesPaused(newState);
+        this.setActive(!newState);
     }
 
     /* FXML Button Callbacks */

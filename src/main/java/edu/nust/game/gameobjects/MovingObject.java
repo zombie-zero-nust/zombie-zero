@@ -5,6 +5,7 @@ import edu.nust.engine.core.components.renderers.BoxRenderer;
 import edu.nust.engine.math.Angle;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class MovingObject extends GameObject
@@ -26,10 +27,11 @@ public class MovingObject extends GameObject
     }
 
     @Override
+    protected void onInit() { }
+
+    @Override
     protected void onUpdate(TimeSpan deltaTime)
     {
-        super.onUpdate(deltaTime);
-
         // 1. Accumulate time
         elapsed = elapsed.add(deltaTime);
 
@@ -50,4 +52,7 @@ public class MovingObject extends GameObject
         Vector2D currentPos = startPosition.lerp(endPosition, t);
         this.getTransform().setPosition(currentPos);
     }
+
+    @Override
+    protected void onRender(GraphicsContext context) { }
 }

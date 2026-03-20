@@ -1,6 +1,6 @@
 package edu.nust.game.scenes;
 
-import edu.nust.engine.core.GameWindow;
+import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.gameobjects.MovingObject;
@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 
 public class StartScene extends edu.nust.engine.core.GameScene
 {
-    public StartScene(GameWindow world)
+    public StartScene(GameWorld world)
     {
         super(world);
     }

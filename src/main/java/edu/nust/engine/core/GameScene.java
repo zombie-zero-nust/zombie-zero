@@ -2,12 +2,14 @@ package edu.nust.engine.core;
 
 import edu.nust.engine.core.gameobjects.Tag;
 import edu.nust.engine.math.TimeSpan;
+import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.Nullable;
@@ -28,10 +30,12 @@ import java.util.function.Supplier;
 /// Same as `Scene` in unity
 ///
 /// @see GameObject
-/// @see GameWindow
+/// @see GameWorld
 public abstract class GameScene
 {
-    private final GameWindow window;
+    private final GameWorld window;
+    /// Whether to update this scene or not
+    private boolean active = true;
 
     /// Contains all elements etc. loaded from FXML file for thus scene
     private final Region uiLayer;
@@ -41,10 +45,10 @@ public abstract class GameScene
     // for world layer
     private final Canvas canvas;
     protected final List<GameObject> gameObjects = new ArrayList<>();
-    // in `GameWindow`, when subscene for world layer is created, this is the camera attached to it
+    // in `GameWorld`, when subscene for world layer is created, this is the camera attached to it
     private final PerspectiveCamera worldCamera;
 
-    public GameScene(GameWindow window)
+    public GameScene(GameWorld window)
     {
         this.window = window;
         this.canvas = initCanvas();
@@ -70,6 +74,10 @@ public abstract class GameScene
 
         // add events
         this.window.getRawScene().setOnKeyPressed(this::onKeyPressed);
+        this.window.getRawScene().setOnKeyReleased(this::onKeyReleased);
+        this.window.getRawScene().setOnMouseClicked(this::onMouseClicked);
+        this.window.getRawScene().setOnMouseMoved(this::onMouseMoved);
+        this.window.getRawScene().setOnMousePressed(this::onMousePressed);
 
         // initialize camera
         this.worldCamera = new PerspectiveCamera();
@@ -78,14 +86,20 @@ public abstract class GameScene
     // package-private so classes outside package cannot call it, neither can subclasses override it
     void invokeUpdate(TimeSpan deltaTime)
     {
-        if (!window.isUpdatesPaused())
+        if (active)
         {
             this.onUpdate(deltaTime);
-            this.gameObjects.forEach(obj -> obj.onUpdate(deltaTime));
+            this.gameObjects.forEach(obj -> {
+                obj.onUpdate(deltaTime);
+                obj.updateComponents(deltaTime);
+            });
         }
 
         this.clearCanvas();
-        this.gameObjects.forEach(obj -> obj.onRender(this.getCanvasContext()));
+        this.gameObjects.forEach(obj -> {
+            obj.onRender(this.getCanvasContext());
+            obj.renderComponents(this.getCanvasContext());
+        });
     }
 
     /* LIFETIME */
@@ -103,10 +117,14 @@ public abstract class GameScene
         return gameObject;
     }
 
-    public GameObject addGameObject(Supplier<GameObject> gameObject)
+    public GameObject addGameObject(Supplier<GameObject> gameObject) { return addGameObject(gameObject.get()); }
+
+    public void spawnGameObject(GameObject gameObject, Vector2D position)
     {
-        return addGameObject(gameObject.get());
+        addGameObject(gameObject).getTransform().setPosition(position);
     }
+
+    public void spawnGameObject(Supplier<GameObject> object, Vector2D pos) { spawnGameObject(object.get(), pos); }
 
     public List<GameObject> getAllGameObjects() { return gameObjects; }
 
@@ -147,6 +165,20 @@ public abstract class GameScene
         }
         return result;
     }
+
+    public void removeGameObject(GameObject gameObject) { gameObjects.remove(gameObject); }
+
+    public void removeGameObjectsOfType(Class<? extends GameObject> type)
+    {
+        gameObjects.removeIf(type::isInstance);
+    }
+
+    public void removeGameObjectsWithTag(Class<? extends Tag> tag)
+    {
+        gameObjects.removeIf(obj -> obj.hasTag(tag));
+    }
+
+    public void removeAllGameObjects() { gameObjects.clear(); }
 
     /* UI LAYER */
 
@@ -198,6 +230,18 @@ public abstract class GameScene
 
     public GraphicsContext getCanvasContext() { return canvas.getGraphicsContext2D(); }
 
+    /* ACTIVE */
+
+    public boolean isActive() { return active; }
+
+    public void setActive(boolean active) { this.active = active; }
+
+    public void toggleActive() { setActive(!active); }
+
+    public void activate() { setActive(true); }
+
+    public void deactivate() { setActive(false); }
+
     /* EVENTS */
 
     protected void onKeyPressed(KeyEvent event)
@@ -205,9 +249,29 @@ public abstract class GameScene
         // Override in subclasses if needed
     }
 
+    protected void onKeyReleased(KeyEvent event)
+    {
+        // Override in subclasses if needed
+    }
+
+    protected void onMouseClicked(MouseEvent event)
+    {
+        // Override in subclasses if needed
+    }
+
+    protected void onMouseMoved(MouseEvent event)
+    {
+        // Override in subclasses if needed
+    }
+
+    protected void onMousePressed(MouseEvent event)
+    {
+        // Override in subclasses if needed
+    }
+
     /* LAYERS AND CAMERA */
 
-    public GameWindow getWindow() { return window; }
+    public GameWorld getWindow() { return window; }
 
     public Region getUILayer() { return uiLayer; }
 

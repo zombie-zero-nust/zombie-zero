@@ -2,22 +2,30 @@ package edu.nust.engine.core;
 
 import edu.nust.Main;
 import edu.nust.engine.math.TimeSpan;
+import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import javafx.animation.AnimationTimer;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.function.Supplier;
 
-/// The core of the game engine
+/// The core of the game engine, currently:
 /// - Manages Window
 /// - Manages Application lifetime
 /// - Manages the all `GameScene`s
 ///
+/// <br><br>
+/// In future will also manage:
+/// - Client Server connection
+///
 /// @see GameScene
-public abstract class GameWindow
+public abstract class GameWorld
 {
     protected final Stage stage;
     // When changing "scenes", we just change root
@@ -27,12 +35,11 @@ public abstract class GameWindow
     private GameScene currentGameScene;
 
     private final AnimationTimer gameLoop;
-    private boolean updatesPaused = false;
 
     /// Subclasses **`MUST`** implement in order to initialize the stage `(set title, size, etc.)`
     protected abstract void initStage();
 
-    public GameWindow(Stage stage)
+    public GameWorld(Stage stage)
     {
         this.stage = stage;
 
@@ -105,9 +112,9 @@ public abstract class GameWindow
 
         // add to root so `this.scene` is updates
         this.sceneRoot.getChildren().setAll(worldScene, newScene.getUILayer());
-
-        this.setUpdatesPaused(false);
     }
+
+    public void setScene(Supplier<GameScene> newScene) { setScene(newScene.get()); }
 
     /// Get the current active [GameScene]
     public GameScene getScene() { return currentGameScene; }
@@ -118,17 +125,46 @@ public abstract class GameWindow
     /// Used for adding stylesheets, events, etc.
     protected Scene getRawScene() { return scene; }
 
-    /* STATES */
-
-    public void setUpdatesPaused(boolean state) { updatesPaused = state; }
-
-    public boolean isUpdatesPaused() { return updatesPaused; }
-
     /* UTILITIES */
 
+    public void centerWindow() { stage.centerOnScreen(); }
+
     public void setWindowTitle(String title) { stage.setTitle(title); }
+
+    public String getWindowTitle() { return stage.getTitle(); }
+
+    public void setCursor(Cursor cursor) { stage.getScene().setCursor(cursor); }
+
+    public Cursor getCursor() { return stage.getScene().getCursor(); }
+
+    public void setCursorVisible(boolean visible) { if (!visible) setCursor(Cursor.NONE); }
+
+    public boolean isCursorVisible() { return getCursor() != Cursor.NONE; }
+
+    public void toggleCursorVisible() { setCursorVisible(!isCursorVisible()); }
+
+    public void setResizable(boolean resizable) { stage.setResizable(resizable); }
+
+    public void setFullscreen(boolean fullscreen) { stage.setFullScreen(fullscreen); }
+
+    public void toggleFullscreen() { setFullscreen(!stage.isFullScreen()); }
+
+    public void isFullscreen(boolean fullscreen) { stage.setFullScreen(fullscreen); }
+
+    public void setSize(double width, double height)
+    {
+        stage.setWidth(width);
+        stage.setHeight(height);
+    }
+
+    public void setWidth(double width) { stage.setWidth(width); }
+
+    public void setHeight(double height) { stage.setHeight(height); }
+
+    public Vector2D getSize() { return new Vector2D(stage.getWidth(), stage.getHeight()); }
 
     public double getWidth() { return stage.getWidth(); }
 
     public double getHeight() { return stage.getHeight(); }
+
 }

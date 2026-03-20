@@ -55,118 +55,18 @@ Legend: `P0` essential, `P1` high value, `P2` nice-to-have
 
 ### 7) `Component` (`src/main/java/edu/nust/engine/core/Component.java`)
 
-- `P0` `isEnabled()`
-- `P0` `setEnabled(boolean enabled)`
-- `P0` `enable()`
-- `P0` `disable()`
-- `P0` `toggleEnabled()`
-- `P0` `getTransform()`
-- `P0` `getScene()`
-- `P0` `getWindow()`
-- `P1` `tryGetComponent(Class<T> type)`
-- `P1` `requireComponent(Class<T> type)`
-- `P1` `addComponent(T component)`
-- `P1` `removeSelf()`
-- `P1` `destroyGameObject()`
-- `P1` lifecycle additions: `onEnable()`, `onDisable()`, `onDestroy()`
-- `P2` `setTag(String tag)`
-- `P2` `hasTag(String tag)`
-
-Total proposed for `Component`: 16+
 
 ### 8) `GameObject` (`src/main/java/edu/nust/engine/core/GameObject.java`)
 
-- `P0` `setName(String name)`
-- `P0` `getName()`
-- `P0` `setActive(boolean active)`
-- `P0` `isActive()`
-- `P0` `activate()`
-- `P0` `deactivate()`
-- `P0` `toggleActive()`
-- `P0` `removeComponent(Class<? extends Component> type)`
-- `P0` `hasComponent(Class<? extends Component> type)`
-- `P0` `getOrAddComponent(Supplier<T> factory)`
-- `P1` `getComponents(Class<T> type)`
-- `P1` `forEachComponent(Consumer<Component> action)`
-- `P1` `destroy()`
-- `P1` `isDestroyed()`
-- `P1` `setLayer(int layer)`
-- `P1` `getLayer()`
-- `P1` `setTag(String tag)`
-- `P1` `hasTag(String tag)`
-- `P2` `setParent(GameObject parent)`
-- `P2` `getParent()`
-- `P2` `addChild(GameObject child)`
-- `P2` `removeChild(GameObject child)`
-- `P2` `children()`
-- `P2` `findChildByName(String name)`
-
-Total proposed for `GameObject`: 24+
 
 ### 9) `GameScene` (`src/main/java/edu/nust/engine/core/GameScene.java`)
 
-- `P0` `removeGameObject(GameObject object)`
-- `P0` `clearGameObjects()`
-- `P0` `findByTag(String tag)`
-- `P0` `findFirstByTag(String tag)`
-- `P0` `findByName(String name)`
-- `P0` `countGameObjects()`
-- `P0` `pause()`
-- `P0` `resume()`
-- `P0` `isPaused()`
-- `P1` `spawn(Supplier<GameObject> prefab, Vector2D position)`
-- `P1` `destroy(GameObject object)`
-- `P1` `destroyAllByTag(String tag)`
-- `P1` `forEachObject(Consumer<GameObject> action)`
-- `P1` `forEachComponent(Class<T> type, Consumer<T> action)`
-- `P1` input hooks: `onKeyReleased`, `onMouseMoved`, `onMousePressed`, `onMouseReleased`
-- `P1` `setBackgroundColor(Color color)`
-- `P1` `setClearEnabled(boolean clearEnabled)`
-- `P2` `setTimeScale(double scale)`
-- `P2` `getDeltaTime()`
-- `P2` `setFixedUpdateRate(double hz)`
-- `P2` `onFixedUpdate(TimeSpan fixedDelta)`
-
-Total proposed for `GameScene`: 23+
 
 ### 10) `GameWindow` (`src/main/java/edu/nust/engine/core/GameWindow.java`)
 
-- `P0` `setSize(double width, double height)`
-- `P0` `setResizable(boolean resizable)`
-- `P0` `setFullscreen(boolean fullscreen)`
-- `P0` `toggleFullscreen()`
-- `P0` `setVsync(boolean enabled)`
-- `P0` `setTargetFps(int fps)`
-- `P0` `getTargetFps()`
-- `P0` `switchScene(Supplier<GameScene> sceneFactory)`
-- `P1` `setIcon(String... path)`
-- `P1` `setWindowPosition(double x, double y)`
-- `P1` `centerWindow()`
-- `P1` `setMinSize(double w, double h)`
-- `P1` `setMaxSize(double w, double h)`
-- `P1` `setCursorVisible(boolean visible)`
-- `P1` `captureMouse(boolean captured)`
-- `P1` `isFocused()`
-- `P2` `setBackgroundScene(GameScene scene)`
-- `P2` `setOnClose(Runnable handler)`
-- `P2` stats helpers: `getFps()`, `getFrameTime()`
-
-Total proposed for `GameWindow`: 19+
 
 ### 11) `Resources` (`src/main/java/edu/nust/engine/resources/Resources.java`)
 
-- `P0` `tryLoadImage(String... path)`
-- `P0` `loadImageOrThrow(String... path)`
-- `P0` `exists(String... path)`
-- `P0` `resolvePathFromBase(String base, String... path)`
-- `P1` cache APIs: `cacheImage`, `getCachedImage`, `clearImageCache`, `removeCachedImage`
-- `P1` typed loaders: `loadText`, `loadJson`, `loadBytes`, `loadFXML`, `loadCss`
-- `P1` safety APIs: `tryLoadText`, `tryLoadJson`, `tryLoadBytes`
-- `P1` diagnostics: `listResources(String... path)`, `debugDumpBasePath()`
-- `P2` async loaders: `loadImageAsync`, `prefetch(String... path)`
-- `P2` convenience: `asset(String relativePath)`, `sceneAsset(String sceneName, String fileName)`
-
-Total proposed for `Resources`: 20+
 
 ### 12) `BoxRenderer` (`src/main/java/edu/nust/engine/core/components/renderers/BoxRenderer.java`)
 

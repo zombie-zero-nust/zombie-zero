@@ -7,63 +7,116 @@ import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class GameObject
 {
     private GameScene scene;
-    private final List<Component> components = new ArrayList<>();
-
+    // can only add one component of each type, e.g. only one Transform, only one BoxRenderer, etc.
+    private final Map<Class<? extends Component>, Component> components = new HashMap<>();
     // tags are identifiers themselves, no instance is stored
     private final Set<Class<? extends Tag>> tags = new HashSet<>();
 
-    public GameObject()
-    {
-        this.addComponent(new Transform());
-    }
+    /// Controls whether to update components and self
+    protected boolean active = true;
 
-    protected void setScene(GameScene scene)
-    {
-        this.scene = scene;
-    }
-
-    public GameScene getScene()
-    {
-        return scene;
-    }
+    public GameObject() { this.addComponent(new Transform()); }
 
     /* COMPONENT */
 
+    /// `addComponent(new BoxRenderer())`
+    /// <br><br>
+    /// Adds the specified component to this GameObject if a component of the same type doesn't already exist, and
+    /// returns the added component. Otherwise, does nothing and returns null.
     @SuppressWarnings("UnusedReturnValue")
-    public <T extends Component> T addComponent(T component)
+    public <T extends Component> @Nullable T addComponent(T component)
     {
+        Class<? extends Component> type = component.getClass();
+
+        if (components.containsKey(type)) return null;
+
         component.setGameObject(this);
-        components.add(component);
+        components.put(type, component);
         component.onInit();
         return component;
     }
 
-    // getComponent(Transform.class)
+    /// getComponent(Transform.class)
+    /// <br><br>
+    /// Returns the component of the specified type if it exists, otherwise returns null.
     public <T extends Component> @Nullable T getComponent(Class<T> type)
     {
-        for (Component component : components)
-        {
-            if (type.isInstance(component))
-            {
-                return type.cast(component);
-            }
-        }
-        return null;
+        Component component = components.get(type);
+        if (component == null) return null;
+        return type.cast(component);
     }
 
+    public <T extends Component> T getOrAddComponent(Supplier<T> constructor)
+    {
+        T temp = constructor.get();
+        Class<? extends Component> type = temp.getClass();
+
+        // check if exists
+        @SuppressWarnings("unchecked") T existing = (T) components.get(type);
+        if (existing != null) return existing;
+
+        // doesn't exist; add
+        addComponent(temp);
+        return temp;
+    }
+
+    /// `hasComponent(Transform.class)`
+    /// <br><br>
+    /// Checks if a component of the specified type exists in this GameObject.
+    public boolean hasComponent(Class<? extends Component> type)
+    {
+        return components.containsKey(type);
+    }
+
+    /// `removeComponent(Transform.class)`
+    /// <br><br>
+    /// Removes the component of the specified type if it exists.
+    public void removeComponent(Class<? extends Component> type)
+    {
+        components.remove(type);
+    }
+
+    /// `removeComponent(transformComponent)`
+    /// <br><br>
+    /// Removes the specified component instance if it exists.
+    public void removeComponent(Component component) { components.remove(component.getClass(), component); }
+
+    public void removeAllComponents() { components.clear(); }
+
+    public void forEachComponent(Consumer<Component> action) { components.values().forEach(action); }
+
+    /// `getTransform()`
+    /// <br><br>
+    /// A convenience method to get the Transform component, which is guaranteed to exist.
     public @NotNull Transform getTransform()
     {
         Transform transform = getComponent(Transform.class);
         assert transform != null : "Transform component not present in GameObject";
         return transform;
+    }
+
+    /// **`INTERNAL`**: updates all components, called by the scene`
+    void updateComponents(TimeSpan deltaTime)
+    {
+        for (Component component : components.values())
+            if (component.isActive()) component.onUpdate(deltaTime);
+    }
+
+    /// **`INTERNAL`**: renders all components, called by the scene`
+    void renderComponents(GraphicsContext context)
+    {
+        for (Component component : components.values())
+            if (component.isActive()) component.onRender(context);
     }
 
     /* TAG */
@@ -91,26 +144,43 @@ public abstract class GameObject
         }
         return false;
     }
+
     /* LIFETIME */
 
-    protected void onInit()
-    {
-        // INFO: components are initialized when added
-    }
+    public boolean isActive() { return active; }
 
-    protected void onUpdate(TimeSpan deltaTime)
+    public void setActive(boolean active) { this.active = active; }
+
+    public void toggleActive() { setActive(!active); }
+
+    public void activate() { setActive(true); }
+
+    public void deactivate() { setActive(false); }
+
+    public void destroy()
     {
-        for (Component component : components)
+        if (scene != null)
         {
-            component.onUpdate(deltaTime);
+            scene.removeGameObject(this);
         }
     }
 
-    protected void onRender(GraphicsContext context)
-    {
-        for (Component component : components)
-        {
-            component.onRender(context);
-        }
-    }
+    /* SCENE */
+
+    /// **`INTERNAL`**: initializes the scene reference for this GameObject, called when added to a scene.
+    void setScene(GameScene scene) { this.scene = scene; }
+
+    public GameScene getScene() { return scene; }
+
+    /* LIFETIME API */
+
+    protected abstract void onInit();
+
+    protected abstract void onUpdate(TimeSpan deltaTime);
+
+    protected abstract void onRender(GraphicsContext context);
+
+    protected void onActivate() { }
+
+    protected void onDeactivate() { }
 }

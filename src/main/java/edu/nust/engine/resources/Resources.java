@@ -3,6 +3,7 @@ package edu.nust.engine.resources;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URL;
 
@@ -11,7 +12,7 @@ public final class Resources
     public static final String BASE_PATH = "/edu/nust/game/";
 
     // no instance
-    private Resources() {}
+    private Resources() { }
 
     /* UNSAFE */
 
@@ -54,14 +55,14 @@ public final class Resources
      *
      * @return URL of the resource at the specified path.
      */
-    public static URL getResource(String... path)
+    public static URL getResourceOrThrow(String... path) throws FileNotFoundException
     {
         String resolved = resolvePath(path);
         URL url = Resources.class.getResource(resolved);
 
         if (url == null)
         {
-            throw new RuntimeException("Resource not found: " + resolved);
+            throw new FileNotFoundException("Resource not found: " + resolved);
         }
 
         return url;
@@ -104,10 +105,22 @@ public final class Resources
         return result;
     }
 
+    /**
+     * Checks if a resource exists at the specified path relative to the base path "/edu/nust/game/".
+     *
+     * @param path Path segments leading to the resource. Resolves to "/edu/nust/game/{path...}".
+     *
+     * @return {@code true} if a resource exists at the specified path, {@code false} otherwise.
+     */
+    public static boolean exists(String... path)
+    {
+        return tryGetResource(path) != null;
+    }
+
     /* TYPES */
 
-    public static Image loadImage(String... path)
+    public static Image loadImageOrThrow(String... path) throws FileNotFoundException
     {
-        return new Image(getResource(path).toExternalForm());
+        return new Image(getResourceOrThrow(path).toExternalForm());
     }
 }

@@ -1,11 +1,11 @@
 package edu.nust.game;
 
-import edu.nust.engine.core.GameWindow;
+import edu.nust.engine.core.GameWorld;
 import javafx.stage.Stage;
 
-public class MainWindow extends GameWindow
+public class MainWorld extends GameWorld
 {
-    public MainWindow(Stage stage)
+    public MainWorld(Stage stage)
     {
         super(stage);
     }
