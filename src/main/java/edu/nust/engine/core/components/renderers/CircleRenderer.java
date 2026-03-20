@@ -1,25 +1,22 @@
 package edu.nust.engine.core.components.renderers;
 
 import edu.nust.engine.core.components.Transform;
-import edu.nust.engine.core.Component;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class CircleRenderer extends Component
+public class CircleRenderer extends ShapeRenderer
 {
-    private final double radius;
-    private final Color color;
+    private double radius;
 
-    public CircleRenderer(double radius, Color color)
+    public CircleRenderer(double radius, Color fillColor)
     {
         this.radius = radius;
-        this.color = color;
+        this.fillColor = fillColor;
     }
 
     @Override
     public void onRender(GraphicsContext context)
     {
-        context.setFill(this.color);
         Transform transform = this.gameObject.getTransform();
 
         double x = transform.getPosition().getX();
@@ -30,16 +27,39 @@ public class CircleRenderer extends Component
         double anchorX = transform.getAnchor().getX();
         double anchorY = transform.getAnchor().getY();
 
-        double offsetX = -this.radius * anchorX;
-        double offsetY = -this.radius * anchorY;
+        double diameter = this.radius * 2;
+
+        double offsetX = -diameter * anchorX;
+        double offsetY = -diameter * anchorY;
 
         context.save();
 
         context.translate(x, y);
         context.rotate(rotation);
 
-        context.fillOval(offsetX, offsetY, this.radius, this.radius);
+        if (filled && fillColor != null)
+        {
+            context.setFill(fillColor);
+            context.fillOval(offsetX, offsetY, diameter, diameter);
+        }
+
+        if (stroked && strokeColor != null)
+        {
+            context.setStroke(strokeColor);
+            context.setLineWidth(strokeWidth);
+            context.strokeOval(offsetX, offsetY, diameter, diameter);
+        }
 
         context.restore();
+    }
+
+    /* INITIALIZER */
+
+    public double getRadius() { return radius; }
+
+    public CircleRenderer setRadius(double radius)
+    {
+        this.radius = radius;
+        return this;
     }
 }

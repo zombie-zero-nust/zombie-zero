@@ -7,8 +7,8 @@ import javafx.scene.image.Image;
 
 public class SpriteRenderer extends Component
 {
-    private final double width;
-    private final double height;
+    private double width;
+    private double height;
 
     private final Image image;
 
@@ -55,12 +55,8 @@ public class SpriteRenderer extends Component
         double offsetX = -this.width * anchorX;
         double offsetY = -this.height * anchorY;
 
-        // clamp frame index
-        int fx = Math.min(frameIndexX, columns - 1);
-        int fy = Math.min(frameIndexY, rows - 1);
-
-        double sx = fx * this.frameWidth;
-        double sy = fy * this.frameHeight;
+        double sx = frameIndexX * this.frameWidth;
+        double sy = frameIndexY * this.frameHeight;
 
         context.save();
 
@@ -84,14 +80,38 @@ public class SpriteRenderer extends Component
 
     /* GETTERS AND SETTERS */
 
-    public void setFrameIndex(int frameIndexX, int frameIndexY)
-    {
-        // clamp to valid range
-        this.frameIndexX = Math.max(0, Math.min(frameIndexX, columns - 1));
-        this.frameIndexY = Math.max(0, Math.min(frameIndexY, rows - 1));
-    }
+    public double getWidth() { return width; }
+
+    public double getHeight() { return height; }
+
+    public int getColumns() { return columns; }
+
+    public int getRows() { return rows; }
 
     public int getFrameIndexX() { return frameIndexX; }
 
     public int getFrameIndexY() { return frameIndexY; }
+
+    public SpriteRenderer setSize(double width, double height)
+    {
+        this.width = width;
+        this.height = height;
+        return this;
+    }
+
+    public void setFrameIndex(int frameIndexX, int frameIndexY)
+    {
+        this.frameIndexX = Math.max(0, Math.min(frameIndexX, columns - 1));
+        this.frameIndexY = Math.max(0, Math.min(frameIndexY, rows - 1));
+    }
+
+    public void setFrameIndexX(int frameIndexX)
+    {
+        this.frameIndexX = Math.max(0, Math.min(frameIndexX, columns - 1));
+    }
+
+    public void setFrameIndexY(int frameIndexY)
+    {
+        this.frameIndexY = Math.max(0, Math.min(frameIndexY, rows - 1));
+    }
 }

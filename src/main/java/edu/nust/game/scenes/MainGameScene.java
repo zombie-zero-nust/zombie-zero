@@ -4,6 +4,7 @@ import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.core.components.renderers.BoxRenderer;
+import edu.nust.engine.core.components.renderers.CircleRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.gameobjects.MovingObject;
@@ -49,7 +50,7 @@ public class MainGameScene extends GameScene
             @Override
             protected void onInit()
             {
-                this.addComponent(new BoxRenderer(100, 100, Color.GREEN));
+                this.addComponent(new CircleRenderer(100, Color.GREEN));
             }
 
             @Override

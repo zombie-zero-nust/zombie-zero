@@ -70,16 +70,7 @@ Legend: `P0` essential, `P1` high value, `P2` nice-to-have
 
 ### 12) `BoxRenderer` (`src/main/java/edu/nust/engine/core/components/renderers/BoxRenderer.java`)
 
-- `P0` `setSize(double width, double height)`
-- `P0` `setColor(Color color)`
-- `P0` `setOpacity(double alpha)`
-- `P0` `setFilled(boolean filled)`
-- `P1` `setStroke(Color color, double width)`
-- `P1` `setRoundedCorners(double radius)`
-- `P1` `setVisible(boolean visible)`
-- `P1` `setRenderOrder(int order)`
 - `P2` `pulseColor(Color a, Color b, double speed)`
-- `P2` `setBlendMode(BlendMode mode)`
 
 Total proposed for `BoxRenderer`: 10+
 
