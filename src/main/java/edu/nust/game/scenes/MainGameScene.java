@@ -32,7 +32,11 @@ public class MainGameScene extends GameScene
     {
         if (isPaused) return; // skip game updates if paused
 
+        double posX = this.getFirstOfType(MovingObject.class).getTransform().getPosition().getX();
+        double posY = this.getFirstOfType(MovingObject.class).getTransform().getPosition().getY();
 
+        this.getCamera().setTranslateX(posX - this.getWindow().getWidth() / 2);
+        this.getCamera().setTranslateY(posY - this.getWindow().getHeight() / 2);
     }
 
     @Override

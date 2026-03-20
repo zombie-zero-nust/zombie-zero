@@ -4,7 +4,8 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.resources.Resources;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.SubScene;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -21,6 +22,8 @@ public abstract class GameWindow
     protected final Stage stage;
     // When changing "scenes", we just change root
     private final Scene scene;
+    // scene root
+    private final StackPane root;
 
     private GameScene currentGameScene;
 
@@ -30,7 +33,10 @@ public abstract class GameWindow
     public GameWindow(Stage stage)
     {
         this.stage = stage;
-        this.scene = new Scene(new StackPane());
+
+        // setup scene
+        this.root = new StackPane();
+        this.scene = new Scene(this.root);
         this.stage.setScene(this.scene);
 
         URL commonCssUrl = Resources.tryGetResource("scenes", "common.css");
@@ -94,15 +100,34 @@ public abstract class GameWindow
         return currentGameScene;
     }
 
-    public void setCurrentGameScene(GameScene scene)
+    public void setCurrentGameScene(GameScene newScene)
     {
-        this.currentGameScene = scene;
-        this.scene.setRoot(scene.getRoot());
+        this.currentGameScene = newScene;
 
-        Canvas canvas = scene.getCanvas();
-        canvas.requestFocus();
+        SubScene worldScene = new SubScene(newScene.getWorldLayer(), stage.getWidth(), stage.getHeight());
+        worldScene.setCamera(newScene.getCamera());
+
+        Region uiLayer = newScene.getUILayer();
+
+        this.root.getChildren().setAll(worldScene, uiLayer);
 
         this.setUpdatesPaused(false);
+    }
+
+    // only used in `edu.nust.engine.core`
+    protected Scene getRawScene()
+    {
+        return scene;
+    }
+
+    public double getWidth()
+    {
+        return stage.getWidth();
+    }
+
+    public double getHeight()
+    {
+        return stage.getHeight();
     }
 
     /* PAUSE */
