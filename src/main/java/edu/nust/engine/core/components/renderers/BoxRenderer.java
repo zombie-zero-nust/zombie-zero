@@ -1,14 +1,13 @@
 package edu.nust.engine.core.components.renderers;
 
 import edu.nust.engine.core.components.Transform;
-import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class BoxRenderer extends ShapeRenderer
 {
-    private Vector2D size = new Vector2D();
+    private final Vector2D size = new Vector2D();
     private double cornerRadius = 0;
 
     public BoxRenderer(double width, double height, Color fillColor)
@@ -62,7 +61,7 @@ public class BoxRenderer extends ShapeRenderer
 
     public BoxRenderer setSize(Vector2D size)
     {
-        this.size = size;
+        this.size.set(size);
         return this;
     }
 

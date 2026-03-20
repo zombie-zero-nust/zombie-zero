@@ -13,11 +13,6 @@ abstract class ShapeRenderer extends Component
     protected Color strokeColor = Color.BLACK;
     protected double strokeWidth = 4;
 
-    protected boolean isPulsing = true;
-    protected TimeSpan pulseDuration = TimeSpan.fromSeconds(2);
-    /// Color at the peak of the pulse
-    protected Color peakPulseFillColor = Color.PALEGREEN;
-
     /* INITIALIZER */
 
     public Color getFillColor() { return fillColor; }
@@ -29,12 +24,6 @@ abstract class ShapeRenderer extends Component
     public double getStrokeWidth() { return strokeWidth; }
 
     public boolean isStroked() { return stroked; }
-
-    public boolean isPulsing() { return isPulsing; }
-
-    public TimeSpan getPulseDuration() { return pulseDuration; }
-
-    public Color getPeakPulseFillColor() { return peakPulseFillColor; }
 
     public ShapeRenderer setFillColor(Color fillColor)
     {
@@ -77,24 +66,6 @@ abstract class ShapeRenderer extends Component
     public ShapeRenderer setStroked(boolean stroked)
     {
         this.stroked = stroked;
-        return this;
-    }
-
-    public ShapeRenderer setPulsing(boolean pulsing)
-    {
-        this.isPulsing = pulsing;
-        return this;
-    }
-
-    public ShapeRenderer setPulseDuration(TimeSpan pulseDuration)
-    {
-        this.pulseDuration = pulseDuration;
-        return this;
-    }
-
-    public ShapeRenderer setPeakPulseFillColor(Color peakPulseFillColor)
-    {
-        this.peakPulseFillColor = peakPulseFillColor;
         return this;
     }
 }
