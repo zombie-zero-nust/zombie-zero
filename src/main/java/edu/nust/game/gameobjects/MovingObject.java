@@ -9,20 +9,45 @@ import javafx.scene.paint.Color;
 
 public class MovingObject extends GameObject
 {
-    public MovingObject()
+    private Vector2D startPosition;
+    private Vector2D endPosition;
+    private TimeSpan moveTime;
+
+    private TimeSpan elapsed = TimeSpan.zero();
+
+    public MovingObject(Vector2D startPosition, Vector2D endPosition, TimeSpan time, Color color)
     {
-        this.getTransform().setPosition(new Vector2D(100, 100));
-        this.getTransform().setRotation(new Angle(25));
-        this.addComponent(new BoxRenderer(50, 50, Color.AQUA));
+        this.startPosition = startPosition;
+        this.endPosition = endPosition;
+        this.moveTime = time;
+
+        this.getTransform().setPosition(startPosition);
+        this.addComponent(new BoxRenderer(50, 50, color));
     }
 
     @Override
     protected void onUpdate(TimeSpan deltaTime)
     {
         super.onUpdate(deltaTime);
-        this.getTransform().translateForward(2);
-        this.getTransform().rotate(new Angle(1));
 
-//        this.getScene().getCamera().setPosition(this.getTransform().getPosition());
+        // 1. Accumulate time
+        elapsed = elapsed.add(deltaTime);
+
+        // 2. Calculate completion ratio (0.0 to 1.0)
+        // We use a triangle wave logic (ping-pong)
+        double totalSeconds = elapsed.asSeconds();
+        double duration = moveTime.asSeconds();
+
+        // This creates a value that goes 0 -> 1 -> 0 -> 1 infinitely
+        double t = (totalSeconds / duration) % 2.0;
+        if (t > 1.0)
+        {
+            t = 2.0 - t;
+        }
+
+        // 3. Apply the Linear Interpolation (LERP)
+        // Since 't' now bounces between 0 and 1, the object moves back and forth
+        Vector2D currentPos = startPosition.lerp(endPosition, t);
+        this.getTransform().setPosition(currentPos);
     }
 }
