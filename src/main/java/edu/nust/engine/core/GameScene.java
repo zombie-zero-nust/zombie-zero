@@ -1,5 +1,6 @@
 package edu.nust.engine.core;
 
+import edu.nust.engine.core.gameobjects.Tag;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.resources.Resources;
 import javafx.fxml.FXMLLoader;
@@ -107,6 +108,8 @@ public abstract class GameScene
         return addGameObject(gameObject.get());
     }
 
+    public List<GameObject> getAllGameObjects() { return gameObjects; }
+
     public @Nullable GameObject getFirstOfType(Class<? extends GameObject> type)
     {
         for (GameObject obj : gameObjects)
@@ -126,9 +129,23 @@ public abstract class GameScene
         return result;
     }
 
-    public List<GameObject> getAllGameObjects()
+    public @Nullable GameObject getFirstWithTag(Class<? extends Tag> tag)
     {
-        return gameObjects;
+        for (GameObject obj : gameObjects)
+        {
+            if (obj.hasTag(tag)) return obj;
+        }
+        return null; // not found
+    }
+
+    public List<GameObject> getAllWithTag(Class<? extends Tag> tag)
+    {
+        List<GameObject> result = new ArrayList<>();
+        for (GameObject obj : gameObjects)
+        {
+            if (obj.hasTag(tag)) result.add(obj);
+        }
+        return result;
     }
 
     /* UI LAYER */
