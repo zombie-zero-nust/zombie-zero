@@ -1,11 +1,11 @@
 package edu.nust.engine.core;
 
+import edu.nust.Main;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.resources.Resources;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -22,22 +22,28 @@ public abstract class GameWindow
     protected final Stage stage;
     // When changing "scenes", we just change root
     private final Scene scene;
-    // scene root
-    private final StackPane root;
+    private final StackPane sceneRoot;
 
     private GameScene currentGameScene;
 
     private final AnimationTimer gameLoop;
     private boolean updatesPaused = false;
 
+    /// Subclasses **`MUST`** implement in order to initialize the stage `(set title, size, etc.)`
+    protected abstract void initStage();
+
     public GameWindow(Stage stage)
     {
         this.stage = stage;
 
         // setup scene
-        this.root = new StackPane();
-        this.scene = new Scene(this.root);
+        this.sceneRoot = new StackPane();
+        this.scene = new Scene(this.sceneRoot);
         this.stage.setScene(this.scene);
+
+        // bind `root.size` to `stage.size` so that when stage is resized
+        this.sceneRoot.prefWidthProperty().bind(this.stage.widthProperty());
+        this.sceneRoot.prefHeightProperty().bind(this.stage.heightProperty());
 
         URL commonCssUrl = Resources.tryGetResource("scenes", "common.css");
         if (commonCssUrl != null)
@@ -70,75 +76,59 @@ public abstract class GameWindow
         };
     }
 
+    /// Call in program entry point i.e. [Main#start(Stage stage)] Starts the Game Loop
     public void start()
     {
         stage.show();
         gameLoop.start();
     }
 
+    /// Call to exit and close
     public void stop()
     {
         gameLoop.stop();
         stage.close();
     }
 
-    /* ABSTRACT */
+    /* SCENE */
 
-    protected abstract void initStage();
-
-    /* HELPERS */
-
-    public void setWindowTitle(String title)
-    {
-        stage.setTitle(title);
-    }
-
-    /* GETTERS AND SETTERS */
-
-    public GameScene getCurrentGameScene()
-    {
-        return currentGameScene;
-    }
-
-    public void setCurrentGameScene(GameScene newScene)
+    public void setScene(GameScene newScene)
     {
         this.currentGameScene = newScene;
 
-        SubScene worldScene = new SubScene(newScene.getWorldLayer(), stage.getWidth(), stage.getHeight());
-        worldScene.setCamera(newScene.getCamera());
+        SubScene worldScene = new SubScene(newScene.getWorldLayer(), this.stage.getWidth(), this.stage.getHeight());
+        // bind world scene size to root size
+        worldScene.widthProperty().bind(this.sceneRoot.widthProperty());
+        worldScene.heightProperty().bind(this.sceneRoot.heightProperty());
+        // set camera for world
+        worldScene.setCamera(newScene.getWorldCamera());
 
-        Region uiLayer = newScene.getUILayer();
-
-        this.root.getChildren().setAll(worldScene, uiLayer);
+        // add to root so `this.scene` is updates
+        this.sceneRoot.getChildren().setAll(worldScene, newScene.getUILayer());
 
         this.setUpdatesPaused(false);
     }
 
-    // only used in `edu.nust.engine.core`
-    protected Scene getRawScene()
-    {
-        return scene;
-    }
+    /// Get the current active [GameScene]
+    public GameScene getScene() { return currentGameScene; }
 
-    public double getWidth()
-    {
-        return stage.getWidth();
-    }
+    /// Only used in [edu.nust.engine.core] for internal purposes.
+    /// <br>
+    /// <br>
+    /// Used for adding stylesheets, events, etc.
+    protected Scene getRawScene() { return scene; }
 
-    public double getHeight()
-    {
-        return stage.getHeight();
-    }
+    /* STATES */
 
-    /* PAUSE */
+    public void setUpdatesPaused(boolean state) { updatesPaused = state; }
 
-    public void setUpdatesPaused(boolean state)
-    {
-        updatesPaused = state;
-    }
+    public boolean isUpdatesPaused() { return updatesPaused; }
 
-    public boolean isUpdatesPaused()
-    {
-        return updatesPaused;
-    }
+    /* UTILITIES */
+
+    public void setWindowTitle(String title) { stage.setTitle(title); }
+
+    public double getWidth() { return stage.getWidth(); }
+
+    public double getHeight() { return stage.getHeight(); }
 }

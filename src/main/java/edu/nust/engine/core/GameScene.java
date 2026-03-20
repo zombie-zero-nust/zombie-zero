@@ -9,7 +9,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -33,31 +32,34 @@ public abstract class GameScene
 {
     private final GameWindow window;
 
+    /// Contains all elements etc. loaded from FXML file for thus scene
+    private final Region uiLayer;
+    /// Contains a canvas that renders all GameObjects
+    private final Region worldLayer;
+
+    // for world layer
     private final Canvas canvas;
-    private final StackPane uiLayer;    // data form fxml
-    private final StackPane worldLayer; // all gameobjects
-
     protected final List<GameObject> gameObjects = new ArrayList<>();
-
-    // every scene must have one camera
-    private final PerspectiveCamera camera;
+    // in `GameWindow`, when subscene for world layer is created, this is the camera attached to it
+    private final PerspectiveCamera worldCamera;
 
     public GameScene(GameWindow window)
     {
         this.window = window;
-
         this.canvas = initCanvas();
+
         // initialize layers
-        this.uiLayer = new StackPane(loadFXMLUI());     // contains the elements defined in FXML
-        this.worldLayer = new StackPane(canvas); // contains canvas with game objects rendered on it
+        this.uiLayer = initUILayer();
+        this.worldLayer = initWorldLayer();
 
         // add CSS
         String sceneName = this.getClass().getSimpleName();
         URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
         if (cssUrl == null) System.out.println("Missing CSS for: " + sceneName);
-        else this.getWindow().getRawScene().getStylesheets().add(cssUrl.toExternalForm());
+        else this.window.getRawScene().getStylesheets().add(cssUrl.toExternalForm());
+        // add CSS to raw scene to allow overriding
 
-        // make canvas resize with window
+        // bind canvas size to world layer, which is bound to `window.root`
         this.canvas.widthProperty().bind(this.worldLayer.widthProperty());
         this.canvas.heightProperty().bind(this.worldLayer.heightProperty());
 
@@ -66,10 +68,10 @@ public abstract class GameScene
         this.gameObjects.forEach(GameObject::onInit);
 
         // add events
-        this.getWindow().getRawScene().setOnKeyPressed(this::onKeyPressed);
+        this.window.getRawScene().setOnKeyPressed(this::onKeyPressed);
 
         // initialize camera
-        this.camera = new PerspectiveCamera();
+        this.worldCamera = new PerspectiveCamera();
     }
 
     // package-private so classes outside package cannot call it, neither can subclasses override it
@@ -93,12 +95,16 @@ public abstract class GameScene
 
     /* CHILDREN */
 
+    public GameObject addGameObject(GameObject gameObject)
+    {
+        gameObject.setScene(this);
+        gameObjects.add(gameObject);
+        return gameObject;
+    }
+
     public GameObject addGameObject(Supplier<GameObject> gameObject)
     {
-        GameObject object = gameObject.get();
-        object.setScene(this);
-        gameObjects.add(object);
-        return object;
+        return addGameObject(gameObject.get());
     }
 
     public @Nullable GameObject getFirstOfType(Class<? extends GameObject> type)
@@ -127,7 +133,7 @@ public abstract class GameScene
 
     /* UI LAYER */
 
-    private Region loadFXMLUI()
+    private Region initUILayer()
     {
         Region root;
 
@@ -154,6 +160,13 @@ public abstract class GameScene
 
     /* CANVAS LAYER */
 
+    private Region initWorldLayer()
+    {
+        StackPane worldLayer = new StackPane(canvas);
+        worldLayer.setPickOnBounds(false); // allow clicks to pass through to UI layer
+        return worldLayer;
+    }
+
     private Canvas initCanvas()
     {
         Canvas canvas = new Canvas();
@@ -166,10 +179,7 @@ public abstract class GameScene
         getCanvasContext().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
-    public GraphicsContext getCanvasContext()
-    {
-        return canvas.getGraphicsContext2D();
-    }
+    public GraphicsContext getCanvasContext() { return canvas.getGraphicsContext2D(); }
 
     /* EVENTS */
 
@@ -178,30 +188,13 @@ public abstract class GameScene
         // Override in subclasses if needed
     }
 
-    /* GETTERS AND SETTERS */
+    /* LAYERS AND CAMERA */
 
-    public GameWindow getWindow()
-    {
-        return window;
-    }
+    public GameWindow getWindow() { return window; }
 
-    public StackPane getUILayer()
-    {
-        return uiLayer;
-    }
+    public Region getUILayer() { return uiLayer; }
 
-    public StackPane getWorldLayer()
-    {
-        return worldLayer;
-    }
+    public Region getWorldLayer() { return worldLayer; }
 
-    public Canvas getCanvas()
-    {
-        return canvas;
-    }
-
-    public PerspectiveCamera getCamera()
-    {
-        return camera;
-    }
+    public PerspectiveCamera getWorldCamera() { return worldCamera; }
 }

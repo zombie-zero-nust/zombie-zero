@@ -15,12 +15,9 @@ public class Main extends Application
     public void start(Stage stage)
     {
         MainWindow window = new MainWindow(stage);
-        window.setCurrentGameScene(new StartScene(window));
+        window.setScene(new StartScene(window));
         window.start();
     }
 
-    public static void main(String[] args)
-    {
-        launch();
-    }
+    public static void main(String[] args) { launch(); }
 }

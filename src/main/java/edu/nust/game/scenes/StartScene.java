@@ -31,7 +31,7 @@ public class StartScene extends edu.nust.engine.core.GameScene
     @FXML
     private void switchToGameScene()
     {
-        this.getWindow().setCurrentGameScene(new MainGameScene(this.getWindow()));
+        this.getWindow().setScene(new MainGameScene(this.getWindow()));
     }
 
     @FXML
