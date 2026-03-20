@@ -2,7 +2,6 @@ package edu.nust.engine.core.components.renderers;
 
 import edu.nust.engine.core.components.Transform;
 import edu.nust.engine.core.Component;
-import edu.nust.engine.math.Vector2I;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -19,7 +18,8 @@ public class SpriteRenderer extends Component
     private final int columns;
     private final int rows;
 
-    private Vector2I frameIndex = new Vector2I(0, 0);
+    private int frameIndexX = 0;
+    private int frameIndexY = 0;
 
     public SpriteRenderer(double width, double height, Image image, int numFramesX, int numFramesY)
     {
@@ -56,8 +56,8 @@ public class SpriteRenderer extends Component
         double offsetY = -this.height * anchorY;
 
         // clamp frame index
-        int fx = (int) Math.min(frameIndex.getX(), columns - 1);
-        int fy = (int) Math.min(frameIndex.getY(), rows - 1);
+        int fx = Math.min(frameIndexX, columns - 1);
+        int fy = Math.min(frameIndexY, rows - 1);
 
         double sx = fx * this.frameWidth;
         double sy = fy * this.frameHeight;
@@ -84,17 +84,14 @@ public class SpriteRenderer extends Component
 
     /* GETTERS AND SETTERS */
 
-    public void setFrameIndex(Vector2I frameIndex)
+    public void setFrameIndex(int frameIndexX, int frameIndexY)
     {
         // clamp to valid range
-        int fx = (int) Math.max(0, Math.min(frameIndex.getX(), columns - 1));
-        int fy = (int) Math.max(0, Math.min(frameIndex.getY(), rows - 1));
-
-        this.frameIndex = new Vector2I(fx, fy);
+        this.frameIndexX = Math.max(0, Math.min(frameIndexX, columns - 1));
+        this.frameIndexY = Math.max(0, Math.min(frameIndexY, rows - 1));
     }
 
-    public Vector2I getFrameIndex()
-    {
-        return frameIndex;
-    }
+    public int getFrameIndexX() { return frameIndexX; }
+
+    public int getFrameIndexY() { return frameIndexY; }
 }
