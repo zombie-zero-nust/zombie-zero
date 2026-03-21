@@ -12,15 +12,26 @@ repositories {
 }
 
 application {
-    mainClass = 'edu.nust.Main'
+    def useTestLogger = project.hasProperty("testLogger")
+    def disableLogs = project.hasProperty("noLogs")
+
+    mainClass = useTestLogger
+            ? 'edu.nust.tests.TestLogger'
+            : 'edu.nust.Main'
+
+    def logConfig = disableLogs
+            ? "${projectDir}/src/main/resources/edu/nust/engine/logger/logback-off.xml"
+            : "${projectDir}/src/main/resources/edu/nust/engine/logger/logback.xml"
+
     applicationDefaultJvmArgs = [
-            '--enable-native-access=javafx.graphics'
+            '--enable-native-access=javafx.graphics',
+            "-Dlogback.configurationFile=${logConfig}"
     ]
 }
 
 javafx {
     version = "23.0.2"
-    modules = [ 'javafx.controls', 'javafx.fxml' ]
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 dependencies {
