@@ -3,18 +3,22 @@ package edu.nust.game.scenes;
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
-import edu.nust.engine.core.components.renderers.BoxRenderer;
 import edu.nust.engine.core.components.renderers.CircleRenderer;
+import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.engine.resources.Resources;
 import edu.nust.game.gameobjects.MovingObject;
 import edu.nust.game.gameobjects.MovingTag;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+
+import java.io.FileNotFoundException;
 
 public class MainGameScene extends GameScene
 {
@@ -28,7 +32,7 @@ public class MainGameScene extends GameScene
     }
 
     @Override
-    protected void onStart()
+    public void onStart()
     {
         this.addGameObject(new MovingObject(
                         new Vector2D(100, 100),
@@ -48,19 +52,29 @@ public class MainGameScene extends GameScene
         this.addGameObject(new GameObject()
         {
             @Override
-            protected void onInit()
+            public void onInit()
             {
-                this.addComponent(new CircleRenderer(100, Color.GREEN));
+                try
+                {
+                    Image image = Resources.loadImageOrThrow("assets", "images", "test.png");
+                    SpriteRenderer sprite = new SpriteRenderer(100, 100, image, 2, 2).tintSelf(Color.LIME)
+                            .setAnimationTime(TimeSpan.fromMilliseconds(500))
+                            .startAnimation();
+                    this.addComponent(sprite);
+                }
+                catch (FileNotFoundException ignored)
+                {
+                }
             }
 
             @Override
-            protected void onUpdate(TimeSpan deltaTime)
+            public void onUpdate(TimeSpan deltaTime)
             {
 
             }
 
             @Override
-            protected void onRender(GraphicsContext context)
+            public void onRender(GraphicsContext context)
             {
 
             }
@@ -68,7 +82,7 @@ public class MainGameScene extends GameScene
     }
 
     @Override
-    protected void onUpdate(TimeSpan deltaTime)
+    public void onUpdate(TimeSpan deltaTime)
     {
         if (isPaused) return; // skip game updates if paused
 

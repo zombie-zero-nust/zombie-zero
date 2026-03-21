@@ -1,6 +1,7 @@
 package edu.nust.engine.core;
 
 import edu.nust.engine.core.gameobjects.Tag;
+import edu.nust.engine.core.interfaces.Updatable;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
@@ -31,7 +32,7 @@ import java.util.function.Supplier;
 ///
 /// @see GameObject
 /// @see GameWorld
-public abstract class GameScene
+public abstract class GameScene implements Updatable
 {
     private final GameWorld window;
     /// Whether to update this scene or not
@@ -90,6 +91,8 @@ public abstract class GameScene
         {
             this.onUpdate(deltaTime);
             this.gameObjects.forEach(obj -> {
+                if (!obj.isActive()) return;
+
                 obj.onUpdate(deltaTime);
                 obj.updateComponents(deltaTime);
             });
@@ -97,6 +100,8 @@ public abstract class GameScene
 
         this.clearCanvas();
         this.gameObjects.forEach(obj -> {
+            if (!obj.isVisible()) return;
+
             obj.onRender(this.getCanvasContext());
             obj.renderComponents(this.getCanvasContext());
         });
@@ -106,7 +111,8 @@ public abstract class GameScene
 
     protected abstract void onStart();
 
-    protected abstract void onUpdate(TimeSpan deltaTime);
+    @Override
+    public abstract void onUpdate(TimeSpan deltaTime);
 
     /* CHILDREN */
 
@@ -232,15 +238,11 @@ public abstract class GameScene
 
     /* ACTIVE */
 
+    @Override
     public boolean isActive() { return active; }
 
+    @Override
     public void setActive(boolean active) { this.active = active; }
-
-    public void toggleActive() { setActive(!active); }
-
-    public void activate() { setActive(true); }
-
-    public void deactivate() { setActive(false); }
 
     /* EVENTS */
 

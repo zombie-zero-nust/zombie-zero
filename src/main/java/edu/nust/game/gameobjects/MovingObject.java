@@ -27,10 +27,10 @@ public class MovingObject extends GameObject
     }
 
     @Override
-    protected void onInit() { }
+    public void onInit() { }
 
     @Override
-    protected void onUpdate(TimeSpan deltaTime)
+    public void onUpdate(TimeSpan deltaTime)
     {
         // 1. Accumulate time
         elapsed = elapsed.add(deltaTime);
@@ -54,5 +54,5 @@ public class MovingObject extends GameObject
     }
 
     @Override
-    protected void onRender(GraphicsContext context) { }
+    public void onRender(GraphicsContext context) { }
 }

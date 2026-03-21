@@ -1,5 +1,6 @@
 package edu.nust.game.scenes;
 
+import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
@@ -7,7 +8,7 @@ import edu.nust.game.gameobjects.MovingObject;
 import javafx.fxml.FXML;
 import javafx.scene.paint.Color;
 
-public class StartScene extends edu.nust.engine.core.GameScene
+public class StartScene extends GameScene
 {
     public StartScene(GameWorld world)
     {
@@ -17,7 +18,7 @@ public class StartScene extends edu.nust.engine.core.GameScene
     /* LIFETIME */
 
     @Override
-    protected void onStart()
+    public void onStart()
     {
         this.addGameObject(new MovingObject(
                 new Vector2D(100, 100),
@@ -28,7 +29,7 @@ public class StartScene extends edu.nust.engine.core.GameScene
     }
 
     @Override
-    protected void onUpdate(TimeSpan deltaTime)
+    public void onUpdate(TimeSpan deltaTime)
     {
 
     }

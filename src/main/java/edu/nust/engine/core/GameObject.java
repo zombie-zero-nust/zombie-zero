@@ -2,6 +2,8 @@ package edu.nust.engine.core;
 
 import edu.nust.engine.core.components.Transform;
 import edu.nust.engine.core.gameobjects.Tag;
+import edu.nust.engine.core.interfaces.Renderable;
+import edu.nust.engine.core.interfaces.Updatable;
 import edu.nust.engine.math.TimeSpan;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +16,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class GameObject
+public abstract class GameObject implements Updatable, Renderable
 {
     private GameScene scene;
     // can only add one component of each type, e.g. only one Transform, only one BoxRenderer, etc.
@@ -24,6 +26,8 @@ public abstract class GameObject
 
     /// Controls whether to update components and self
     protected boolean active = true;
+    /// Controls whether to render components and self
+    protected boolean visible = true;
 
     public GameObject() { this.addComponent(new Transform()); }
 
@@ -116,7 +120,7 @@ public abstract class GameObject
     void renderComponents(GraphicsContext context)
     {
         for (Component component : components.values())
-            if (component.isActive()) component.onRender(context);
+            if (component.isVisible()) component.onRender(context);
     }
 
     /* TAG */
@@ -147,15 +151,27 @@ public abstract class GameObject
 
     /* LIFETIME */
 
+    @Override
     public boolean isActive() { return active; }
 
-    public void setActive(boolean active) { this.active = active; }
+    @Override
+    public void setActive(boolean active)
+    {
+        this.active = active;
+        if (active) onActivate();
+        else onDeactivate();
+    }
 
-    public void toggleActive() { setActive(!active); }
+    @Override
+    public boolean isVisible() { return visible; }
 
-    public void activate() { setActive(true); }
-
-    public void deactivate() { setActive(false); }
+    @Override
+    public void setVisible(boolean visible)
+    {
+        this.visible = visible;
+        if (visible) onShow();
+        else onHide();
+    }
 
     public void destroy()
     {
@@ -174,13 +190,11 @@ public abstract class GameObject
 
     /* LIFETIME API */
 
-    protected abstract void onInit();
+    public abstract void onInit();
 
-    protected abstract void onUpdate(TimeSpan deltaTime);
+    @Override
+    public abstract void onUpdate(TimeSpan deltaTime);
 
-    protected abstract void onRender(GraphicsContext context);
-
-    protected void onActivate() { }
-
-    protected void onDeactivate() { }
+    @Override
+    public abstract void onRender(GraphicsContext context);
 }
