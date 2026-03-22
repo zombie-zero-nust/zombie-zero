@@ -1,7 +1,7 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%green([%d{HH:mm:ss}]) %highlight([%-5level:%logger{0}]) - %msg%n</pattern>
+            <pattern>%green([%d{HH:mm:ss}]) %highlight([%level:%logger{0}]) - %msg%n</pattern>
         </encoder>
     </appender>
 

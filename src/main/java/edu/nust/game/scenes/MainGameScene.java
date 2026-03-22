@@ -88,7 +88,7 @@ public class MainGameScene extends GameScene
         GameObject trackedObject = this.getFirstWithTag(MovingTag.class);
         if (trackedObject == null) return;
 
-        this.getWorldCamera().translate(trackedObject.getTransform().getPosition());
+        this.getWorldCamera().setPosition(trackedObject.getTransform().getPosition());
     }
 
     @Override

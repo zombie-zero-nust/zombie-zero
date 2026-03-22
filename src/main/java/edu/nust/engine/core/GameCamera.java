@@ -21,27 +21,27 @@ public class GameCamera
         return this;
     }
 
-    public GameCamera translate(Vector2D position)
+    public GameCamera translate(Vector2D offset)
     {
-        this.position = position;
+        this.position.addSelf(offset);
         return this;
     }
 
     public GameCamera translate(double x, double y)
     {
-        this.position.set(x, y);
+        this.position.addSelf(x, y);
         return this;
     }
 
     public GameCamera translateX(double x)
     {
-        this.position.setX(x);
+        this.position.addSelf(x, 0);
         return this;
     }
 
     public GameCamera translateY(double y)
     {
-        this.position.setY(y);
+        this.position.addSelf(0, y);
         return this;
     }
 
