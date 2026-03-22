@@ -1,6 +1,7 @@
 package edu.nust.engine.core;
 
 import edu.nust.engine.core.gameobjects.Tag;
+import edu.nust.engine.core.interfaces.InputHandler;
 import edu.nust.engine.core.interfaces.Updatable;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
@@ -32,7 +33,7 @@ import java.util.function.Supplier;
 ///
 /// @see GameObject
 /// @see GameWorld
-public abstract class GameScene implements Updatable
+public abstract class GameScene implements Updatable, InputHandler
 {
     private final GameWorld window;
     /// Whether to update this scene or not
@@ -76,9 +77,9 @@ public abstract class GameScene implements Updatable
         // add events
         this.window.getRawScene().setOnKeyPressed(this::onKeyPressed);
         this.window.getRawScene().setOnKeyReleased(this::onKeyReleased);
-        this.window.getRawScene().setOnMouseClicked(this::onMouseClicked);
-        this.window.getRawScene().setOnMouseMoved(this::onMouseMoved);
         this.window.getRawScene().setOnMousePressed(this::onMousePressed);
+        this.window.getRawScene().setOnMouseReleased(this::onMouseReleased);
+        this.window.getRawScene().setOnMouseMoved(this::onMouseMoved);
 
         // initialize camera
         this.worldCamera = new PerspectiveCamera();
@@ -243,33 +244,6 @@ public abstract class GameScene implements Updatable
 
     @Override
     public void setActive(boolean active) { this.active = active; }
-
-    /* EVENTS */
-
-    protected void onKeyPressed(KeyEvent event)
-    {
-        // Override in subclasses if needed
-    }
-
-    protected void onKeyReleased(KeyEvent event)
-    {
-        // Override in subclasses if needed
-    }
-
-    protected void onMouseClicked(MouseEvent event)
-    {
-        // Override in subclasses if needed
-    }
-
-    protected void onMouseMoved(MouseEvent event)
-    {
-        // Override in subclasses if needed
-    }
-
-    protected void onMousePressed(MouseEvent event)
-    {
-        // Override in subclasses if needed
-    }
 
     /* LAYERS AND CAMERA */
 
