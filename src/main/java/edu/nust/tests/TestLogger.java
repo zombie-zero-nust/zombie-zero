@@ -1,17 +1,29 @@
 package edu.nust.tests;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import edu.nust.engine.logger.GameLogger;
+import edu.nust.engine.logger.LogProgress;
 
 public final class TestLogger
 {
-    public static final Logger LOGGER = LoggerFactory.getLogger(TestLogger.class);
+    public static final GameLogger LOGGER = GameLogger.getLogger(TestLogger.class);
 
     public static void main(String[] args)
     {
-        LOGGER.info("Info log message");
-        LOGGER.warn("Warning log message");
-        LOGGER.error("Error log message");
-        LOGGER.debug("Debug log message");
+        LOGGER.debug("This is a debug message.");
+        LOGGER.info("This is an info message.");
+        for (int i = 0; i < 10; i++)
+        {
+            progress(i);
+        }
+        LOGGER.success("This is a success message.");
+        LOGGER.warn("This is a warning message.");
+        LOGGER.error("This is an error message.");
+    }
+
+    private static void progress(int counter)
+    {
+        LogProgress progress = LOGGER.startProgress("Starting a progress {}...", counter);
+        LOGGER.reportProgress(progress, "Halfway through the progress...");
+        LOGGER.endProgress(progress, "Finished the progress!");
     }
 }
