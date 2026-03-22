@@ -6,22 +6,66 @@ import org.slf4j.LoggerFactory;
 public class GameLogger
 {
     private final Logger rawLogger;
+    private final String className;
 
     /// Use {@link #getLogger(Class)} instead
-    private GameLogger(Class<?> loggingClass) { this.rawLogger = LoggerFactory.getLogger(loggingClass); }
+    private GameLogger(Class<?> loggingClass)
+    {
+        this.rawLogger = LoggerFactory.getLogger(loggingClass);
+        this.className = loggingClass.getName();
+    }
 
     public static GameLogger getLogger(Class<?> loggingClass) { return new GameLogger(loggingClass); }
+
+    /* MESSAGE FORMATTERS */
+
+    private String resetAnsi() { return "\u001B[0m"; }
+
+    /// Returns caller info in format "FileName:LineNumber". If the caller info cannot be determined, returns
+    /// "Unknown".
+    /// <br>
+    /// Does not include the `.java` extension in the file name for brevity.
+    private String getCallerInfo()
+    {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        // loop until we find stack frame of logging class
+        for (StackTraceElement frame : stack) {
+            // get simple name from fully-qualified class
+            String fullName = frame.getClassName(); // e.g., edu.nust.engine.TestLogger
+            if (fullName.equalsIgnoreCase(className)) {
+                String fileName = frame.getFileName();
+                if (fileName != null) return fileName.replace(".java", "") + ":" + frame.getLineNumber();
+            }
+        }
+        return "Unknown";
+    }
+
+    private String getPrefix(String ansiColor, LogLevel level)
+    {
+        String levelStr = "[" + level.name() + " ";
+        return ansiColor + levelStr + getCallerInfo() + "]" + resetAnsi() + " ";
+    }
+
+    public String withMessage(LogLevel level, String... message)
+    {
+        return getPrefix(level.ansiColor, level) + String.join("", message);
+    }
+
+    public String withProgressMessage(LogLevel level, LogProgress progress, String... message)
+    {
+        return getPrefix(level.ansiColor + progress.getAnsi(), level) + String.join("", message);
+    }
 
     /* INTERNAL */
 
     private void logMessage(LogLevel level, String message, Object... args)
     {
-        rawLogger.info(level.withMessage(message), args);
+        rawLogger.info(withMessage(level, message), args);
     }
 
     private void logProgressMessage(LogLevel level, LogProgress progress, String message, Object... args)
     {
-        rawLogger.info(level.withProgressMessage(progress, message), args);
+        rawLogger.info(withProgressMessage(level, progress, message), args);
     }
 
     /* LOG TYPES */

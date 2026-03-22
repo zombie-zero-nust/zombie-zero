@@ -2,34 +2,16 @@ package edu.nust.engine.logger;
 
 public enum LogLevel
 {
-    DEBUG("\u001B[45m"),
-    INFO("\u001B[44m"),
-    START_PROGRESS(""),   // ignored, see `LogProgress`
-    REPORT_PROGRESS(""),  // ignored, see `LogProgress`
-    END_PROGRESS(""),     // ignored, see `LogProgress`
-    SUCCESS("\u001B[42m"),
-    WARN("\u001B[43m"),
-    ERROR("\u001B[41m");
+    DEBUG("\u001B[35m"),   // magenta text
+    INFO("\u001B[34m"),    // blue text
+    START_PROGRESS(""),    // ignored for progress
+    REPORT_PROGRESS(""),   // ignored
+    END_PROGRESS(""),      // ignored
+    SUCCESS("\u001B[32m"), // green text
+    WARN("\u001B[33m"),    // yellow text
+    ERROR("\u001B[31m");   // red text
 
-    private final String ansiColor;
+    final String ansiColor;
 
-    LogLevel(String ansiStr)
-    {
-        this.ansiColor = ansiStr;
-    }
-
-    private String resetAnsi() { return "\u001B[0m"; }
-
-    /* MESSAGE FORMATTERS */
-
-    public String withMessage(String... message)
-    {
-        return this.ansiColor + "[" + this.name() + "]" + resetAnsi() + " " + String.join("", message);
-    }
-
-    public String withProgressMessage(LogProgress progress, String... message)
-    {
-        return this.ansiColor + progress.getAnsi() + "[" + this.name() + "]" + resetAnsi() //
-                + " " + String.join("", message);
-    }
+    LogLevel(String ansiStr) { this.ansiColor = ansiStr; }
 }
