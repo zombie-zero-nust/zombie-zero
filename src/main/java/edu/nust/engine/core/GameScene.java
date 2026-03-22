@@ -7,17 +7,18 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /// Represents a "scene" in the game, which can contain multiple `GameObject`s and has its own UI layout (root).
@@ -46,7 +47,11 @@ public abstract class GameScene implements Updatable, InputHandler
     private final Canvas canvas;
     protected final List<GameObject> gameObjects = new ArrayList<>();
     // in `GameWorld`, when subscene for world layer is created, this is the camera attached to it
-    private final PerspectiveCamera worldCamera;
+    private final GameCamera worldCamera;
+
+    /* DEBUG OPTIONS */
+
+    private boolean debugGrid = false;
 
     public GameScene(GameWorld window)
     {
@@ -80,7 +85,7 @@ public abstract class GameScene implements Updatable, InputHandler
         this.window.getRawScene().setOnMouseMoved(this::onMouseMoved);
 
         // initialize camera
-        this.worldCamera = new PerspectiveCamera();
+        this.worldCamera = new GameCamera();
     }
 
     // package-private so classes outside package cannot call it, neither can subclasses override it
@@ -98,11 +103,16 @@ public abstract class GameScene implements Updatable, InputHandler
         }
 
         this.clearCanvas();
-        this.gameObjects.forEach(obj -> {
-            if (!obj.isVisible()) return;
 
-            obj.onRender(this.getCanvasContext());
-            obj.renderComponents(this.getCanvasContext());
+        fetchWorldContextAndRun((ctx) -> {
+            this.gameObjects.forEach(obj -> {
+                if (!obj.isVisible()) return;
+
+                obj.onRender(ctx);
+                obj.renderComponents(ctx);
+            });
+
+            this.renderDebug(ctx);
         });
     }
 
@@ -230,10 +240,81 @@ public abstract class GameScene implements Updatable, InputHandler
 
     public void clearCanvas()
     {
-        getCanvasContext().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        getRawContext().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
-    public GraphicsContext getCanvasContext() { return canvas.getGraphicsContext2D(); }
+    private GraphicsContext getRawContext() { return canvas.getGraphicsContext2D(); }
+
+    /// Fetches a `GraphicsContext` with the camera transformations, then runs the given function with it.
+    public void fetchWorldContextAndRun(Consumer<GraphicsContext> contextConsumer)
+    {
+        GraphicsContext ctx = this.getRawContext();
+        ctx.save();
+
+        double zoom = worldCamera.getZoom();
+        double canvasW = canvas.getWidth();
+        double canvasH = canvas.getHeight();
+
+        // move origin to center of screen
+        ctx.translate(canvasW / 2, canvasH / 2);
+
+        // apply zoom to context
+        ctx.scale(zoom, zoom);
+
+        // translate context to center at camera position
+        ctx.translate(-worldCamera.getPosition().getX(), -worldCamera.getPosition().getY());
+
+        contextConsumer.accept(ctx);
+
+        ctx.restore();
+    }
+
+    /* DEBUG */
+
+    private void renderDebug(GraphicsContext ctx)
+    {
+        if (debugGrid)
+        {
+            ctx.setStroke(Color.GRAY);
+            ctx.setLineWidth(1);
+
+            double zoom = worldCamera.getZoom();
+
+            double canvasW = canvas.getWidth();
+            double canvasH = canvas.getHeight();
+
+            // camera center
+            double camX = worldCamera.getPosition().getX();
+            double camY = worldCamera.getPosition().getY();
+
+            // visible world bounds
+            double halfW = canvasW / 2.0 / zoom;
+            double halfH = canvasH / 2.0 / zoom;
+
+            double left = camX - halfW;
+            double right = camX + halfW;
+            double top = camY - halfH;
+            double bottom = camY + halfH;
+
+            double gridSize = 100;
+
+            // snap to grid
+            double startX = Math.floor(left / gridSize) * gridSize;
+            double startY = Math.floor(top / gridSize) * gridSize;
+
+            // vertical lines
+            for (double x = startX; x <= right; x += gridSize)
+            {
+                ctx.strokeLine(x, top, x, bottom);
+            }
+
+            // horizontal lines
+            for (double y = startY; y <= bottom; y += gridSize)
+            {
+                ctx.strokeLine(left, y, right, y);
+            }
+        }
+    }
 
     /* ACTIVE */
 
@@ -251,5 +332,17 @@ public abstract class GameScene implements Updatable, InputHandler
 
     public Region getWorldLayer() { return worldLayer; }
 
-    public PerspectiveCamera getWorldCamera() { return worldCamera; }
+    public GameCamera getWorldCamera() { return worldCamera; }
+
+    /* DEBUG */
+
+    public boolean hasDebugGrid() { return debugGrid; }
+
+    public void setDebugGrid(boolean debugGrid) { this.debugGrid = debugGrid; }
+
+    public void toggleDebugGrid() { setDebugGrid(!debugGrid); }
+
+    public void showDebugGrid() { this.debugGrid = true; }
+
+    public void hideDebugGrid() { this.debugGrid = false; }
 }

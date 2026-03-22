@@ -1,7 +1,6 @@
 package edu.nust.engine.core.components.renderers;
 
 import edu.nust.engine.core.Component;
-import edu.nust.engine.math.TimeSpan;
 import javafx.scene.paint.Color;
 
 abstract class ShapeRenderer extends Component
@@ -9,9 +8,9 @@ abstract class ShapeRenderer extends Component
     protected boolean filled = true;
     protected Color fillColor;
 
-    protected boolean stroked = true;
+    protected boolean stroked = false;
     protected Color strokeColor = Color.BLACK;
-    protected double strokeWidth = 4;
+    protected double strokeWidth = 2.0;
 
     /* INITIALIZER */
 

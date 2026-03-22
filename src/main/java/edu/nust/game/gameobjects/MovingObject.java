@@ -2,7 +2,6 @@ package edu.nust.game.gameobjects;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.components.renderers.BoxRenderer;
-import edu.nust.engine.math.Angle;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -14,6 +13,8 @@ public class MovingObject extends GameObject
     private Vector2D endPosition;
     private TimeSpan moveTime;
 
+    private double size = 50;
+
     private TimeSpan elapsed = TimeSpan.zero();
 
     public MovingObject(Vector2D startPosition, Vector2D endPosition, TimeSpan time, Color color)
@@ -23,7 +24,7 @@ public class MovingObject extends GameObject
         this.moveTime = time;
 
         this.getTransform().setPosition(startPosition);
-        this.addComponent(new BoxRenderer(50, 50, color));
+        this.addComponent(new BoxRenderer(size, size, color));
     }
 
     @Override
@@ -32,27 +33,23 @@ public class MovingObject extends GameObject
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
-        // 1. Accumulate time
+        // accumulate time
         elapsed = elapsed.add(deltaTime);
 
-        // 2. Calculate completion ratio (0.0 to 1.0)
-        // We use a triangle wave logic (ping-pong)
-        double totalSeconds = elapsed.asSeconds();
-        double duration = moveTime.asSeconds();
+        // compute progress (clamped between 0 and 1)
+        double raw = (elapsed.asSeconds() % (2 * moveTime.asSeconds())) / moveTime.asSeconds();
+        double t = raw <= 1 ? raw : 2 - raw;
 
-        // This creates a value that goes 0 -> 1 -> 0 -> 1 infinitely
-        double t = (totalSeconds / duration) % 2.0;
-        if (t > 1.0)
-        {
-            t = 2.0 - t;
-        }
+        // interpolate position
+        Vector2D direction = endPosition.subtract(startPosition);
+        Vector2D current = startPosition.add(direction.multiply(t));
 
-        // 3. Apply the Linear Interpolation (LERP)
-        // Since 't' now bounces between 0 and 1, the object moves back and forth
-        Vector2D currentPos = startPosition.lerp(endPosition, t);
-        this.getTransform().setPosition(currentPos);
+        // apply position
+        this.getTransform().setPosition(current);
     }
 
     @Override
     public void onRender(GraphicsContext context) { }
+
+    public void setSize(double size) { this.size = size; }
 }

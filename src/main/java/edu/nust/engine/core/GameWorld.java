@@ -8,7 +8,6 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
-import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -108,7 +107,7 @@ public abstract class GameWorld
         worldScene.widthProperty().bind(this.sceneRoot.widthProperty());
         worldScene.heightProperty().bind(this.sceneRoot.heightProperty());
         // set camera for world
-        worldScene.setCamera(newScene.getWorldCamera());
+        // worldScene.setCamera(newScene.getWorldCamera());
 
         // add to root so `this.scene` is updates
         this.sceneRoot.getChildren().setAll(worldScene, newScene.getUILayer());
