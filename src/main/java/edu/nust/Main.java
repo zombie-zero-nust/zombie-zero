@@ -1,5 +1,7 @@
 package edu.nust;
 
+import edu.nust.engine.logger.GameLogger;
+import edu.nust.engine.logger.enums.LogLevel;
 import edu.nust.game.MainWorld;
 import edu.nust.game.scenes.StartScene;
 import javafx.application.Application;
@@ -11,6 +13,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application
 {
+
     @Override
     public void start(Stage stage)
     {
@@ -19,5 +22,11 @@ public class Main extends Application
         window.start();
     }
 
-    public static void main(String[] args) { launch(); }
+    public static void main(String[] args)
+    {
+        initLogger();
+        launch();
+    }
+
+    private static void initLogger() { GameLogger.setGlobalLevel(LogLevel.TRACE); }
 }

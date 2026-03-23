@@ -18,7 +18,7 @@ public final class TestLogger
         }
         LOGGER.success("This is a success message.");
         LOGGER.warn("This is a warning message.");
-        LOGGER.error("This is an error message.");
+        LOGGER.error(true, "This is an error message.");
     }
 
     private static void progress(int counter)

@@ -14,7 +14,11 @@ public enum LogLevel
 
     private final String ansiColor;
 
-    LogLevel(String ansiStr) { this.ansiColor = ansiStr; }
+    LogLevel(String ansiColor) { this.ansiColor = ansiColor; }
 
     public String getAnsiColor() { return ansiColor; }
+
+    public boolean isEnabled(LogLevel current) { return this.ordinal() >= current.ordinal(); }
+
+    public static boolean isEnabled(LogLevel current, LogLevel target) { return target.ordinal() >= current.ordinal(); }
 }
