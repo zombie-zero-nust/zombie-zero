@@ -24,20 +24,49 @@ public class LogProgress
     private final String ansiBg;
     private final String ansiFg;
 
-    // disable external construction
+    private final String name;
+    private final GameLogger logger;
 
-    /// You cannot create a LogProgress directly, use {@link GameLogger#startProgress(String, Object...)} instead
-    private LogProgress()
+    /// Use {@link LogProgress#create(String, GameLogger)} instead
+    public LogProgress(String name, GameLogger logger)
     {
         int id = NEXT_ID.getAndIncrement();
         this.ansiBg = COLORS[id % COLORS.length].bg;
         this.ansiFg = COLORS[id % COLORS.length].fg;
+
+        this.name = name.replace(" ", "").toUpperCase();
+        this.logger = logger;
     }
 
-    /// **`INTERNAL`** Use {@link GameLogger#startProgress(String, Object...)} instead
-    static LogProgress create() { return new LogProgress(); }
+    /// Starts a {@link LogProgress} with a random color
+    /// <br>
+    /// Can use logging methods to log, such as:
+    ///
+    /// @see LogProgress#begin(String, Object...)
+    /// @see LogProgress#log(String, Object...)
+    /// @see LogProgress#end(String, Object...)
+    public static LogProgress create(String name, GameLogger logger) { return new LogProgress(name, logger); }
+
+    public void begin(String message, Object... args)
+    {
+        logger.beginProgress(this, message, args);
+    }
+
+    public void log(String message, Object... args)
+    {
+        logger.logProgress(this, message, args);
+    }
+
+    public void end(String message, Object... args)
+    {
+        logger.endProgress(this, message, args);
+    }
+
+    /* GAME LOGGER & INTERNAL */
 
     String getAnsi() { return ansiBg + ansiFg; }
+
+    String getName() { return name; }
 
     private record ColorPair(String bg, String fg)
     {

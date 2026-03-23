@@ -29,10 +29,12 @@ public class GameLogger
     {
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         // loop until we find stack frame of logging class
-        for (StackTraceElement frame : stack) {
+        for (StackTraceElement frame : stack)
+        {
             // get simple name from fully-qualified class
             String fullName = frame.getClassName(); // e.g., edu.nust.engine.TestLogger
-            if (fullName.equalsIgnoreCase(className)) {
+            if (fullName.equalsIgnoreCase(className))
+            {
                 String fileName = frame.getFileName();
                 if (fileName != null) return fileName.replace(".java", "") + ":" + frame.getLineNumber();
             }
@@ -40,21 +42,22 @@ public class GameLogger
         return "Unknown";
     }
 
-    private String getPrefix(String ansiColor, LogLevel level)
+    private String getPrefix(String level, String ansiColor)
     {
-        String levelStr = "[" + level.name() + " ";
+        String levelStr = "[" + level + " ";
         return ansiColor + levelStr + getCallerInfo() + "]" + resetAnsi() + " ";
     }
 
-    public String withMessage(LogLevel level, String... message)
+    private String withMessage(LogLevel level, String... message)
     {
-        return getPrefix(level.ansiColor, level) + String.join("", message);
+        return getPrefix(level.name(), level.ansiColor) + String.join("", message);
     }
 
-    public String withProgressMessage(LogLevel level, LogProgress progress, String... message)
+    private String withProgressMessage(LogProgressType type, LogProgress progress, String... message)
     {
-        return getPrefix(level.ansiColor + progress.getAnsi(), level) + String.join("", message);
+        return getPrefix(type.getName() + " " + progress.getName(), progress.getAnsi()) + String.join("", message);
     }
+
 
     /* INTERNAL */
 
@@ -63,9 +66,9 @@ public class GameLogger
         rawLogger.info(withMessage(level, message), args);
     }
 
-    private void logProgressMessage(LogLevel level, LogProgress progress, String message, Object... args)
+    private void logProgressMessage(LogProgressType type, LogProgress progress, String message, Object... args)
     {
-        rawLogger.info(withProgressMessage(level, progress, message), args);
+        rawLogger.info(withProgressMessage(type, progress, message), args);
     }
 
     /* LOG TYPES */
@@ -87,22 +90,21 @@ public class GameLogger
 
     /* PROGRESS */
 
-    /// Starts a {@link LogProgress} with a random color, and returns the progress object to be used for reporting and
-    /// ending the progress.
-    public LogProgress startProgress(String message, Object... args)
+    /// **`INTERNAL`** Use {@link LogProgress#begin(String, Object...)} instead
+    void beginProgress(LogProgress progress, String message, Object... args)
     {
-        LogProgress progress = LogProgress.create();
-        logProgressMessage(LogLevel.START_PROGRESS, progress, message, args);
-        return progress;
+        logProgressMessage(LogProgressType.BEGIN, progress, message, args);
     }
 
-    public void reportProgress(LogProgress progress, String message, Object... args)
+    /// **`INTERNAL`** Use {@link LogProgress#log(String, Object...)} instead
+    void logProgress(LogProgress progress, String message, Object... args)
     {
-        logProgressMessage(LogLevel.REPORT_PROGRESS, progress, message, args);
+        logProgressMessage(LogProgressType.LOG, progress, message, args);
     }
 
-    public void endProgress(LogProgress progress, String message, Object... args)
+    /// **`INTERNAL`** Use {@link LogProgress#end(String, Object...)} instead
+    void endProgress(LogProgress progress, String message, Object... args)
     {
-        logProgressMessage(LogLevel.END_PROGRESS, progress, message, args);
+        logProgressMessage(LogProgressType.END, progress, message, args);
     }
 }

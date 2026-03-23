@@ -22,8 +22,9 @@ public final class TestLogger
 
     private static void progress(int counter)
     {
-        LogProgress progress = LOGGER.startProgress("Starting a progress {}...", counter);
-        LOGGER.reportProgress(progress, "Halfway through the progress...");
-        LOGGER.endProgress(progress, "Finished the progress!");
+        LogProgress progress = LogProgress.create("Counter " + counter, LOGGER);
+        progress.begin("Starting a progress {}...", counter);
+        progress.log("Halfway through the progress...");
+        progress.end("Finished the progress!");
     }
 }
