@@ -3,6 +3,8 @@ package edu.nust.engine.core;
 import edu.nust.engine.core.gameobjects.Tag;
 import edu.nust.engine.core.interfaces.InputHandler;
 import edu.nust.engine.core.interfaces.Updatable;
+import edu.nust.engine.logger.GameLogger;
+import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
@@ -34,6 +36,8 @@ import java.util.function.Supplier;
 /// @see GameWorld
 public abstract class GameScene implements Updatable<GameScene>, InputHandler
 {
+    protected final GameLogger logger = GameLogger.getLogger(this.getClass());
+
     private final GameWorld window;
     /// Whether to update this scene or not
     private boolean active = true;
@@ -55,6 +59,9 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
 
     public GameScene(GameWorld window)
     {
+        LogProgress initSceneLogger = LogProgress.create("SCENE", logger);
+        initSceneLogger.begin("Initializing scene: {}", this.getClass().getSimpleName());
+
         this.window = window;
         this.canvas = initCanvas();
 
@@ -65,9 +72,15 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
         // add CSS
         String sceneName = this.getClass().getSimpleName();
         URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
-        if (cssUrl == null) System.out.println("Missing CSS for: " + sceneName);
-        else this.window.getRawScene().getStylesheets().add(cssUrl.toExternalForm());
-        // add CSS to raw scene to allow overriding
+        if (cssUrl == null)
+        {
+            logger.warn("Missing CSS for: {}", sceneName);
+        }
+        else
+        {
+            // add CSS to raw scene to allow overriding
+            this.window.getRawScene().getStylesheets().add(cssUrl.toExternalForm());
+        }
 
         // bind canvas size to world layer, which is bound to `window.root`
         this.canvas.widthProperty().bind(this.worldLayer.widthProperty());
@@ -86,6 +99,8 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
 
         // initialize camera
         this.worldCamera = new GameCamera();
+
+        initSceneLogger.end("Scene initialized successfully");
     }
 
     // package-private so classes outside package cannot call it, neither can subclasses override it
@@ -123,12 +138,13 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
     @Override
     public abstract void onUpdate(TimeSpan deltaTime);
 
-    /* CHILDREN */
+    /* GAME OBJECT */
 
     public GameObject addGameObject(GameObject gameObject)
     {
         gameObject.setScene(this);
         gameObjects.add(gameObject);
+        logger.debug("GameObject {} added to scene", gameObject.getClass().getSimpleName());
         return gameObject;
     }
 
@@ -184,19 +200,29 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
         return result;
     }
 
-    public void removeGameObject(GameObject gameObject) { gameObjects.remove(gameObject); }
+    public void removeGameObject(GameObject gameObject)
+    {
+        gameObjects.remove(gameObject);
+        logger.debug("GameObject {} removed from scene", gameObject.getClass().getSimpleName());
+    }
 
     public void removeGameObjectsOfType(Class<? extends GameObject> type)
     {
         gameObjects.removeIf(type::isInstance);
+        logger.debug("All GameObjects of type {} removed from scene", type.getSimpleName());
     }
 
     public void removeGameObjectsWithTag(Class<? extends Tag> tag)
     {
         gameObjects.removeIf(obj -> obj.hasTag(tag));
+        logger.debug("All GameObjects with tag {} removed from scene", tag.getSimpleName());
     }
 
-    public void removeAllGameObjects() { gameObjects.clear(); }
+    public void removeAllGameObjects()
+    {
+        gameObjects.clear();
+        logger.debug("All GameObjects removed from scene");
+    }
 
     /* UI LAYER */
 
@@ -222,6 +248,7 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
             throw new RuntimeException("Failed to load FXML: " + sceneName, e);
         }
 
+        logger.debug("UI layer initialized successfully");
         return root;
     }
 
@@ -231,6 +258,7 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
     {
         StackPane worldLayer = new StackPane(canvas);
         worldLayer.setPickOnBounds(false); // allow clicks to pass through to UI layer
+        logger.debug("World layer initialized successfully");
         return worldLayer;
     }
 
@@ -328,8 +356,16 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
     public GameScene setActive(boolean active)
     {
         this.active = active;
-        if (active) onActivate();
-        else onDeactivate();
+        if (active)
+        {
+            onActivate();
+            logger.debug("Scene activated");
+        }
+        else
+        {
+            onDeactivate();
+            logger.debug("Scene deactivated");
+        }
         return this;
     }
 

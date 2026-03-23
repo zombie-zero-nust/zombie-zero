@@ -1,6 +1,8 @@
 package edu.nust.engine.core;
 
 import edu.nust.Main;
+import edu.nust.engine.logger.GameLogger;
+import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
@@ -26,6 +28,8 @@ import java.util.function.Supplier;
 /// @see GameScene
 public abstract class GameWorld
 {
+    protected final GameLogger logger = GameLogger.getLogger(this.getClass());
+
     protected final Stage stage;
     // When changing "scenes", we just change root
     private final Scene scene;
@@ -55,6 +59,11 @@ public abstract class GameWorld
         if (commonCssUrl != null)
         {
             this.scene.getStylesheets().add(commonCssUrl.toExternalForm());
+            logger.debug("Loaded common.css");
+        }
+        else
+        {
+            logger.warn("\"common.css\" not found, ensure 'edu/nust/game/scenes/common.css' if not intentional.");
         }
 
         initStage();
@@ -80,11 +89,14 @@ public abstract class GameWorld
                 if (currentGameScene != null) currentGameScene.invokeUpdate(TimeSpan.fromNanoseconds(deltaTimeNs));
             }
         };
+
+        logger.success("Game World initialized successfully");
     }
 
     /// Call in program entry point i.e. [Main#start(Stage stage)] Starts the Game Loop
     public void start()
     {
+        logger.success("Game started");
         stage.show();
         gameLoop.start();
     }
@@ -94,23 +106,27 @@ public abstract class GameWorld
     {
         gameLoop.stop();
         stage.close();
+        logger.success("Game stopped");
     }
 
     /* SCENE */
 
     public GameWorld setScene(GameScene newScene)
     {
+        LogProgress sceneSwitchLogger = LogProgress.create("SCENE_SWITCH", logger);
+        sceneSwitchLogger.begin("Switching Scene to {}", newScene.getClass().getSimpleName());
+
         this.currentGameScene = newScene;
 
         SubScene worldScene = new SubScene(newScene.getWorldLayer(), this.stage.getWidth(), this.stage.getHeight());
         // bind world scene size to root size
         worldScene.widthProperty().bind(this.sceneRoot.widthProperty());
         worldScene.heightProperty().bind(this.sceneRoot.heightProperty());
-        // set camera for world
-        // worldScene.setCamera(newScene.getWorldCamera());
 
-        // add to root so `this.scene` is updates
+        // add to root so `this.scene` is updated
         this.sceneRoot.getChildren().setAll(worldScene, newScene.getUILayer());
+
+        sceneSwitchLogger.end("Switched to Scene {} successfully", newScene.getClass().getSimpleName());
 
         return this;
     }
@@ -196,7 +212,7 @@ public abstract class GameWorld
         setCursorVisible(!isCursorVisible());
         return this;
     }
-    
+
     public GameWorld centerWindow()
     {
         stage.centerOnScreen();

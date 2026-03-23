@@ -2,11 +2,14 @@ package edu.nust.engine.core;
 
 import edu.nust.engine.core.interfaces.Renderable;
 import edu.nust.engine.core.interfaces.Updatable;
+import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.math.TimeSpan;
 import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Component implements Updatable<Component>, Renderable<Component>
 {
+    protected final GameLogger logger = GameLogger.getLogger(this.getClass());
+
     protected GameObject gameObject;
     /// Whether this should update self or not
     protected boolean active = true;
@@ -22,8 +25,16 @@ public abstract class Component implements Updatable<Component>, Renderable<Comp
     public Component setActive(boolean active)
     {
         this.active = active;
-        if (active) onActivate();
-        else onDeactivate();
+        if (active)
+        {
+            onActivate();
+            logger.debug("{} activated", this.getClass().getSimpleName());
+        }
+        else
+        {
+            onDeactivate();
+            logger.debug("{} deactivated", this.getClass().getSimpleName());
+        }
         return this;
     }
 
@@ -34,8 +45,16 @@ public abstract class Component implements Updatable<Component>, Renderable<Comp
     public Component setVisible(boolean visible)
     {
         this.visible = visible;
-        if (visible) onShow();
-        else onHide();
+        if (visible)
+        {
+            onShow();
+            logger.debug("{} shown", this.getClass().getSimpleName());
+        }
+        else
+        {
+            onHide();
+            logger.debug("{} hidden", this.getClass().getSimpleName());
+        }
         return this;
     }
 

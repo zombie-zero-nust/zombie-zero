@@ -52,6 +52,9 @@ public class GameLogger
 
     /* LOG TYPES */
 
+    /// Trace log with cyan text
+    public void trace(String message, Object... args) { logMessage(LogLevel.TRACE, message, args); }
+
     /// Debug log with magenta text
     public void debug(String message, Object... args) { logMessage(LogLevel.DEBUG, message, args); }
 
