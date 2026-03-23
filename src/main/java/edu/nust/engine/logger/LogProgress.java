@@ -47,20 +47,11 @@ public class LogProgress
     /// @see LogProgress#end(String, Object...)
     public static LogProgress create(String name, GameLogger logger) { return new LogProgress(name, logger); }
 
-    public void begin(String message, Object... args)
-    {
-        logger.beginProgress(this, message, args);
-    }
+    public void begin(String message, Object... args) { logger.beginProgress(this, message, args); }
 
-    public void log(String message, Object... args)
-    {
-        logger.logProgress(this, message, args);
-    }
+    public void log(String message, Object... args) { logger.logProgress(this, message, args); }
 
-    public void end(String message, Object... args)
-    {
-        logger.endProgress(this, message, args);
-    }
+    public void end(String message, Object... args) { logger.endProgress(this, message, args); }
 
     /* GAME LOGGER & INTERNAL */
 
