@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 ///
 /// @see GameObject
 /// @see GameWorld
-public abstract class GameScene implements Updatable, InputHandler
+public abstract class GameScene implements Updatable<GameScene>, InputHandler
 {
     private final GameWorld window;
     /// Whether to update this scene or not
@@ -134,12 +134,15 @@ public abstract class GameScene implements Updatable, InputHandler
 
     public GameObject addGameObject(Supplier<GameObject> gameObject) { return addGameObject(gameObject.get()); }
 
-    public void spawnGameObject(GameObject gameObject, Vector2D position)
+    public GameObject spawnGameObject(GameObject gameObject, Vector2D position)
     {
-        addGameObject(gameObject).getTransform().setPosition(position);
+        return addGameObject(gameObject).getTransform().setPosition(position).getGameObject();
     }
 
-    public void spawnGameObject(Supplier<GameObject> object, Vector2D pos) { spawnGameObject(object.get(), pos); }
+    public GameObject spawnGameObject(Supplier<GameObject> object, Vector2D pos)
+    {
+        return spawnGameObject(object.get(), pos);
+    }
 
     public List<GameObject> getAllGameObjects() { return gameObjects; }
 
@@ -322,7 +325,13 @@ public abstract class GameScene implements Updatable, InputHandler
     public boolean isActive() { return active; }
 
     @Override
-    public void setActive(boolean active) { this.active = active; }
+    public GameScene setActive(boolean active)
+    {
+        this.active = active;
+        if (active) onActivate();
+        else onDeactivate();
+        return this;
+    }
 
     /* LAYERS AND CAMERA */
 
@@ -338,11 +347,27 @@ public abstract class GameScene implements Updatable, InputHandler
 
     public boolean hasDebugGrid() { return debugGrid; }
 
-    public void setDebugGrid(boolean debugGrid) { this.debugGrid = debugGrid; }
+    public GameScene setDebugGrid(boolean debugGrid)
+    {
+        this.debugGrid = debugGrid;
+        return this;
+    }
 
-    public void toggleDebugGrid() { setDebugGrid(!debugGrid); }
+    public GameScene toggleDebugGrid()
+    {
+        setDebugGrid(!debugGrid);
+        return this;
+    }
 
-    public void showDebugGrid() { this.debugGrid = true; }
+    public GameScene showDebugGrid()
+    {
+        this.debugGrid = true;
+        return this;
+    }
 
-    public void hideDebugGrid() { this.debugGrid = false; }
+    public GameScene hideDebugGrid()
+    {
+        this.debugGrid = false;
+        return this;
+    }
 }

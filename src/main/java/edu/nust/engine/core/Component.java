@@ -4,9 +4,8 @@ import edu.nust.engine.core.interfaces.Renderable;
 import edu.nust.engine.core.interfaces.Updatable;
 import edu.nust.engine.math.TimeSpan;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Region;
 
-public abstract class Component implements Updatable, Renderable
+public abstract class Component implements Updatable<Component>, Renderable<Component>
 {
     protected GameObject gameObject;
     /// Whether this should update self or not
@@ -20,22 +19,24 @@ public abstract class Component implements Updatable, Renderable
     public boolean isActive() { return active; }
 
     @Override
-    public void setActive(boolean active)
+    public Component setActive(boolean active)
     {
         this.active = active;
         if (active) onActivate();
         else onDeactivate();
+        return this;
     }
 
     @Override
     public boolean isVisible() { return visible; }
 
     @Override
-    public void setVisible(boolean visible)
+    public Component setVisible(boolean visible)
     {
         this.visible = visible;
         if (visible) onShow();
         else onHide();
+        return this;
     }
 
     public void removeSelf()

@@ -177,17 +177,9 @@ public class SpriteRenderer extends Component
         return this;
     }
 
-    public SpriteRenderer setFrameX(int frameX)
-    {
-        this.frameX = clampMinMax(frameX, 0, columns - 1);
-        return this;
-    }
+    public SpriteRenderer setFrameX(int frameX) { return setFrame(frameX, this.frameY); }
 
-    public SpriteRenderer setFrameY(int frameY)
-    {
-        this.frameY = clampMinMax(frameY, 0, rows - 1);
-        return this;
-    }
+    public SpriteRenderer setFrameY(int frameY) { return setFrame(this.frameX, frameY); }
 
     public SpriteRenderer nextFrame()
     {
@@ -233,7 +225,6 @@ public class SpriteRenderer extends Component
 
     public int getRows() { return rows; }
 
-    @SuppressWarnings("UnusedReturnValue")
     public SpriteRenderer setImage(Image image, int numFramesX, int numFramesY)
     {
         this.image = image;

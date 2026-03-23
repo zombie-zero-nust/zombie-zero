@@ -2,19 +2,19 @@ package edu.nust.engine.core.interfaces;
 
 import edu.nust.engine.math.TimeSpan;
 
-public interface Updatable
+public interface Updatable<T>
 {
     void onUpdate(TimeSpan deltaTime);
 
     boolean isActive();
 
-    void setActive(boolean active);
+    T setActive(boolean active);
 
-    default void toggleActive() { setActive(!isActive()); }
+    default T toggleActive() { return setActive(!isActive()); }
 
-    default void activate() { setActive(true); }
+    default T activate() { return setActive(true); }
 
-    default void deactivate() { setActive(false); }
+    default T deactivate() { return setActive(false); }
 
     default void onActivate() { }
 

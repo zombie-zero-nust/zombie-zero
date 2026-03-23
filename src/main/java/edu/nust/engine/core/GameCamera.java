@@ -49,24 +49,19 @@ public class GameCamera
 
     public double getZoom() { return zoom; }
 
-    public void setZoom(double zoom)
+    public GameCamera setZoom(double zoom)
     {
         if (zoom <= 0)
         {
             LOGGER.warn("Attempted to set zoom to non-positive value: {}", zoom);
-            return;
+            return this;
         }
 
         this.zoom = zoom;
+        return this;
     }
 
-    public void incrementZoom(double factor)
-    {
-        setZoom(this.zoom * factor);
-    }
+    public GameCamera incrementZoom(double factor) { return setZoom(this.zoom * factor); }
 
-    public void decrementZoom(double factor)
-    {
-        setZoom(this.zoom / factor);
-    }
+    public GameCamera decrementZoom(double factor) { return setZoom(this.zoom / factor); }
 }

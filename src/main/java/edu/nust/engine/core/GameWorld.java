@@ -98,7 +98,7 @@ public abstract class GameWorld
 
     /* SCENE */
 
-    public void setScene(GameScene newScene)
+    public GameWorld setScene(GameScene newScene)
     {
         this.currentGameScene = newScene;
 
@@ -111,9 +111,11 @@ public abstract class GameWorld
 
         // add to root so `this.scene` is updates
         this.sceneRoot.getChildren().setAll(worldScene, newScene.getUILayer());
+
+        return this;
     }
 
-    public void setScene(Supplier<GameScene> newScene) { setScene(newScene.get()); }
+    public GameWorld setScene(Supplier<GameScene> newScene) { return setScene(newScene.get()); }
 
     /// Get the current active [GameScene]
     public GameScene getScene() { return currentGameScene; }
@@ -126,44 +128,84 @@ public abstract class GameWorld
 
     /* UTILITIES */
 
-    public void centerWindow() { stage.centerOnScreen(); }
-
-    public void setWindowTitle(String title) { stage.setTitle(title); }
-
-    public String getWindowTitle() { return stage.getTitle(); }
-
-    public void setCursor(Cursor cursor) { stage.getScene().setCursor(cursor); }
-
-    public Cursor getCursor() { return stage.getScene().getCursor(); }
-
-    public void setCursorVisible(boolean visible) { if (!visible) setCursor(Cursor.NONE); }
-
-    public boolean isCursorVisible() { return getCursor() != Cursor.NONE; }
-
-    public void toggleCursorVisible() { setCursorVisible(!isCursorVisible()); }
-
-    public void setResizable(boolean resizable) { stage.setResizable(resizable); }
-
-    public void setFullscreen(boolean fullscreen) { stage.setFullScreen(fullscreen); }
-
-    public void toggleFullscreen() { setFullscreen(!stage.isFullScreen()); }
-
-    public void isFullscreen(boolean fullscreen) { stage.setFullScreen(fullscreen); }
-
-    public void setSize(double width, double height)
-    {
-        stage.setWidth(width);
-        stage.setHeight(height);
-    }
-
-    public void setWidth(double width) { stage.setWidth(width); }
-
-    public void setHeight(double height) { stage.setHeight(height); }
-
     public Vector2D getSize() { return new Vector2D(stage.getWidth(), stage.getHeight()); }
 
     public double getWidth() { return stage.getWidth(); }
 
     public double getHeight() { return stage.getHeight(); }
 
+    public String getWindowTitle() { return stage.getTitle(); }
+
+    public Cursor getCursor() { return stage.getScene().getCursor(); }
+
+    public boolean isCursorVisible() { return getCursor() != Cursor.NONE; }
+
+    public boolean isFullscreen() { return stage.isFullScreen(); }
+
+    public GameWorld setSize(double width, double height)
+    {
+        stage.setWidth(width);
+        stage.setHeight(height);
+        return this;
+    }
+
+    public GameWorld setWidth(double width)
+    {
+        stage.setWidth(width);
+        return this;
+    }
+
+    public GameWorld setHeight(double height)
+    {
+        stage.setHeight(height);
+        return this;
+    }
+
+    public GameWorld setFullscreen(boolean fullscreen)
+    {
+        stage.setFullScreen(fullscreen);
+        return this;
+    }
+
+    public GameWorld toggleFullscreen()
+    {
+        setFullscreen(!stage.isFullScreen());
+        return this;
+    }
+
+    public GameWorld setWindowTitle(String title)
+    {
+        stage.setTitle(title);
+        return this;
+    }
+
+    public GameWorld setCursor(Cursor cursor)
+    {
+        stage.getScene().setCursor(cursor);
+        return this;
+    }
+
+    public GameWorld setCursorVisible(boolean visible)
+    {
+        if (!visible) setCursor(Cursor.NONE);
+        return this;
+    }
+
+    public GameWorld toggleCursorVisible()
+    {
+        setCursorVisible(!isCursorVisible());
+        return this;
+    }
+    
+    public GameWorld centerWindow()
+    {
+        stage.centerOnScreen();
+        return this;
+    }
+
+    public GameWorld setResizable(boolean resizable)
+    {
+        stage.setResizable(resizable);
+        return this;
+    }
 }

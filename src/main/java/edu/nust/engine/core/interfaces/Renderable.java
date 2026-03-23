@@ -2,19 +2,19 @@ package edu.nust.engine.core.interfaces;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public interface Renderable
+public interface Renderable<T>
 {
     void onRender(GraphicsContext context);
 
     boolean isVisible();
 
-    void setVisible(boolean active);
+    T setVisible(boolean active);
 
-    default void toggleVisible() { setVisible(!isVisible()); }
+    default T toggleVisible() { return setVisible(!isVisible()); }
 
-    default void show() { setVisible(true); }
+    default T show() { return setVisible(true); }
 
-    default void hide() { setVisible(false); }
+    default T hide() { return setVisible(false); }
 
     default void onShow() { }
 

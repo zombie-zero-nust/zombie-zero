@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class GameObject implements Updatable, Renderable
+public abstract class GameObject implements Updatable<GameObject>, Renderable<GameObject>
 {
     private GameScene scene;
     // can only add one component of each type, e.g. only one Transform, only one BoxRenderer, etc.
@@ -37,7 +37,6 @@ public abstract class GameObject implements Updatable, Renderable
     /// <br><br>
     /// Adds the specified component to this GameObject if a component of the same type doesn't already exist, and
     /// returns the added component. Otherwise, does nothing and returns null.
-    @SuppressWarnings("UnusedReturnValue")
     public <T extends Component> @Nullable T addComponent(T component)
     {
         Class<? extends Component> type = component.getClass();
@@ -125,9 +124,17 @@ public abstract class GameObject implements Updatable, Renderable
 
     /* TAG */
 
-    public <T extends Tag> void addTag(Class<T> tagClass) { tags.add(tagClass); }
+    public <T extends Tag> GameObject addTag(Class<T> tagClass)
+    {
+        tags.add(tagClass);
+        return this;
+    }
 
-    public <T extends Tag> void removeTag(Class<T> tagClass) { tags.remove(tagClass); }
+    public <T extends Tag> GameObject removeTag(Class<T> tagClass)
+    {
+        tags.remove(tagClass);
+        return this;
+    }
 
     /// Allows inherited tags, e.g. if
     /// <br>
@@ -155,22 +162,24 @@ public abstract class GameObject implements Updatable, Renderable
     public boolean isActive() { return active; }
 
     @Override
-    public void setActive(boolean active)
+    public GameObject setActive(boolean active)
     {
         this.active = active;
         if (active) onActivate();
         else onDeactivate();
+        return this;
     }
 
     @Override
     public boolean isVisible() { return visible; }
 
     @Override
-    public void setVisible(boolean visible)
+    public GameObject setVisible(boolean visible)
     {
         this.visible = visible;
         if (visible) onShow();
         else onHide();
+        return this;
     }
 
     public void destroy()

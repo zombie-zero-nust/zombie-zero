@@ -14,75 +14,95 @@ public class Transform extends Component
 
     public Vector2D getPosition() { return position; }
 
-    public void setPosition(Vector2D position) { this.position = position; }
+    public Transform setPosition(Vector2D position)
+    {
+        this.position = position;
+        return this;
+    }
 
-    public void setPosition(double x, double y) { setPosition(new Vector2D(x, y)); }
+    public Transform setPosition(double x, double y) { return setPosition(new Vector2D(x, y)); }
 
-    public void setPositionX(double x) { setPosition(new Vector2D(x, getPosition().getY())); }
+    public Transform setPositionX(double x) { return setPosition(new Vector2D(x, getPosition().getY())); }
 
-    public void setPositionY(double y) { setPosition(new Vector2D(getPosition().getX(), y)); }
+    public Transform setPositionY(double y) { return setPosition(new Vector2D(getPosition().getX(), y)); }
 
     /* TRANSLATE */
 
-    public void translate(double x, double y) { this.position.translate(x, y); }
+    public Transform translate(double x, double y)
+    {
+        this.position.translate(x, y);
+        return this;
+    }
 
-    public void translate(Vector2D translation) { this.position.translate(translation.getX(), translation.getY()); }
+    public Transform translate(Vector2D translation) { return translate(translation.getX(), translation.getY()); }
 
-    public void translateForward(double distance) { translate(Vector2D.multiply(forward(), distance)); }
+    public Transform translateForward(double distance) { return translate(Vector2D.multiply(forward(), distance)); }
 
-    public void translateRight(double distance) { translate(Vector2D.multiply(right(), distance)); }
+    public Transform translateRight(double distance) { return translate(Vector2D.multiply(right(), distance)); }
 
-    public void translateBackward(double distance) { translate(Vector2D.multiply(backward(), distance)); }
+    public Transform translateBackward(double distance) { return translate(Vector2D.multiply(backward(), distance)); }
 
-    public void translateLeft(double distance) { translate(Vector2D.multiply(left(), distance)); }
+    public Transform translateLeft(double distance) { return translate(Vector2D.multiply(left(), distance)); }
 
     /* ANCHOR */
 
     public Vector2D getAnchor() { return anchor; }
 
-    public void setAnchor(Vector2D anchor) { this.anchor = anchor; }
+    public Transform setAnchor(Vector2D anchor)
+    {
+        this.anchor = anchor;
+        return this;
+    }
 
-    public void setAnchor(double x, double y) { setAnchor(new Vector2D(x, y)); }
+    public Transform setAnchor(double x, double y) { return setAnchor(new Vector2D(x, y)); }
 
-    public void setAnchorX(double x) { setAnchor(new Vector2D(x, anchor.getY())); }
+    public Transform setAnchorX(double x) { return setAnchor(new Vector2D(x, anchor.getY())); }
 
-    public void setAnchorY(double y) { setAnchor(new Vector2D(anchor.getX(), y)); }
+    public Transform setAnchorY(double y) { return setAnchor(new Vector2D(anchor.getX(), y)); }
 
-    public void setAnchorCentered() { setAnchor(new Vector2D(0.5, 0.5)); }
+    public Transform setAnchorCentered() { return setAnchor(new Vector2D(0.5, 0.5)); }
 
-    public void setAnchorTopLeft() { setAnchor(new Vector2D(0, 0)); }
+    public Transform setAnchorTopLeft() { return setAnchor(new Vector2D(0, 0)); }
 
-    public void setAnchorTopRight() { setAnchor(new Vector2D(1, 0)); }
+    public Transform setAnchorTopRight() { return setAnchor(new Vector2D(1, 0)); }
 
-    public void setAnchorBottomLeft() { setAnchor(new Vector2D(0, 1)); }
+    public Transform setAnchorBottomLeft() { return setAnchor(new Vector2D(0, 1)); }
 
-    public void setAnchorBottomRight() { setAnchor(new Vector2D(1, 1)); }
+    public Transform setAnchorBottomRight() { return setAnchor(new Vector2D(1, 1)); }
 
-    public void setAnchorTopCenter() { setAnchor(new Vector2D(0.5, 0)); }
+    public Transform setAnchorTopCenter() { return setAnchor(new Vector2D(0.5, 0)); }
 
-    public void setAnchorBottomCenter() { setAnchor(new Vector2D(0.5, 1)); }
+    public Transform setAnchorBottomCenter() { return setAnchor(new Vector2D(0.5, 1)); }
 
-    public void setAnchorLeftCenter() { setAnchor(new Vector2D(0, 0.5)); }
+    public Transform setAnchorLeftCenter() { return setAnchor(new Vector2D(0, 0.5)); }
 
-    public void setAnchorRightCenter() { setAnchor(new Vector2D(1, 0.5)); }
+    public Transform setAnchorRightCenter() { return setAnchor(new Vector2D(1, 0.5)); }
 
     /* ROTATION */
 
     public Angle getRotation() { return rotation; }
 
-    public void setRotation(Angle rotation) { this.rotation = rotation; }
+    public Transform setRotation(Angle rotation)
+    {
+        this.rotation = rotation;
+        return this;
+    }
 
-    public void setRotationDegrees(double degrees) { setRotation(Angle.fromDegrees(degrees)); }
+    public Transform setRotationDegrees(double degrees) { return setRotation(Angle.fromDegrees(degrees)); }
 
-    public void setRotationRadians(double radians) { setRotation(Angle.fromRadians(radians)); }
+    public Transform setRotationRadians(double radians) { return setRotation(Angle.fromRadians(radians)); }
 
     /* ROTATE */
 
-    public void rotate(Angle rotation) { this.rotation = this.rotation.addSelf(rotation); }
+    public Transform rotate(Angle rotation)
+    {
+        this.rotation = this.rotation.addSelf(rotation);
+        return this;
+    }
 
-    public void rotateDegrees(double degrees) { rotate(Angle.fromDegrees(degrees)); }
+    public Transform rotateDegrees(double degrees) { return rotate(Angle.fromDegrees(degrees)); }
 
-    public void rotateRadians(double radians) { rotate(Angle.fromRadians(radians)); }
+    public Transform rotateRadians(double radians) { return rotate(Angle.fromRadians(radians)); }
 
     /* DIRECTION */
 
@@ -120,53 +140,58 @@ public class Transform extends Component
 
     /* ORIENTATION */
 
-    public void lookAt(Vector2D target)
+    public Transform lookAt(Vector2D target)
     {
         Vector2D direction = Vector2D.subtract(target, position);
         setRotation(Angle.fromRadians(Math.atan2(direction.getY(), direction.getX())));
+        return this;
     }
 
-    public void lookAt(double x, double y) { lookAt(new Vector2D(x, y)); }
+    public Transform lookAt(double x, double y) { return lookAt(new Vector2D(x, y)); }
 
-    public void lookUp() { setRotation(Angle.fromRadians(Math.PI / 2)); }
+    public Transform lookUp() { return setRotation(Angle.fromRadians(Math.PI / 2)); }
 
-    public void lookRight() { setRotation(Angle.fromRadians(0)); }
+    public Transform lookRight() { return setRotation(Angle.fromRadians(0)); }
 
-    public void lookDown() { setRotation(Angle.fromRadians(-Math.PI / 2)); }
+    public Transform lookDown() { return setRotation(Angle.fromRadians(-Math.PI / 2)); }
 
-    public void lookLeft() { setRotation(Angle.fromRadians(Math.PI)); }
+    public Transform lookLeft() { return setRotation(Angle.fromRadians(Math.PI)); }
 
-    public void setForward(Vector2D forward)
+    public Transform setForward(Vector2D forward)
     {
         forward.normalizeSelf();
         setRotation(Angle.fromRadians(Math.atan2(forward.getY(), forward.getX())));
+        return this;
     }
 
-    public void setForward(double x, double y) { setForward(new Vector2D(x, y)); }
+    public Transform setForward(double x, double y) { return setForward(new Vector2D(x, y)); }
 
-    public void setRight(Vector2D right)
+    public Transform setRight(Vector2D right)
     {
         right.normalizeSelf();
         setRotation(Angle.fromRadians(Math.atan2(right.getY(), right.getX()) - Math.PI / 2));
+        return this;
     }
 
-    public void setRight(double x, double y) { setRight(new Vector2D(x, y)); }
+    public Transform setRight(double x, double y) { return setRight(new Vector2D(x, y)); }
 
-    public void setBackward(Vector2D backward)
+    public Transform setBackward(Vector2D backward)
     {
         backward.normalizeSelf();
         setRotation(Angle.fromRadians(Math.atan2(backward.getY(), backward.getX()) - Math.PI));
+        return this;
     }
 
-    public void setBackward(double x, double y) { setBackward(new Vector2D(x, y)); }
+    public Transform setBackward(double x, double y) { return setBackward(new Vector2D(x, y)); }
 
-    public void setLeft(Vector2D left)
+    public Transform setLeft(Vector2D left)
     {
         left.normalizeSelf();
         setRotation(Angle.fromRadians(Math.atan2(left.getY(), left.getX()) + Math.PI / 2));
+        return this;
     }
 
-    public void setLeft(double x, double y) { setLeft(new Vector2D(x, y)); }
+    public Transform setLeft(double x, double y) { return setLeft(new Vector2D(x, y)); }
 
     /* DISTANCE & ANGLE */
 
