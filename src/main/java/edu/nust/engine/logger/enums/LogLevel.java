@@ -2,15 +2,15 @@ package edu.nust.engine.logger.enums;
 
 public enum LogLevel
 {
-    TRACE("\u001B[36m"),   // cyan text
-    DEBUG("\u001B[35m"),   // magenta text
-    INFO("\u001B[34m"),    // blue text
-    START_PROGRESS(""),    // ignored for progress
-    REPORT_PROGRESS(""),   // ignored
-    END_PROGRESS(""),      // ignored
-    SUCCESS("\u001B[32m"), // green text
-    WARN("\u001B[33m"),    // yellow text
-    ERROR("\u001B[31m");   // red text
+    TRACE(LogFormats.BRIGHT_CYAN.ansiCode()),
+    DEBUG(LogFormats.BRIGHT_MAGENTA.ansiCode()),
+    INFO(LogFormats.BRIGHT_BLUE.ansiCode()),
+    START_PROGRESS(LogFormats.RESET),
+    REPORT_PROGRESS(LogFormats.RESET),
+    END_PROGRESS(LogFormats.RESET),
+    SUCCESS(LogFormats.BRIGHT_GREEN.ansiCode()),
+    WARN(LogFormats.BRIGHT_YELLOW.ansiCode()),
+    ERROR(LogFormats.BRIGHT_RED.ansiCode());
 
     private final String ansiColor;
 

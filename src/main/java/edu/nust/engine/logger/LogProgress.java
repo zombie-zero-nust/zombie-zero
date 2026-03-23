@@ -1,5 +1,8 @@
 package edu.nust.engine.logger;
 
+import edu.nust.engine.logger.enums.LogFormats;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 /// A LogProgress represents a `progress` that can be started, reported on, and ended. Each progress has a unique ID and
@@ -9,15 +12,10 @@ public class LogProgress
     private static final AtomicInteger NEXT_ID = new AtomicInteger(0);
 
     private static final ColorPair[] COLORS = { //
-            ColorPair.withWhiteText("\u001B[40m"), // BLACK
-            ColorPair.withWhiteText("\u001B[41m"), // RED
-            ColorPair.withWhiteText("\u001B[42m"), // GREEN
-            ColorPair.withWhiteText("\u001B[43m"), // YELLOW
-            ColorPair.withWhiteText("\u001B[44m"), // BLUE
-            ColorPair.withWhiteText("\u001B[45m"), // MAGENTA
-            ColorPair.withWhiteText("\u001B[46m"), // CYAN
-            ColorPair.withBlackText("\u001B[47m")  // WHITE
-    };
+            ColorPair.withWhiteText(LogFormats.BG_BLACK.ansiCode()), ColorPair.withWhiteText(LogFormats.BG_RED.ansiCode()), ColorPair.withWhiteText(
+            LogFormats.BG_GREEN.ansiCode()), ColorPair.withWhiteText(LogFormats.BG_YELLOW.ansiCode()), ColorPair.withWhiteText(
+            LogFormats.BG_BLUE.ansiCode()), ColorPair.withWhiteText(LogFormats.BG_MAGENTA.ansiCode()), ColorPair.withWhiteText(
+            LogFormats.BG_CYAN.ansiCode()), ColorPair.withBlackText(LogFormats.BG_WHITE.ansiCode())};
 
     private final String ansiBg;
     private final String ansiFg;
@@ -32,8 +30,28 @@ public class LogProgress
         this.ansiBg = COLORS[id % COLORS.length].bg;
         this.ansiFg = COLORS[id % COLORS.length].fg;
 
-        this.name = name.replace(" ", "").toUpperCase();
+        this.name = sanitize(name);
         this.logger = logger;
+    }
+
+
+    private static @NotNull String sanitize(String name)
+    {
+        if (name == null) return "UNKNOWN";
+
+        final String ansiRegex = "\u001B\\[[;\\d]*m";
+        //@formatter:off
+        // 1. remove ANSI escape codes
+        // 2. replace underscores to dashes
+        // 3. keep only alphanumeric and dashes
+        // 4. uppercase
+        String cleaned = name
+                .replaceAll(ansiRegex, "")
+                .replaceAll("[^a-zA-Z0-9_]", "")
+                .toUpperCase();
+        //@formatter:on
+
+        return cleaned.isEmpty() ? "UNKNOWN" : cleaned;
     }
 
     /// Starts a {@link LogProgress} with a random color

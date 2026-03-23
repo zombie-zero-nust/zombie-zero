@@ -1,9 +1,11 @@
 package edu.nust.engine.logger;
 
+import edu.nust.engine.logger.enums.LogFormats;
 import edu.nust.engine.logger.enums.LogLevel;
 import edu.nust.engine.logger.enums.LogProgressType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 public class GameLogger
 {
@@ -13,21 +15,16 @@ public class GameLogger
     private final Logger rawLogger;
 
     /// Use {@link #getLogger(Class)} instead
-    private GameLogger(Class<?> loggingClass)
-    {
-        this.rawLogger = LoggerFactory.getLogger(loggingClass);
-    }
+    private GameLogger(Class<?> loggingClass) { this.rawLogger = LoggerFactory.getLogger(loggingClass); }
 
     public static GameLogger getLogger(Class<?> loggingClass) { return new GameLogger(loggingClass); }
 
     /* MESSAGE FORMATTERS */
 
-    private String resetAnsi() { return "\u001B[0m"; }
-
     private String getPrefix(String level, String ansiColor)
     {
         String levelStr = "[" + level + "]";
-        return ansiColor + levelStr + resetAnsi() + " ";
+        return ansiColor + levelStr + LogFormats.RESET + " ";
     }
 
     private String withMessage(LogLevel level, String... message)
@@ -77,7 +74,7 @@ public class GameLogger
     public void error(boolean shouldThrow, String message, Object... args)
     {
         logMessage(LogLevel.ERROR, message, args);
-        if (shouldThrow) throw new RuntimeException(String.format(message, args));
+        if (shouldThrow) throw new RuntimeException(MessageFormatter.arrayFormat(message, args).getMessage());
     }
 
     /* PROGRESS */
@@ -102,13 +99,7 @@ public class GameLogger
 
     /* CONFIGURATION */
 
-    public static void setGlobalLevel(LogLevel level)
-    {
-        GLOBAL_LEVEL = level;
-    }
+    public static void setGlobalLevel(LogLevel level) { GLOBAL_LEVEL = level; }
 
-    public static void setEnabled(boolean enabled)
-    {
-        ENABLED = enabled;
-    }
+    public static void setEnabled(boolean enabled) { ENABLED = enabled; }
 }
