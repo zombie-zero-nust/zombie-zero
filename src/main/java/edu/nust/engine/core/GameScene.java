@@ -59,14 +59,18 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
 
     public GameScene(GameWorld window)
     {
+        logger.trace("Constructing GameScene: {}", this.getClass().getSimpleName());
         LogProgress initSceneLogger = LogProgress.create("SCENE", logger);
         initSceneLogger.begin("Initializing scene: {}", this.getClass().getSimpleName());
 
         this.window = window;
+        logger.trace("Canvas initialization starting");
         this.canvas = initCanvas();
 
         // initialize layers
+        logger.trace("UI Layer initialization starting");
         this.uiLayer = initUILayer();
+        logger.trace("World Layer initialization starting");
         this.worldLayer = initWorldLayer();
 
         // add CSS
@@ -78,19 +82,24 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
         }
         else
         {
+            logger.trace("Adding CSS stylesheet");
             // add CSS to raw scene to allow overriding
             this.window.getRawScene().getStylesheets().add(cssUrl.toExternalForm());
         }
 
         // bind canvas size to world layer, which is bound to `window.root`
+        logger.trace("Binding canvas dimensions to world layer");
         this.canvas.widthProperty().bind(this.worldLayer.widthProperty());
         this.canvas.heightProperty().bind(this.worldLayer.heightProperty());
 
         // start the scene
+        logger.trace("Calling onStart() for scene setup");
         onStart();
+        logger.trace("Initializing all GameObjects");
         this.gameObjects.forEach(GameObject::onInit);
 
         // add events
+        logger.trace("Registering input event handlers");
         this.window.getRawScene().setOnKeyPressed(this::onKeyPressed);
         this.window.getRawScene().setOnKeyReleased(this::onKeyReleased);
         this.window.getRawScene().setOnMousePressed(this::onMousePressed);
@@ -98,6 +107,7 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
         this.window.getRawScene().setOnMouseMoved(this::onMouseMoved);
 
         // initialize camera
+        logger.trace("Initializing world camera");
         this.worldCamera = new GameCamera();
 
         initSceneLogger.end("Scene initialized successfully");
@@ -142,6 +152,7 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
 
     public GameObject addGameObject(GameObject gameObject)
     {
+        logger.trace("addGameObject({}) called", gameObject.getClass().getSimpleName());
         gameObject.setScene(this);
         gameObjects.add(gameObject);
         logger.debug("GameObject {} added to scene", gameObject.getClass().getSimpleName());
@@ -152,6 +163,7 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
 
     public GameObject spawnGameObject(GameObject gameObject, Vector2D position)
     {
+        logger.trace("spawnGameObject({}) at position {}", gameObject.getClass().getSimpleName(), position);
         return addGameObject(gameObject).getTransform().setPosition(position).getGameObject();
     }
 
@@ -202,24 +214,28 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
 
     public void removeGameObject(GameObject gameObject)
     {
+        logger.trace("removeGameObject({}) called", gameObject.getClass().getSimpleName());
         gameObjects.remove(gameObject);
         logger.debug("GameObject {} removed from scene", gameObject.getClass().getSimpleName());
     }
 
     public void removeGameObjectsOfType(Class<? extends GameObject> type)
     {
+        logger.trace("removeGameObjectsOfType({}) called", type.getSimpleName());
         gameObjects.removeIf(type::isInstance);
         logger.debug("All GameObjects of type {} removed from scene", type.getSimpleName());
     }
 
     public void removeGameObjectsWithTag(Class<? extends Tag> tag)
     {
+        logger.trace("removeGameObjectsWithTag({}) called", tag.getSimpleName());
         gameObjects.removeIf(obj -> obj.hasTag(tag));
         logger.debug("All GameObjects with tag {} removed from scene", tag.getSimpleName());
     }
 
     public void removeAllGameObjects()
     {
+        logger.trace("removeAllGameObjects() called, removing {} objects", gameObjects.size());
         gameObjects.clear();
         logger.debug("All GameObjects removed from scene");
     }
@@ -228,13 +244,13 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
 
     private Region initUILayer()
     {
-        Region root;
+        Region root = new StackPane(); // just for intellisense
 
         String sceneName = this.getClass().getSimpleName();
 
         // FXML
         URL fxmlUrl = Resources.tryGetResource("scenes", sceneName, "layout.fxml");
-        if (fxmlUrl == null) throw new RuntimeException("Missing FXML for: " + sceneName);
+        if (fxmlUrl == null) logger.error(true, "Missing FXML for: " + sceneName);
 
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         loader.setController(this);
@@ -245,7 +261,7 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
         }
         catch (IOException e)
         {
-            throw new RuntimeException("Failed to load FXML: " + sceneName, e);
+            logger.error(true, "Failed to load FXML: " + sceneName, e);
         }
 
         logger.debug("UI layer initialized successfully");
@@ -355,14 +371,17 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
     @Override
     public GameScene setActive(boolean active)
     {
+        logger.trace("setActive({}) called on {}", active, this.getClass().getSimpleName());
         this.active = active;
         if (active)
         {
+            logger.trace("Activating scene {}", this.getClass().getSimpleName());
             onActivate();
             logger.debug("Scene activated");
         }
         else
         {
+            logger.trace("Deactivating scene {}", this.getClass().getSimpleName());
             onDeactivate();
             logger.debug("Scene deactivated");
         }
@@ -389,21 +408,9 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
         return this;
     }
 
-    public GameScene toggleDebugGrid()
-    {
-        setDebugGrid(!debugGrid);
-        return this;
-    }
+    public GameScene toggleDebugGrid() { return setDebugGrid(!debugGrid); }
 
-    public GameScene showDebugGrid()
-    {
-        this.debugGrid = true;
-        return this;
-    }
+    public GameScene showDebugGrid() { return setDebugGrid(true); }
 
-    public GameScene hideDebugGrid()
-    {
-        this.debugGrid = false;
-        return this;
-    }
+    public GameScene hideDebugGrid() { return setDebugGrid(false); }
 }

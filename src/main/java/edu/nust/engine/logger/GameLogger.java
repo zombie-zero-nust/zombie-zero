@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 
 public class GameLogger
 {
+    private static LogLevel GLOBAL_LEVEL = LogLevel.TRACE;
+    private static boolean ENABLED = true;
+
     private final Logger rawLogger;
 
     /// Use {@link #getLogger(Class)} instead
@@ -42,11 +45,14 @@ public class GameLogger
 
     private void logMessage(LogLevel level, String message, Object... args)
     {
+        // filter logs
+        if (!ENABLED || !level.isEnabled(GLOBAL_LEVEL)) return;
         rawLogger.info(withMessage(level, message), args);
     }
 
     private void logProgressMessage(LogProgressType type, LogProgress progress, String message, Object... args)
     {
+        if (!ENABLED || !LogLevel.isEnabled(GLOBAL_LEVEL, LogLevel.INFO)) return;
         rawLogger.info(withProgressMessage(type, progress, message), args);
     }
 
@@ -68,7 +74,11 @@ public class GameLogger
     public void warn(String message, Object... args) { logMessage(LogLevel.WARN, message, args); }
 
     /// Error log with red text
-    public void error(String message, Object... args) { logMessage(LogLevel.ERROR, message, args); }
+    public void error(boolean shouldThrow, String message, Object... args)
+    {
+        logMessage(LogLevel.ERROR, message, args);
+        if (shouldThrow) throw new RuntimeException(String.format(message, args));
+    }
 
     /* PROGRESS */
 
@@ -88,5 +98,17 @@ public class GameLogger
     void endProgress(LogProgress progress, String message, Object... args)
     {
         logProgressMessage(LogProgressType.END, progress, message, args);
+    }
+
+    /* CONFIGURATION */
+
+    public static void setGlobalLevel(LogLevel level)
+    {
+        GLOBAL_LEVEL = level;
+    }
+
+    public static void setEnabled(boolean enabled)
+    {
+        ENABLED = enabled;
     }
 }

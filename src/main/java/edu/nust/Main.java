@@ -22,7 +22,7 @@ public class Main extends Application
         window.start();
     }
 
-    public static void main(String[] args)
+    public static void main(String[] ignored)
     {
         initLogger();
         launch();

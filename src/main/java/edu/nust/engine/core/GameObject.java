@@ -44,14 +44,17 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
     public <T extends Component> @Nullable T addComponent(T component)
     {
         Class<? extends Component> type = component.getClass();
+        logger.trace("addComponent({}) called", type.getSimpleName());
 
         if (components.containsKey(type))
         {
+            logger.trace("{} already exists, returning existing component", type.getSimpleName());
             logger.debug("{} already attached to GameObject, discarding new component", type.getSimpleName());
             @SuppressWarnings("unchecked") T existing = (T) components.get(type);
             return existing;
         }
 
+        logger.trace("Attaching {} to GameObject", type.getSimpleName());
         component.setGameObject(this);
         components.put(type, component);
         component.onInit();
@@ -94,6 +97,7 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
     /// Removes the component of the specified type if it exists.
     public void removeComponent(Class<? extends Component> type)
     {
+        logger.trace("removeComponent({}) called", type.getSimpleName());
         components.remove(type);
         logger.debug("{} detached from GameObject", type.getSimpleName());
     }
@@ -103,12 +107,14 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
     /// Removes the specified component instance if it exists.
     public void removeComponent(Component component)
     {
+        logger.trace("removeComponent(instance) called for {}", component.getClass().getSimpleName());
         components.remove(component.getClass(), component);
         logger.debug("{} detached from GameObject", component.getClass().getSimpleName());
     }
 
     public void removeAllComponents()
     {
+        logger.trace("removeAllComponents() called");
         components.clear();
         logger.debug("All components detached from GameObject");
     }
@@ -143,6 +149,7 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
 
     public <T extends Tag> GameObject addTag(Class<T> tagClass)
     {
+        logger.trace("addTag({}) called", tagClass.getSimpleName());
         tags.add(tagClass);
         logger.debug("Tag {} added to GameObject", tagClass.getSimpleName());
         return this;
@@ -150,6 +157,7 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
 
     public <T extends Tag> GameObject removeTag(Class<T> tagClass)
     {
+        logger.trace("removeTag({}) called", tagClass.getSimpleName());
         tags.remove(tagClass);
         logger.debug("Tag {} removed from GameObject", tagClass.getSimpleName());
         return this;
@@ -183,14 +191,17 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
     @Override
     public GameObject setActive(boolean active)
     {
+        logger.trace("setActive({}) called on {}", active, this.getClass().getSimpleName());
         this.active = active;
         if (active)
         {
+            logger.trace("Activating GameObject {}", this.getClass().getSimpleName());
             onActivate();
             logger.debug("GameObject activated");
         }
         else
         {
+            logger.trace("Deactivating GameObject {}", this.getClass().getSimpleName());
             onDeactivate();
             logger.debug("GameObject deactivated");
         }
@@ -203,14 +214,17 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
     @Override
     public GameObject setVisible(boolean visible)
     {
+        logger.trace("setVisible({}) called on {}", visible, this.getClass().getSimpleName());
         this.visible = visible;
         if (visible)
         {
+            logger.trace("Showing GameObject {}", this.getClass().getSimpleName());
             onShow();
             logger.debug("GameObject shown");
         }
         else
         {
+            logger.trace("Hiding GameObject {}", this.getClass().getSimpleName());
             onHide();
             logger.debug("GameObject hidden");
         }

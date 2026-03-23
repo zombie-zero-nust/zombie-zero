@@ -44,17 +44,21 @@ public abstract class GameWorld
 
     public GameWorld(Stage stage)
     {
+        logger.trace("Constructing GameWorld: {}", this.getClass().getSimpleName());
         this.stage = stage;
 
         // setup scene
+        logger.trace("Setting up Scene and StackPane");
         this.sceneRoot = new StackPane();
         this.scene = new Scene(this.sceneRoot);
         this.stage.setScene(this.scene);
 
         // bind `root.size` to `stage.size` so that when stage is resized
+        logger.trace("Binding scene root dimensions to stage");
         this.sceneRoot.prefWidthProperty().bind(this.stage.widthProperty());
         this.sceneRoot.prefHeightProperty().bind(this.stage.heightProperty());
 
+        logger.trace("Loading common CSS stylesheet");
         URL commonCssUrl = Resources.tryGetResource("scenes", "common.css");
         if (commonCssUrl != null)
         {
@@ -66,8 +70,10 @@ public abstract class GameWorld
             logger.warn("\"common.css\" not found, ensure 'edu/nust/game/scenes/common.css' if not intentional.");
         }
 
+        logger.trace("Calling initStage() for subclass setup");
         initStage();
 
+        logger.trace("Creating game loop AnimationTimer");
         this.gameLoop = new AnimationTimer()
         {
             private long lastTime = 0;
@@ -96,6 +102,7 @@ public abstract class GameWorld
     /// Call in program entry point i.e. [Main#start(Stage stage)] Starts the Game Loop
     public void start()
     {
+        logger.trace("Starting GameWorld and game loop");
         logger.success("Game started");
         stage.show();
         gameLoop.start();
@@ -104,6 +111,7 @@ public abstract class GameWorld
     /// Call to exit and close
     public void stop()
     {
+        logger.trace("Stopping GameWorld and game loop");
         gameLoop.stop();
         stage.close();
         logger.success("Game stopped");
@@ -113,17 +121,21 @@ public abstract class GameWorld
 
     public GameWorld setScene(GameScene newScene)
     {
+        logger.trace("setScene({}) called", newScene.getClass().getSimpleName());
         LogProgress sceneSwitchLogger = LogProgress.create("SCENE_SWITCH", logger);
         sceneSwitchLogger.begin("Switching Scene to {}", newScene.getClass().getSimpleName());
 
         this.currentGameScene = newScene;
 
+        logger.trace("Creating SubScene for world layer");
         SubScene worldScene = new SubScene(newScene.getWorldLayer(), this.stage.getWidth(), this.stage.getHeight());
         // bind world scene size to root size
+        logger.trace("Binding SubScene dimensions to root");
         worldScene.widthProperty().bind(this.sceneRoot.widthProperty());
         worldScene.heightProperty().bind(this.sceneRoot.heightProperty());
 
         // add to root so `this.scene` is updated
+        logger.trace("Setting both layers to root");
         this.sceneRoot.getChildren().setAll(worldScene, newScene.getUILayer());
 
         sceneSwitchLogger.end("Switched to Scene {} successfully", newScene.getClass().getSimpleName());

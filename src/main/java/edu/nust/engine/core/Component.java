@@ -24,14 +24,17 @@ public abstract class Component implements Updatable<Component>, Renderable<Comp
     @Override
     public Component setActive(boolean active)
     {
+        logger.trace("setActive({}) called on {}", active, this.getClass().getSimpleName());
         this.active = active;
         if (active)
         {
+            logger.trace("Activating {}", this.getClass().getSimpleName());
             onActivate();
             logger.debug("{} activated", this.getClass().getSimpleName());
         }
         else
         {
+            logger.trace("Deactivating {}", this.getClass().getSimpleName());
             onDeactivate();
             logger.debug("{} deactivated", this.getClass().getSimpleName());
         }
@@ -44,14 +47,17 @@ public abstract class Component implements Updatable<Component>, Renderable<Comp
     @Override
     public Component setVisible(boolean visible)
     {
+        logger.trace("setVisible({}) called on {}", visible, this.getClass().getSimpleName());
         this.visible = visible;
         if (visible)
         {
+            logger.trace("Showing {}", this.getClass().getSimpleName());
             onShow();
             logger.debug("{} shown", this.getClass().getSimpleName());
         }
         else
         {
+            logger.trace("Hiding {}", this.getClass().getSimpleName());
             onHide();
             logger.debug("{} hidden", this.getClass().getSimpleName());
         }
