@@ -2,21 +2,28 @@
     <conversionRule conversionWord="msgNoAnsi"
                     class="edu.nust.engine.logger.ANSIStripper"/>
 
+    <!-- System property 'sessionStart' for the current session timestamp -->
+    <property name="sessionStart" value="${currentTime}"/>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- Level handled in code -->
-            <pattern>%green([%d{HH:mm:ss}]) %magenta([%logger{0}:%L]) %msg%n</pattern>
+            <pattern>%green([%d{hh:mm:ss a}]) %magenta([%logger{0}:%L]) %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- New file per session -->
         <file>logs/latest.log</file>
+
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/archived/log-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- Archive by session timestamp -->
+            <fileNamePattern>logs/archived/%d{yyyy-MM-dd_HH-mm-ss}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
+
         <encoder>
-            <pattern>[%d{HH:mm:ss}] [%logger{0}:%L] %msgNoAnsi%n</pattern>
+            <pattern>[%d{dd-MM-yyyy hh:mm:ss a}] [%logger:%L] %msgNoAnsi%n</pattern>
         </encoder>
     </appender>
 
@@ -24,5 +31,4 @@
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>
-
 </configuration>
