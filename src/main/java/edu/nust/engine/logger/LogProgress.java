@@ -19,8 +19,6 @@ public class LogProgress
             ColorPair.withBlackText("\u001B[47m")  // WHITE
     };
 
-    private static final String RESET_COLOR = "\u001B[0m";
-
     private final String ansiBg;
     private final String ansiFg;
 

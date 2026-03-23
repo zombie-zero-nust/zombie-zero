@@ -2,7 +2,7 @@
     <conversionRule conversionWord="msgNoAnsi"
                     class="edu.nust.engine.logger.logback.ANSIStripper"/>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT" class="edu.nust.engine.logger.logback.ColoredConsoleAppender">
         <encoder>
             <!-- Level handled in code -->
             <pattern>%green([%d{hh:mm:ss a}]) %magenta([%logger{0}]) %msg%n</pattern>
