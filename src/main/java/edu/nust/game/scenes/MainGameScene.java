@@ -10,7 +10,6 @@ import edu.nust.engine.resources.Resources;
 import edu.nust.game.gameobjects.MovingObject;
 import edu.nust.game.gameobjects.MovingTag;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -33,7 +32,7 @@ public class MainGameScene extends GameScene
     }
 
     @Override
-    public void onStart()
+    public void onInit()
     {
         this.addGameObject(new MovingObject(
                         new Vector2D(100, 100),
@@ -50,40 +49,28 @@ public class MainGameScene extends GameScene
                 Color.ORANGE
         ));
 
-        this.addGameObject(new GameObject()
+        try
         {
-            @Override
-            public void onInit()
-            {
-                try
-                {
-                    Image image = Resources.loadImageOrThrow("assets", "images", "test.png");
-                    SpriteRenderer sprite = new SpriteRenderer(100, 100, image, 2, 2).tintSelf(Color.LIME)
-                            .setAnimationTime(TimeSpan.fromMilliseconds(500))
-                            .startAnimation();
-                    this.addComponent(sprite);
-                }
-                catch (FileNotFoundException ignored)
-                {
-                }
-            }
-
-            @Override
-            public void onUpdate(TimeSpan deltaTime)
-            {
-
-            }
-
-            @Override
-            public void onRender(GraphicsContext context)
-            {
-
-            }
-        }).getTransform().setPosition(new Vector2D(0, 0));
+            Image image = Resources.loadImageOrThrow("assets", "images", "test.png");
+            SpriteRenderer sprite = new SpriteRenderer(100, 100, image, 2, 2).tintSelf(Color.LIME)
+                    .setAnimationTime(TimeSpan.fromMilliseconds(500))
+                    .startAnimation();
+            this.addGameObject(GameObject.create())
+                    .addComponent(sprite)
+                    .getGameObject()
+                    .getTransform()
+                    .setPosition(new Vector2D(0, 0));
+        }
+        catch (FileNotFoundException ignored)
+        {
+        }
     }
 
     @Override
-    public void onUpdate(TimeSpan deltaTime)
+    public void onUpdate(TimeSpan deltaTime) { }
+
+    @Override
+    public void lateUpdate(TimeSpan deltaTime)
     {
         if (isPaused) return; // skip game updates if paused
 

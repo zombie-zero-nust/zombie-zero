@@ -28,5 +28,5 @@ public class Main extends Application
         launch();
     }
 
-    private static void initLogger() { GameLogger.setGlobalLevel(LogLevel.TRACE); }
+    private static void initLogger() { GameLogger.setGlobalLevel(LogLevel.INFO); }
 }

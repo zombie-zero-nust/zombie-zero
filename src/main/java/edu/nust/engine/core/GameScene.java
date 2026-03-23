@@ -1,6 +1,7 @@
 package edu.nust.engine.core;
 
 import edu.nust.engine.core.gameobjects.Tag;
+import edu.nust.engine.core.interfaces.Initiable;
 import edu.nust.engine.core.interfaces.InputHandler;
 import edu.nust.engine.core.interfaces.Updatable;
 import edu.nust.engine.logger.GameLogger;
@@ -34,7 +35,7 @@ import java.util.function.Supplier;
 ///
 /// @see GameObject
 /// @see GameWorld
-public abstract class GameScene implements Updatable<GameScene>, InputHandler
+public abstract class GameScene implements Initiable, Updatable<GameScene>, InputHandler
 {
     protected final GameLogger logger = GameLogger.getLogger(this.getClass());
 
@@ -94,7 +95,7 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
 
         // start the scene
         logger.trace("Calling onStart() for scene setup");
-        onStart();
+        onInit();
         logger.trace("Initializing all GameObjects");
         this.gameObjects.forEach(GameObject::onInit);
 
@@ -114,39 +115,25 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
     }
 
     // package-private so classes outside package cannot call it, neither can subclasses override it
-    void invokeUpdate(TimeSpan deltaTime)
+    void invokeGameLoopFrame(TimeSpan deltaTime)
     {
         if (active)
         {
             this.onUpdate(deltaTime);
-            this.gameObjects.forEach(obj -> {
-                if (!obj.isActive()) return;
-
-                obj.onUpdate(deltaTime);
-                obj.updateComponents(deltaTime);
-            });
+            this.gameObjects.forEach(obj -> obj.invokeUpdate(deltaTime));
+            // late update in reverse order to allow rendering changes to be applied in same frame
+            this.gameObjects.forEach(obj -> obj.invokeLateUpdate(deltaTime));
+            this.lateUpdate(deltaTime);
         }
 
         this.clearCanvas();
 
         fetchWorldContextAndRun((ctx) -> {
-            this.gameObjects.forEach(obj -> {
-                if (!obj.isVisible()) return;
-
-                obj.onRender(ctx);
-                obj.renderComponents(ctx);
-            });
+            this.gameObjects.forEach(obj -> obj.invokeRender(ctx));
 
             this.renderDebug(ctx);
         });
     }
-
-    /* LIFETIME */
-
-    protected abstract void onStart();
-
-    @Override
-    public abstract void onUpdate(TimeSpan deltaTime);
 
     /* GAME OBJECT */
 
@@ -413,4 +400,15 @@ public abstract class GameScene implements Updatable<GameScene>, InputHandler
     public GameScene showDebugGrid() { return setDebugGrid(true); }
 
     public GameScene hideDebugGrid() { return setDebugGrid(false); }
+
+    /* LIFETIME EVENTS */
+
+    @Override
+    public void onInit() { }
+
+    @Override
+    public void onUpdate(TimeSpan deltaTime) { }
+
+    @Override
+    public void lateUpdate(TimeSpan deltaTime) { }
 }

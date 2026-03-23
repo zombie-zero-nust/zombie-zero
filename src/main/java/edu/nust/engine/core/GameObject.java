@@ -2,6 +2,7 @@ package edu.nust.engine.core;
 
 import edu.nust.engine.core.components.Transform;
 import edu.nust.engine.core.gameobjects.Tag;
+import edu.nust.engine.core.interfaces.Initiable;
 import edu.nust.engine.core.interfaces.Renderable;
 import edu.nust.engine.core.interfaces.Updatable;
 import edu.nust.engine.logger.GameLogger;
@@ -17,7 +18,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class GameObject implements Updatable<GameObject>, Renderable<GameObject>
+public abstract class GameObject implements Initiable, Updatable<GameObject>, Renderable<GameObject>
 {
     protected final GameLogger logger = GameLogger.getLogger(this.getClass());
 
@@ -34,6 +35,25 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
 
     public GameObject() { this.addComponent(new Transform()); }
 
+    /* FACTORY */
+
+    public static GameObject create(Consumer<GameObject> initializer)
+    {
+        return new GameObject()
+        {
+            @Override
+            public void onInit() { initializer.accept(this); }
+
+            @Override
+            public void onUpdate(TimeSpan deltaTime) { }
+
+            @Override
+            public void onRender(GraphicsContext context) { }
+        };
+    }
+
+    public static GameObject create() { return create((ignored) -> { }); }
+
     /* COMPONENT */
 
     /// `addComponent(new BoxRenderer())`
@@ -41,7 +61,7 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
     /// Adds the specified component to this GameObject if a component of the same type doesn't already exist, and
     /// returns the added component. If a component of the same type already exists, the existing component is returned
     /// and the new component is discarded.
-    public <T extends Component> @Nullable T addComponent(T component)
+    public <T extends Component> @NotNull T addComponent(T component)
     {
         Class<? extends Component> type = component.getClass();
         logger.trace("addComponent({}) called", type.getSimpleName());
@@ -129,20 +149,6 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
         Transform transform = getComponent(Transform.class);
         assert transform != null : "Transform component not present in GameObject";
         return transform;
-    }
-
-    /// **`INTERNAL`**: updates all components, called by the scene`
-    void updateComponents(TimeSpan deltaTime)
-    {
-        for (Component component : components.values())
-            if (component.isActive()) component.onUpdate(deltaTime);
-    }
-
-    /// **`INTERNAL`**: renders all components, called by the scene`
-    void renderComponents(GraphicsContext context)
-    {
-        for (Component component : components.values())
-            if (component.isVisible()) component.onRender(context);
     }
 
     /* TAG */
@@ -246,13 +252,44 @@ public abstract class GameObject implements Updatable<GameObject>, Renderable<Ga
 
     public GameScene getScene() { return scene; }
 
-    /* LIFETIME API */
+    void invokeUpdate(TimeSpan deltaTime)
+    {
+        if (!this.isActive()) return;
 
-    public abstract void onInit();
+        this.onUpdate(deltaTime);
+        for (Component component : components.values())
+            if (component.isActive()) component.onUpdate(deltaTime);
+    }
+
+    void invokeLateUpdate(TimeSpan deltaTime)
+    {
+        if (!this.isActive()) return;
+
+        this.lateUpdate(deltaTime);
+        for (Component component : components.values())
+            if (component.isActive()) component.lateUpdate(deltaTime);
+    }
+
+    void invokeRender(GraphicsContext context)
+    {
+        if (!this.isVisible()) return;
+
+        this.onRender(context);
+        for (Component component : components.values())
+            if (component.isVisible()) component.onRender(context);
+    }
+
+    /* LIFETIME EVENTS */
 
     @Override
-    public abstract void onUpdate(TimeSpan deltaTime);
+    public void onInit() { }
 
     @Override
-    public abstract void onRender(GraphicsContext context);
+    public void onUpdate(TimeSpan deltaTime) { }
+
+    @Override
+    public void lateUpdate(TimeSpan deltaTime) { }
+
+    @Override
+    public void onRender(GraphicsContext context) { }
 }

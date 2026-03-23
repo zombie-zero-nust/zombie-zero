@@ -6,6 +6,8 @@ public interface Updatable<T>
 {
     void onUpdate(TimeSpan deltaTime);
 
+    void lateUpdate(TimeSpan deltaTime);
+
     boolean isActive();
 
     T setActive(boolean active);

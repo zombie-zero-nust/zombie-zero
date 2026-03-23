@@ -18,7 +18,7 @@ public class StartScene extends GameScene
     /* LIFETIME */
 
     @Override
-    public void onStart()
+    public void onInit()
     {
         this.addGameObject(new MovingObject(
                 new Vector2D(100, 100),

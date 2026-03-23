@@ -92,7 +92,8 @@ public abstract class GameWorld
                 long deltaTimeNs = now - lastTime;
                 lastTime = now; // update lastTime for next frame
 
-                if (currentGameScene != null) currentGameScene.invokeUpdate(TimeSpan.fromNanoseconds(deltaTimeNs));
+                if (currentGameScene != null)
+                    currentGameScene.invokeGameLoopFrame(TimeSpan.fromNanoseconds(deltaTimeNs));
             }
         };
 

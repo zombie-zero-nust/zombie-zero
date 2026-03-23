@@ -1,12 +1,13 @@
 package edu.nust.engine.core;
 
+import edu.nust.engine.core.interfaces.Initiable;
 import edu.nust.engine.core.interfaces.Renderable;
 import edu.nust.engine.core.interfaces.Updatable;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.math.TimeSpan;
 import javafx.scene.canvas.GraphicsContext;
 
-public abstract class Component implements Updatable<Component>, Renderable<Component>
+public abstract class Component implements Initiable, Updatable<Component>, Renderable<Component>
 {
     protected final GameLogger logger = GameLogger.getLogger(this.getClass());
 
@@ -81,10 +82,14 @@ public abstract class Component implements Updatable<Component>, Renderable<Comp
 
     /* LIFETIME EVENTS */
 
+    @Override
     public void onInit() { }
 
     @Override
     public void onUpdate(TimeSpan deltaTime) { }
+
+    @Override
+    public void lateUpdate(TimeSpan deltaTime) { }
 
     @Override
     public void onRender(GraphicsContext context) { }
