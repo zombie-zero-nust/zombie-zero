@@ -1,11 +1,11 @@
 <configuration>
     <conversionRule conversionWord="msgNoAnsi"
-                    converterClass="edu.nust.engine.logger.ANSIStripper"/>
+                    class="edu.nust.engine.logger.ANSIStripper"/>
 
-    <appender name="STDOUT" class="edu.nust.engine.logger.ColoredConsoleAppender">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- Level handled in code -->
-            <pattern>%green([%d{HH:mm:ss}]) %msg%n</pattern>
+            <pattern>%green([%d{HH:mm:ss}]) %magenta([%logger{0}:%L]) %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -16,7 +16,7 @@
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{HH:mm:ss}] %msgNoAnsi%n</pattern>
+            <pattern>[%d{HH:mm:ss}] [%logger{0}:%L] %msgNoAnsi%n</pattern>
         </encoder>
     </appender>
 
