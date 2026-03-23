@@ -4,6 +4,14 @@ import edu.nust.engine.math.Vector2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Represents a camera in the {@link GameScene}, controlling the view of the scene. Contains position and zoom
+ * properties.
+ * <br><br>
+ * The camera's position represents the center of the view.
+ * <br><br>
+ * This class does not handle any rendering or transformations itself; it simply stores the camera's state.
+ */
 public class GameCamera
 {
     public static final Logger LOGGER = LoggerFactory.getLogger(GameCamera.class);
@@ -13,32 +21,46 @@ public class GameCamera
 
     /* POSITION */
 
+    /// Gets the current position of the camera. This represents the center of the view.
     public Vector2D getPosition() { return position; }
 
+    /// **`CHAINABLE`** Sets the position of the camera. This represents the center of the view.
     public GameCamera setPosition(Vector2D position)
     {
         this.position = position;
         return this;
     }
 
+    /// **`CHAINABLE`** Sets the position of the camera. This represents the center of the view.
+    public GameCamera setPosition(double x, double y)
+    {
+        this.position = new Vector2D(x, y);
+        return this;
+    }
+
+    /// **`CHAINABLE`** Moves the camera by the specified offset. Adds to the existing position.
     public GameCamera translate(Vector2D offset)
     {
         this.position.addSelf(offset);
         return this;
     }
 
+    /// **`CHAINABLE`** Moves the camera by the specified offset. Adds to the existing position, effectively translating
+    /// the view.
     public GameCamera translate(double x, double y)
     {
         this.position.addSelf(x, y);
         return this;
     }
 
+    /// **`CHAINABLE`** Moves the camera horizontally by the specified amount. Adds to the existing position.
     public GameCamera translateX(double x)
     {
         this.position.addSelf(x, 0);
         return this;
     }
 
+    /// **`CHAINABLE`** Moves the camera vertically by the specified amount. Adds to the existing position.
     public GameCamera translateY(double y)
     {
         this.position.addSelf(0, y);
@@ -47,8 +69,14 @@ public class GameCamera
 
     /* ZOOM */
 
+    /// Gets the current zoom level of the camera. A zoom of 1.0 means no zoom, greater than 1.0 means zoomed in, and
+    /// less than 1.0 means zoomed out.
     public double getZoom() { return zoom; }
 
+    /// **`CHAINABLE`** Sets the zoom level of the camera. A zoom of 1.0 means no zoom, greater than 1.0 means zoomed
+    /// in, and less than 1.0 means zoomed out.
+    /// <br><br>
+    /// Zoom must be a positive value.
     public GameCamera setZoom(double zoom)
     {
         if (zoom <= 0)
@@ -61,7 +89,15 @@ public class GameCamera
         return this;
     }
 
+    /// **`CHAINABLE`** Increases the zoom level of the camera by multiplying the current zoom by the specified factor.
+    /// A factor greater than 1.0 will zoom in, while a factor between 0 and 1.0 will zoom out.
+    /// <br><br>
+    /// Factor must be a positive value.
     public GameCamera incrementZoom(double factor) { return setZoom(this.zoom * factor); }
 
+    /// **`CHAINABLE`** Decreases the zoom level of the camera by dividing the current zoom by the specified factor. A
+    /// factor greater than 1.0 will zoom out, while a factor between 0 and 1.0 will zoom in.
+    /// <br><br>
+    /// Factor must be a positive value.
     public GameCamera decrementZoom(double factor) { return setZoom(this.zoom / factor); }
 }

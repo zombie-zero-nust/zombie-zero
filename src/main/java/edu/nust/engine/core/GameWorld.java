@@ -16,16 +16,16 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.function.Supplier;
 
-/// The core of the game engine, currently:
-/// - Manages Window
-/// - Manages Application lifetime
-/// - Manages the all `GameScene`s
-///
-/// <br><br>
-/// In future will also manage:
-/// - Client Server connection
-///
-/// @see GameScene
+/**
+ * Represents the entire game world, managing the main window, scenes, and the game loop.
+ * <br><br>
+ * The GameWorld is responsible for initializing the main window ({@link Stage}), switching between {@link GameScene}s,
+ * and running the main game loop using an {@link AnimationTimer}.
+ * <br><br>
+ * To use, create a subclass of GameWorld and implement the initStage() method to set up window properties. Then, in the
+ * program entry point (e.g., {@link Main#start(Stage stage)}), create an instance of your GameWorld subclass and call
+ * start() to begin the game loop.
+ */
 public abstract class GameWorld
 {
     protected final GameLogger logger = GameLogger.getLogger(this.getClass());
@@ -39,7 +39,9 @@ public abstract class GameWorld
 
     private final AnimationTimer gameLoop;
 
-    /// Subclasses **`MUST`** implement in order to initialize the stage `(set title, size, etc.)`
+    /// Use this to set up {@link GameWorld#stage} properties, i.e. window properties
+    /// <br>
+    /// Examples include title, window size, etc.
     protected abstract void initStage();
 
     public GameWorld(Stage stage)
@@ -100,7 +102,7 @@ public abstract class GameWorld
         logger.success("Game World initialized successfully");
     }
 
-    /// Call in program entry point i.e. [Main#start(Stage stage)] Starts the Game Loop
+    /// Call in program entry point i.e. [Main#start(Stage stage)], Starts the Game Loop
     public void start()
     {
         logger.trace("Starting GameWorld and game loop");
@@ -120,6 +122,7 @@ public abstract class GameWorld
 
     /* SCENE */
 
+    /// Switches to the given [GameScene]
     public GameWorld setScene(GameScene newScene)
     {
         logger.trace("setScene({}) called", newScene.getClass().getSimpleName());
@@ -144,33 +147,42 @@ public abstract class GameWorld
         return this;
     }
 
+    /// Switches to the given [GameScene]
     public GameWorld setScene(Supplier<GameScene> newScene) { return setScene(newScene.get()); }
 
-    /// Get the current active [GameScene]
+    /// Get the current [GameScene]
     public GameScene getScene() { return currentGameScene; }
 
     /// Only used in [edu.nust.engine.core] for internal purposes.
     /// <br>
     /// <br>
     /// Used for adding stylesheets, events, etc.
-    protected Scene getRawScene() { return scene; }
+    Scene getRawScene() { return scene; }
 
     /* UTILITIES */
 
+    /// Gets the size of the window as a Vector2D (width, height)
     public Vector2D getSize() { return new Vector2D(stage.getWidth(), stage.getHeight()); }
 
+    /// Gets the width of the window
     public double getWidth() { return stage.getWidth(); }
 
+    /// Gets the height of the window
     public double getHeight() { return stage.getHeight(); }
 
+    /// Gets the title of the window
     public String getWindowTitle() { return stage.getTitle(); }
 
+    /// Gets the current cursor of the window
     public Cursor getCursor() { return stage.getScene().getCursor(); }
 
+    /// Gets whether the cursor is visible
     public boolean isCursorVisible() { return getCursor() != Cursor.NONE; }
 
+    /// Gets whether the window is resizable
     public boolean isFullscreen() { return stage.isFullScreen(); }
 
+    /// **`CHAINABLE`** Sets the size of the window
     public GameWorld setSize(double width, double height)
     {
         stage.setWidth(width);
@@ -178,60 +190,70 @@ public abstract class GameWorld
         return this;
     }
 
+    /// **`CHAINABLE`** Sets the width of the window
     public GameWorld setWidth(double width)
     {
         stage.setWidth(width);
         return this;
     }
 
+    /// **`CHAINABLE`** Sets the height of the window
     public GameWorld setHeight(double height)
     {
         stage.setHeight(height);
         return this;
     }
 
+    /// **`CHAINABLE`** Sets whether the window is in fullscreen mode
     public GameWorld setFullscreen(boolean fullscreen)
     {
         stage.setFullScreen(fullscreen);
         return this;
     }
 
+    /// **`CHAINABLE`** Toggles whether the window is in fullscreen mode
     public GameWorld toggleFullscreen()
     {
         setFullscreen(!stage.isFullScreen());
         return this;
     }
 
+    /// **`CHAINABLE`** Sets the title of the window
     public GameWorld setWindowTitle(String title)
     {
         stage.setTitle(title);
         return this;
     }
 
+    /// **`CHAINABLE`** Sets the cursor of the window
     public GameWorld setCursor(Cursor cursor)
     {
         stage.getScene().setCursor(cursor);
         return this;
     }
 
+    /// **`CHAINABLE`** Sets whether the cursor is visible
     public GameWorld setCursorVisible(boolean visible)
     {
         if (!visible) setCursor(Cursor.NONE);
         return this;
     }
 
+    /// **`CHAINABLE`** Toggles whether the cursor is visible
     public GameWorld toggleCursorVisible()
     {
         setCursorVisible(!isCursorVisible());
         return this;
     }
 
+    /// **`CHAINABLE`** Toggles whether the window is in fullscreen mode
     public GameWorld centerWindow()
     {
         stage.centerOnScreen();
         return this;
     }
 
+    /// **`CHAINABLE`** Sets whether the window is resizable
     public GameWorld setResizable(boolean resizable)
     {
         stage.setResizable(resizable);

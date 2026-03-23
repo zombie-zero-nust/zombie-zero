@@ -7,6 +7,11 @@ import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.math.TimeSpan;
 import javafx.scene.canvas.GraphicsContext;
 
+/**
+ * The base class for all components that can be attached to a {@link GameObject}. Components are used to add
+ * functionality to GameObjects, such as rendering, physics, input handling, etc. Each component is attached to a single
+ * GameObject and can access its GameObject and other components on the same GameObject.
+ */
 public abstract class Component implements Initiable, Updatable<Component>, Renderable<Component>
 {
     protected final GameLogger logger = GameLogger.getLogger(this.getClass());
@@ -65,6 +70,10 @@ public abstract class Component implements Initiable, Updatable<Component>, Rend
         return this;
     }
 
+    /**
+     * Removes this component from its GameObject, effectively destroying it. After calling this, the component will no
+     * longer receive update or render calls.
+     */
     public void removeSelf()
     {
         if (gameObject != null && gameObject.getScene() != null)
@@ -78,6 +87,8 @@ public abstract class Component implements Initiable, Updatable<Component>, Rend
     /// **`INTERNAL`**: initializes the GameObject reference for this component, called when added to a GameObject.
     void setGameObject(GameObject gameObject) { this.gameObject = gameObject; }
 
+    /// Gets the {@link GameObject} this {@link Component} is attached to. Returns null if not attached to any
+    /// {@link GameObject}.
     public GameObject getGameObject() { return gameObject; }
 
     /* LIFETIME EVENTS */
