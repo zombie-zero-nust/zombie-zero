@@ -1,6 +1,6 @@
 <configuration>
     <conversionRule conversionWord="msgNoAnsi"
-                    class="edu.nust.engine.logger.ANSIStripper"/>
+                    class="edu.nust.engine.logger.logback.ANSIStripper"/>
 
     <!-- System property 'sessionStart' for the current session timestamp -->
     <property name="sessionStart" value="${currentTime}"/>

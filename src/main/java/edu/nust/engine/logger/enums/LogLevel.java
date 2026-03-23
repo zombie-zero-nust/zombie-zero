@@ -1,4 +1,4 @@
-package edu.nust.engine.logger;
+package edu.nust.engine.logger.enums;
 
 public enum LogLevel
 {
@@ -11,7 +11,9 @@ public enum LogLevel
     WARN("\u001B[33m"),    // yellow text
     ERROR("\u001B[31m");   // red text
 
-    final String ansiColor;
+    private final String ansiColor;
 
     LogLevel(String ansiStr) { this.ansiColor = ansiStr; }
+
+    public String getAnsiColor() { return ansiColor; }
 }

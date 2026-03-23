@@ -1,4 +1,4 @@
-package edu.nust.engine.logger;
+package edu.nust.engine.logger.enums;
 
 public enum LogProgressType
 {

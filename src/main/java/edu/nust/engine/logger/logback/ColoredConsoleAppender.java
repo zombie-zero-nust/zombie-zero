@@ -1,4 +1,4 @@
-package edu.nust.engine.logger;
+package edu.nust.engine.logger.logback;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;

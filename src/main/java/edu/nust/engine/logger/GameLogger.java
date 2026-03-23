@@ -1,5 +1,7 @@
 package edu.nust.engine.logger;
 
+import edu.nust.engine.logger.enums.LogLevel;
+import edu.nust.engine.logger.enums.LogProgressType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LocationAwareLogger;
@@ -38,7 +40,7 @@ public class GameLogger
 
     private String withMessage(LogLevel level, String... message)
     {
-        return getPrefix(level.name(), level.ansiColor) + String.join("", message);
+        return getPrefix(level.name(), level.getAnsiColor()) + String.join("", message);
     }
 
     private String withProgressMessage(LogProgressType type, LogProgress progress, String... message)
