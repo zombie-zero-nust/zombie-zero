@@ -4,26 +4,15 @@ import edu.nust.engine.logger.enums.LogLevel;
 import edu.nust.engine.logger.enums.LogProgressType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.spi.LocationAwareLogger;
 
 public class GameLogger
 {
-    private final LocationAwareLogger rawLogger;
-    private static final String FQCN = GameLogger.class.getName();
-    private static final String PROGRESS_FQCN = LogProgress.class.getName();
+    private final Logger rawLogger;
 
     /// Use {@link #getLogger(Class)} instead
     private GameLogger(Class<?> loggingClass)
     {
-        Logger logger = LoggerFactory.getLogger(loggingClass);
-        if (logger instanceof LocationAwareLogger)
-        {
-            this.rawLogger = (LocationAwareLogger) logger;
-        }
-        else
-        {
-            throw new UnsupportedOperationException("Logger does not support location awareness.");
-        }
+        this.rawLogger = LoggerFactory.getLogger(loggingClass);
     }
 
     public static GameLogger getLogger(Class<?> loggingClass) { return new GameLogger(loggingClass); }
@@ -53,58 +42,48 @@ public class GameLogger
 
     private void logMessage(LogLevel level, String message, Object... args)
     {
-        rawLogger.log(null, FQCN, LocationAwareLogger.INFO_INT, withMessage(level, message), args, null);
+        rawLogger.info(withMessage(level, message), args);
+    }
+
+    private void logProgressMessage(LogProgressType type, LogProgress progress, String message, Object... args)
+    {
+        rawLogger.info(withProgressMessage(type, progress, message), args);
     }
 
     /* LOG TYPES */
 
     /// Debug log with magenta text
-    public void debug(String message, Object... args)
-    {
-        rawLogger.log(null, FQCN, LocationAwareLogger.INFO_INT, withMessage(LogLevel.DEBUG, message), args, null);
-    }
+    public void debug(String message, Object... args) { logMessage(LogLevel.DEBUG, message, args); }
 
     /// Info log with blue text
-    public void info(String message, Object... args)
-    {
-        rawLogger.log(null, FQCN, LocationAwareLogger.INFO_INT, withMessage(LogLevel.INFO, message), args, null);
-    }
+    public void info(String message, Object... args) { logMessage(LogLevel.INFO, message, args); }
 
     /// Success log with green text
-    public void success(String message, Object... args)
-    {
-        rawLogger.log(null, FQCN, LocationAwareLogger.INFO_INT, withMessage(LogLevel.SUCCESS, message), args, null);
-    }
+    public void success(String message, Object... args) { logMessage(LogLevel.SUCCESS, message, args); }
 
     /// Warning log with yellow text
-    public void warn(String message, Object... args)
-    {
-        rawLogger.log(null, FQCN, LocationAwareLogger.INFO_INT, withMessage(LogLevel.WARN, message), args, null);
-    }
+    public void warn(String message, Object... args) { logMessage(LogLevel.WARN, message, args); }
 
     /// Error log with red text
-    public void error(String message, Object... args)
-    {
-        rawLogger.log(null, FQCN, LocationAwareLogger.INFO_INT, withMessage(LogLevel.ERROR, message), args, null);
-    }
+    public void error(String message, Object... args) { logMessage(LogLevel.ERROR, message, args); }
 
     /* PROGRESS */
 
     /// **`INTERNAL`** Use {@link LogProgress#begin(String, Object...)} instead
     void beginProgress(LogProgress progress, String message, Object... args)
     {
-        rawLogger.log(null, PROGRESS_FQCN, LocationAwareLogger.INFO_INT, withProgressMessage(LogProgressType.BEGIN, progress, message), args, null);
+        logProgressMessage(LogProgressType.BEGIN, progress, message, args);
     }
 
     /// **`INTERNAL`** Use {@link LogProgress#log(String, Object...)} instead
     void logProgress(LogProgress progress, String message, Object... args)
     {
-        rawLogger.log(null, PROGRESS_FQCN, LocationAwareLogger.INFO_INT, withProgressMessage(LogProgressType.LOG, progress, message), args, null);
+        logProgressMessage(LogProgressType.LOG, progress, message, args);
     }
 
     /// **`INTERNAL`** Use {@link LogProgress#end(String, Object...)} instead
     void endProgress(LogProgress progress, String message, Object... args)
     {
-        rawLogger.log(null, PROGRESS_FQCN, LocationAwareLogger.INFO_INT, withProgressMessage(LogProgressType.END, progress, message), args, null);
+        logProgressMessage(LogProgressType.END, progress, message, args);
     }
 }

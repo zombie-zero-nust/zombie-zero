@@ -2,13 +2,10 @@
     <conversionRule conversionWord="msgNoAnsi"
                     class="edu.nust.engine.logger.logback.ANSIStripper"/>
 
-    <!-- System property 'sessionStart' for the current session timestamp -->
-    <property name="sessionStart" value="${currentTime}"/>
-
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- Level handled in code -->
-            <pattern>%green([%d{hh:mm:ss a}]) %magenta([%logger{0}:%L]) %msg%n</pattern>
+            <pattern>%green([%d{hh:mm:ss a}]) %magenta([%logger{0}]) %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -23,7 +20,7 @@
         </rollingPolicy>
 
         <encoder>
-            <pattern>[%d{dd-MM-yyyy hh:mm:ss a}] [%logger:%L] %msgNoAnsi%n</pattern>
+            <pattern>[%d{dd-MM-yyyy hh:mm:ss a}] [%logger] %msgNoAnsi%n</pattern>
         </encoder>
     </appender>
 
