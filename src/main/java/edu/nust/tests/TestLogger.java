@@ -9,6 +9,7 @@ public final class TestLogger
 
     public static void main(String[] args)
     {
+        LOGGER.trace("This is a trace message.");
         LOGGER.debug("This is a debug message.");
         LOGGER.info("This is an info message.");
         for (int i = 0; i < 10; i++)

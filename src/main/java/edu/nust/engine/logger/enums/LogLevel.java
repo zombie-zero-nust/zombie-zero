@@ -2,6 +2,7 @@ package edu.nust.engine.logger.enums;
 
 public enum LogLevel
 {
+    TRACE("\u001B[36m"),   // cyan text
     DEBUG("\u001B[35m"),   // magenta text
     INFO("\u001B[34m"),    // blue text
     START_PROGRESS(""),    // ignored for progress
