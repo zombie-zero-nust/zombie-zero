@@ -6,6 +6,15 @@
 
 <StackPane styleClass="ui-root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
 
+    <!-- Show help text at top left -->
+    <VBox fx:id="helpTextContainer" styleClass="helpTextContainer">
+        <Text styleClass="helpText" text="Press 'Esc' to Pause/Resume" />
+        <Text styleClass="helpText" text="Press 'W' to Zoom In" />
+        <Text styleClass="helpText" text="Press 'S' to Zoom Out" />
+        <Text styleClass="helpText" text="Press 'G' to show Grid" />
+        <Text styleClass="helpText" text="Press 'H' to hide help" />
+    </VBox>
+
     <StackPane fx:id="pauseOverlay" managed="false" styleClass="pauseOverlay" visible="false">
 
         <VBox alignment="CENTER" spacing="20">
@@ -17,14 +26,5 @@
         </VBox>
 
     </StackPane>
-
-    <!-- Show help text at top left -->
-    <VBox fx:id="helpTextContainer" styleClass="helpTextContainer">
-        <Text styleClass="helpText" text="Press 'Esc' to Pause/Resume" />
-        <Text styleClass="helpText" text="Press 'W' to Zoom In" />
-        <Text styleClass="helpText" text="Press 'S' to Zoom Out" />
-        <Text styleClass="helpText" text="Press 'G' to show Grid" />
-        <Text styleClass="helpText" text="Press 'H' to hide help" />
-    </VBox>
 
 </StackPane>
