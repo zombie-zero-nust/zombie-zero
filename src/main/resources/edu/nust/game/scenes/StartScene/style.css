@@ -1,0 +1,9 @@
+.helpTextContainer{
+    -fx-padding: 16px;
+    -fx-spacing: 12px;
+}
+
+.helpText {
+    -fx-font-size: 16px;
+    -fx-fill: #ffffff;
+}

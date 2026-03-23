@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 import java.io.FileNotFoundException;
@@ -22,6 +23,7 @@ import java.io.FileNotFoundException;
 public class MainGameScene extends GameScene
 {
     @FXML private StackPane pauseOverlay;
+    @FXML private VBox helpTextContainer;
 
     private boolean isPaused = false;
 
@@ -113,6 +115,11 @@ public class MainGameScene extends GameScene
         {
             this.toggleDebugGrid();
         }
+        // toggle help overlay with H
+        else if (event.getCode() == KeyCode.H)
+        {
+            this.toggleHelpText();
+        }
     }
 
     private void setPaused(boolean newState)
@@ -121,6 +128,13 @@ public class MainGameScene extends GameScene
         pauseOverlay.setVisible(newState);
         pauseOverlay.setManaged(newState);
         this.setActive(!newState);
+    }
+
+    private void toggleHelpText()
+    {
+        boolean isVisible = helpTextContainer.isVisible();
+        helpTextContainer.setVisible(!isVisible);
+        helpTextContainer.setManaged(!isVisible);
     }
 
     /* FXML Button Callbacks */
