@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
  * Represents a camera in the {@link GameScene}, controlling the view of the scene. Contains position and zoom
  * properties.
  * <br><br>
- * The camera's position represents the center of the view.
+ * <b>{@code NOTE}</b> : The camera's position represents the center of the view.
  * <br><br>
  * This class does not handle any rendering or transformations itself; it simply stores the camera's state.
  */

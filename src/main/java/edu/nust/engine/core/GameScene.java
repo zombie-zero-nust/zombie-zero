@@ -27,18 +27,18 @@ import java.util.function.Supplier;
 /**
  * Represents a single scene in the game, containing {@link GameObject}s and UI elements layered on top.
  * <br><br>
- * Each GameScene has two main layers: a world layer (canvas) for rendering {@link GameObject}s, and a UI layer (JavaFX
- * nodes) for rendering user interface elements. The GameScene manages the lifecycle of its game objects, including
+ * Each GameScene has two main layers: a world layer for rendering {@link GameObject}s, and a UI layer (JavaFX nodes)
+ * for rendering user interface elements. The GameScene manages the lifecycle of {@link GameObject}s, including
  * initialization, updates, and rendering.
  * <br><br>
- * To create a new scene, subclass GameScene and implement the required method to set up the scene.
+ * To create a new scene, subclass {@link GameScene} and implement the required methods to set up the scene.
  * <br><br>
- * For FXML create two files at {@code resources/edu/nust/game/scenes/YourSceneName/}:
+ * For UI (FXML) create two files at {@code resources/edu/nust/game/scenes/YourSceneName/}:
  * <ol>
- * <li>{@code layout.fxml} for the UI Layout <b>{@code MANDATORY}</b></li>
- * <li>{@code style.css} for the scene's CSS styles <b>{@code OPTIONAL}</b></li>
+ *     <li>{@code layout.fxml} for the UI Layout <b>{@code (MANDATORY)}</b></li>
+ *     <li>{@code style.css} for the scene's CSS styles <b>{@code (OPTIONAL)}</b></li>
  * </ol>
- * The FXML controller will be the GameScene subclass itself, so you can define {@code @FXML} fields and
+ * The FXML controller ({@code fx::controller}) will be the {@link GameScene} subclass itself, so you can define {@code @FXML} fields and
  * methods in your {@link GameScene} subclass to interact with the UI elements defined in the FXML file.
  * <br><br>
  * Additionally use the lifecycle methods {@link GameScene#onInit()}, {@link GameScene#onUpdate(TimeSpan)}, and
@@ -129,7 +129,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         {
             this.onUpdate(deltaTime);
             this.gameObjects.forEach(obj -> obj.invokeUpdate(deltaTime));
-            // late update in reverse order to allow rendering changes to be applied in same frame
+            // late update after all updates
             this.gameObjects.forEach(obj -> obj.invokeLateUpdate(deltaTime));
             this.lateUpdate(deltaTime);
         }

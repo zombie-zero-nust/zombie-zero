@@ -1,5 +1,6 @@
 package edu.nust.engine.core.interfaces;
 
+import edu.nust.engine.math.TimeSpan;
 import javafx.scene.canvas.GraphicsContext;
 
 import edu.nust.engine.core.Component;
@@ -15,8 +16,10 @@ import edu.nust.engine.core.GameWorld;
 public interface Renderable<T>
 {
     /**
-     * Called every frame to render the object. The provided {@link GraphicsContext} can be used to draw shapes, images,
-     * text, etc.
+     * Called every frame to render the object after both {@link Updatable#onUpdate(TimeSpan)} and
+     * {@link Updatable#lateUpdate(TimeSpan)}.
+     * <br><br>
+     * The provided {@link GraphicsContext} can be used to draw shapes, images, text, etc.
      *
      * @param context The {@link GraphicsContext} to render with.
      */

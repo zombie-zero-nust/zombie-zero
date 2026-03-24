@@ -33,7 +33,7 @@ public interface Updatable<T>
      */
     void onUpdate(TimeSpan deltaTime);
 
-    /***
+    /**
      * Called every frame after all {@link Updatable#onUpdate(TimeSpan)} calls to perform any necessary late updates.
      * <br><br>
      * Update order is as follows:

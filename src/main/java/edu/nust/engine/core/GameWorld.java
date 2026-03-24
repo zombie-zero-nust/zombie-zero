@@ -20,11 +20,11 @@ import java.util.function.Supplier;
  * Represents the entire game world, managing the main window, scenes, and the game loop.
  * <br><br>
  * The GameWorld is responsible for initializing the main window ({@link Stage}), switching between {@link GameScene}s,
- * and running the main game loop using an {@link AnimationTimer}.
+ * and running the main game loop.
  * <br><br>
- * To use, create a subclass of GameWorld and implement the initStage() method to set up window properties. Then, in the
+ * To use, create a subclass of GameWorld and implement the {@link GameWorld#initStage} method to set up window properties. Then, in the
  * program entry point (e.g., {@link Main#start(Stage stage)}), create an instance of your GameWorld subclass and call
- * start() to begin the game loop.
+ * {@link GameWorld#start }to begin the game loop.
  */
 public abstract class GameWorld
 {
@@ -39,9 +39,11 @@ public abstract class GameWorld
 
     private final AnimationTimer gameLoop;
 
-    /// Use this to set up {@link GameWorld#stage} properties, i.e. window properties
-    /// <br>
-    /// Examples include title, window size, etc.
+    /**
+     * Use this to set up window ({@link GameWorld#stage}) properties
+     * <br>
+     * Examples of properties include title, window size, etc.
+     */
     protected abstract void initStage();
 
     public GameWorld(Stage stage)
@@ -153,10 +155,12 @@ public abstract class GameWorld
     /// Get the current [GameScene]
     public GameScene getScene() { return currentGameScene; }
 
-    /// Only used in [edu.nust.engine.core] for internal purposes.
-    /// <br>
-    /// <br>
-    /// Used for adding stylesheets, events, etc.
+    /**
+     * Only used in {@link edu.nust.engine.core} for internal purposes.
+     * <br>
+     * <br>
+     * Used for adding stylesheets, events, etc.
+     */
     Scene getRawScene() { return scene; }
 
     /* UTILITIES */

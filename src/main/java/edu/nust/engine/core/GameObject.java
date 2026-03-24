@@ -53,12 +53,21 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
     /* FACTORY */
 
     /**
+     * <b>Syntax:</b> {@code GameObject.create()}
+     * <br><br>
+     * A factory method to create a simple {@link GameObject}.
+     *
+     * @return The same {@link GameObject} that was created, for chaining
+     */
+    public static GameObject create() { return new GameObject() { }; }
+
+    /**
      * <b>Syntax:</b> {@code GameObject.create(obj -> { obj.addComponent(...); ... })}
      * <br><br>
-     * A factory method to create a {@link GameObject} with a custom {@link Consumer}
+     * Creates a {@link GameObject} with a custom initializer function ({@link Consumer})
      *
-     * @param initializer A Consumer that takes the newly created GameObject as a parameter, allowing you to add
-     *                    components, tags, etc. to it in a lambda expression.
+     * @param initializer A Consumer that takes the newly created GameObject as a parameter, allows adding components,
+     *                    tags, etc. to it in a lambda expression.
      *
      * @return The same {@link GameObject} that was created, for chaining
      */
@@ -71,15 +80,6 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
         };
     }
 
-    /**
-     * <b>Syntax:</b> {@code GameObject.create()}
-     * <br><br>
-     * A factory method to create a simple {@link GameObject}.
-     *
-     * @return The same {@link GameObject} that was created, for chaining
-     */
-    public static GameObject create() { return create((ignored) -> { }); }
-
     /* COMPONENT */
 
     /**
@@ -89,10 +89,10 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      * already exist, and returns the added {@link Component}. If a {@link Component} of the same type already exists,
      * {@code null} is returned and the new {@link Component<T>} is discarded.
      * <br><br>
-     * <b>DO NOT USE</b>, for checking if a component exists; use {@link GameObject#hasComponent(Class)} instead.
+     * <b>{@code DO NOT USE}</b> : For checking if a component exists; use {@link GameObject#hasComponent(Class)}
+     * instead.
      *
-     * @param component The component to add to this GameObject.
-     * @param <T>       The {@link Component} class type being added, which must extend {@link Component}.
+     * @param component The {@link Component} class type being added, which must extend {@link Component}.
      *
      * @return The {@link Component} if added, or {@code null} if already existed.
      */
@@ -126,8 +126,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      * Retrieves the {@link Component} of the specified type from this {@link GameObject}. If a {@link Component} of
      * that type exists, it is returned; otherwise, {@code null} is returned.
      *
-     * @param type The class type of the component to retrieve. Must not be null.
-     * @param <T>  The {@link Component} class type being retrieved, which must extend {@link Component}.
+     * @param type The {@link Component} class type being retrieved, which must extend {@link Component}.
      *
      * @return The {@link Component} of the specified type if it exists in this GameObject, or {@code null} if no such
      * component exists.
@@ -155,16 +154,13 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      */
     public <T extends Component> T getOrAddComponent(Supplier<T> constructor)
     {
-        T temp = constructor.get();
-        Class<? extends Component> type = temp.getClass();
-
         // check if exists
-        @SuppressWarnings("unchecked") T existing = (T) components.get(type);
+        @SuppressWarnings("unchecked") //
+        T existing = (T) getComponent(constructor.get().getClass());
         if (existing != null) return existing;
 
         // doesn't exist; add
-        addComponent(temp);
-        return temp;
+        return addComponent(constructor.get());
     }
 
     /**
@@ -210,7 +206,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
     }
 
     /**
-     * Removes <b>all</b> {@link Component}s from this {@link GameObject}.
+     * Removes <b>ALL</b> {@link Component}s from this {@link GameObject}.
      */
     public void removeAllComponents()
     {
@@ -242,13 +238,16 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
     /* TAG */
 
     /**
-     * <b>Syntax:</b> {@code gameObject.addTag(Enemy.class)}
+     * <b>Syntax:</b> {@code gameObject.addTag(EnemyTag.class)}
      * <br><br>
-     * Adds the specified tag to this {@link GameObject}. If the tag already exists, nothing happens.
+     * Adds the specified tag to this {@link GameObject}. If the tag already exists, nothing happens. No
+     * {@link GameObject} can have multiple tags of same type.
      *
      * @param tagClass The {@link Tag} class to add, which must extend {@link Tag}.
      *
      * @return This GameObject, for chaining.
+     *
+     * @see Tag
      */
     public <T extends Tag> GameObject addTag(Class<T> tagClass)
     {
@@ -259,13 +258,15 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
     }
 
     /**
-     * <b>Syntax:</b> {@code gameObject.removeTag(Enemy.class)}
+     * <b>Syntax:</b> {@code gameObject.removeTag(EnemyTag.class)}
      * <br><br>
-     * Removes the specified tag from this {@link GameObject}. If the tag doesn't exist, nothing happens.
+     * Removes the specified {@link Tag} from this {@link GameObject}. If the tag doesn't exist, nothing happens.
      *
      * @param tagClass The {@link Tag} class to remove, which must extend {@link Tag}.
      *
      * @return This GameObject, for chaining.
+     *
+     * @see Tag
      */
     public <T extends Tag> GameObject removeTag(Class<T> tagClass)
     {
@@ -276,15 +277,22 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
     }
 
     /**
-     * <b>Syntax:</b> {@code gameObject.hasTag(Enemy.class)}
+     * <b>Syntax:</b> {@code gameObject.hasTag(EnemyTag.class)}
      * <br><br>
-     * Checks if this {@link GameObject} has the specified tag. If this GameObject has the specified tag, or a tag that
-     * is a subclass of the specified tag, {@code true} is returned; otherwise, {@code false} is returned.
+     * Checks if this {@link GameObject} has the specified tag. If this GameObject has the specified {@link Tag}, or a
+     * {@link Tag} that is a subclass of the specified {@link Tag}, {@code true} is returned; otherwise, {@code false}
+     * is returned.
+     * <br><br>
+     * <b>{@code NOTE}</b> : Suppose {@code EnemyTag extends HumanoidTag}, then
+     * {@code gameObject.hasTag(HumanoidTag.class)} will return {@code true} if this GameObject has the
+     * {@code EnemyTag}, even though it doesn't have the {@code HumanoidTag} explicitly.
      *
      * @param tagClass The {@link Tag} class to check for, which must extend {@link Tag}.
      *
      * @return {@code true} if this {@link GameObject} has the specified tag or a subclass of it, or {@code false} if it
      * doesn't.
+     *
+     * @see Tag
      */
     public <T extends Tag> boolean hasTag(Class<T> tagClass)
     {
@@ -375,9 +383,10 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
     {
         if (!this.isActive()) return;
 
-        this.lateUpdate(deltaTime);
+        // reverse order
         for (Component component : components.values())
             if (component.isActive()) component.lateUpdate(deltaTime);
+        this.lateUpdate(deltaTime);
     }
 
     void invokeRender(GraphicsContext context)
