@@ -442,7 +442,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
         if (!this.isActive()) return;
 
         this.onUpdate(deltaTime);
-        for (Component component : components.values())
+        for (Component component : components)
             if (component.isActive()) component.onUpdate(deltaTime);
     }
 
@@ -451,7 +451,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
         if (!this.isActive()) return;
 
         // reverse order
-        for (Component component : components.values())
+        for (Component component : components)
             if (component.isActive()) component.lateUpdate(deltaTime);
         this.lateUpdate(deltaTime);
     }
@@ -461,7 +461,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
         if (!this.isVisible()) return;
 
         this.onRender(context);
-        for (Component component : components.values())
+        for (Component component : components)
             if (component.isVisible()) component.onRender(context);
     }
 
