@@ -12,10 +12,7 @@ import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -35,8 +32,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
     protected final GameLogger logger = GameLogger.getLogger(this.getClass());
 
     private GameScene scene;
-    // can only add one component of each type, e.g. only one Transform, only one BoxRenderer, etc.
-    private final Map<Class<? extends Component>, Component> components = new HashMap<>();
+    private final List<Component> components = new ArrayList<>();
     // tags are identifiers themselves, no instance is stored
     private final Set<Class<? extends Tag>> tags = new HashSet<>();
 
@@ -89,109 +85,181 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      * already exist, and returns the added {@link Component}. If a {@link Component} of the same type already exists,
      * {@code null} is returned and the new {@link Component<T>} is discarded.
      * <br><br>
-     * <b>{@code DO NOT USE}</b> : For checking if a component exists; use {@link GameObject#hasComponent(Class)}
-     * instead.
+     * <b>{@code DO NOT USE}</b> : For checking if a component exists; use
+     * {@link GameObject#hasAnyComponentOfType(Class)} instead.
      *
-     * @param component The {@link Component} class type being added, which must extend {@link Component}.
+     * @param component The {@link Component} being added, which must extend {@link Component}.
      *
      * @return The {@link Component} if added, or {@code null} if already existed.
      */
     public <T extends Component> @Nullable T addComponent(T component)
     {
-        Class<? extends Component> type = component.getClass();
-        logger.trace("addComponent({}) called", type.getSimpleName());
+        logger.trace("addComponent({}) called", component.getClass().getSimpleName());
 
-        if (components.containsKey(type))
+        if (hasComponent(component))
         {
             logger.trace(
                     "{} already exists, returning {}",
-                    type.getSimpleName(),
+                    component.getClass().getSimpleName(),
                     LogFormats.BRIGHT_MAGENTA.apply("null")
             );
             return null;
         }
 
-        logger.trace("Attaching {} to GameObject", type.getSimpleName());
+        logger.trace("Attaching {} to GameObject", component.getClass().getSimpleName());
         component.setGameObject(this);
-        components.put(type, component);
+        components.add(component);
         component.onInit();
-        logger.debug("{} attached to GameObject", type.getSimpleName());
+        logger.debug("{} attached to GameObject", component.getClass().getSimpleName());
 
         return component;
     }
 
     /**
-     * <b>Syntax:</b> {@code Transform transform = gameObject.getComponent(Transform.class)}
+     * <b>Syntax:</b> {@code gameObject.addComponent(Transform::new)}
      * <br><br>
-     * Retrieves the {@link Component} of the specified type from this {@link GameObject}. If a {@link Component} of
-     * that type exists, it is returned; otherwise, {@code null} is returned.
+     * Adds a new {@link Component} created using the provided constructor to this {@link GameObject} if a
+     * {@link Component} of the same type doesn't already exist, and returns the added {@link Component}. If a
+     * {@link Component} of the same type already exists, {@code null} is returned and the new {@link Component<T>} is
+     * discarded.
+     * <br><br>
+     * <b>{@code DO NOT USE}</b> : For checking if a component exists; use
+     * {@link GameObject#hasAnyComponentOfType(Class)} instead.
+     *
+     * @param constructor A {@link Supplier} that constructs the {@link Component} being added.
+     *
+     * @return The {@link Component} if added, or {@code null} if already existed.
+     */
+    public <T extends Component> @Nullable T addComponent(Supplier<T> constructor) { return addComponent(constructor.get()); }
+
+    /**
+     * <b>Syntax:</b> {@code gameObject.getFirstComponent(Transform.class)}
+     * <br><br>
+     * Retrieves the first {@link Component} of the specified type from this {@link GameObject}. If a {@link Component}
+     * of that type exists, it is returned; otherwise, {@code null} is returned.
      *
      * @param type The {@link Component} class type being retrieved, which must extend {@link Component}.
      *
      * @return The {@link Component} of the specified type if it exists in this GameObject, or {@code null} if no such
      * component exists.
      */
-    public <T extends Component> @Nullable T getComponent(Class<T> type)
+    public <T extends Component> @Nullable T getFirstComponent(Class<T> type)
     {
-        Component component = components.get(type);
-        if (component == null) return null;
-        return type.cast(component);
+        for (Component component : components)
+        {
+            if (type.isInstance(component)) return type.cast(component);
+        }
+        return null;
     }
 
     /**
-     * <b>Syntax:</b> {@code Transform transform = gameObject.getOrAddComponent(Transform::new)}
+     * <b>Syntax:</b> {@code gameObject.getFirstOrAddComponent(new Transform())}
+     * <br><br>
+     * Retrieves the {@link Component} of the specified type from this {@link GameObject}. If a {@link Component} of
+     * that type exists, it is returned; otherwise, the provided {@link Component} is added to this {@link GameObject}
+     * and returned.
+     *
+     * @param component The {@link Component} instance to retrieve or add.
+     *
+     * @return The {@link Component} of the specified type if it exists in this GameObject, or the provided component if
+     * no such component exists.
+     */
+    public <T extends Component> T getFirstOrAddComponent(T component)
+    {
+        // check if exists
+        @SuppressWarnings("unchecked") //
+        T existing = (T) getFirstComponent(component.getClass());
+        if (existing != null) return existing;
+
+        // doesn't exist; add
+        return addComponent(component);
+    }
+
+    /**
+     * <b>Syntax:</b> {@code gameObject.getFirstOrAddComponent(Transform::new)}
      * <br><br>
      * Retrieves the {@link Component} of the specified type from this {@link GameObject}. If a {@link Component} of
      * that type exists, it is returned; otherwise, a new {@link Component} is created using the provided constructor,
      * added to this {@link GameObject}, and returned
      *
-     * @param constructor {@link Supplier} for {@link Component}
-     * @param <T>         The {@link Component} class type being retrieved or added, which must extend
-     *                    {@link Component}.
+     * @param constructor {@link Supplier} for {@link Component} class type being retrieved or added.
      *
      * @return The {@link Component} of the specified type if it exists in this GameObject, or a new component of that
      * type if no such component exists.
      */
-    public <T extends Component> T getOrAddComponent(Supplier<T> constructor)
+    public <T extends Component> T getFirstOrAddComponent(Supplier<T> constructor)
     {
-        // check if exists
-        @SuppressWarnings("unchecked") //
-        T existing = (T) getComponent(constructor.get().getClass());
-        if (existing != null) return existing;
-
-        // doesn't exist; add
-        return addComponent(constructor.get());
+        return getFirstOrAddComponent(constructor.get());
     }
 
     /**
-     * <b>Syntax:</b> {@code gameObject.hasComponent(Transform.class)}
+     * Gets a list of all {@link Component}s attached to this {@link GameObject}. Modifying this list will not affect
+     * the components attached to this GameObject.
+     *
+     * @return A list of all components attached to this GameObject.
+     */
+    public List<Component> getAllComponents() { return components; }
+
+    /**
+     * <b>Syntax:</b> {@code gameObject.getAllComponentsOfType(Renderer.class)}
+     * <br><br>
+     * Retrieves a list of all {@link Component}s of the specified type from this {@link GameObject}. If no
+     * {@link Component} of that type exists, an empty list is returned.
+     *
+     * @param type The {@link Component} class type being retrieved, which must extend {@link Component}.
+     *
+     * @return A list of all components of the specified type attached to this GameObject, or an empty list if no such
+     * component exists.
+     */
+    public <T extends Component> List<T> getAllComponentsOfType(Class<T> type)
+    {
+        return components.stream().filter(type::isInstance).map(type::cast).toList();
+    }
+
+    /**
+     * <b>Syntax:</b> {@code gameObject.hasAnyComponentOfType(Transform.class)}
      * <br><br>
      * Checks if a {@link Component} of the specified type exists in this {@link GameObject}.
      *
      * @param type The class type of the component to check for.
      *
-     * @return {@code true} if a {@link Component} of the specified type exists in this GameObject, or {@code false} if
-     * no such
+     * @return {@code true} if a {@link Component} of the specified type exists in this GameObject, or {@code false}
+     * otherwise
      */
-    public boolean hasComponent(Class<? extends Component> type) { return components.containsKey(type); }
+    public boolean hasAnyComponentOfType(Class<? extends Component> type)
+    {
+        return components.stream().anyMatch(type::isInstance);
+    }
 
     /**
-     * <b>Syntax:</b> {@code gameObject.removeComponent(Transform.class)}
+     * <b>Syntax:</b> {@code gameObject.hasComponent(transform)}
+     * <br><br>
+     * Checks if the specified {@link Component} instance exists in this {@link GameObject}.
+     *
+     * @param component The component instance to check for.
+     *
+     * @return {@code true} if a {@link Component} <b>instance</b> of the specified type exists in this GameObject, or
+     * {@code false} otherwise
+     */
+    public boolean hasComponent(Component component) { return components.contains(component); }
+
+    /**
+     * <b>Syntax:</b> {@code gameObject.removeAllWithComponent(Transform.class)}
      * <br><br>
      * Removes the {@link Component} of the specified type from this {@link GameObject} if it exists. If a
      * {@link Component} of that type exists, it is removed; otherwise, nothing happens.
      *
      * @param type The class type of the component to remove.
      */
-    public void removeComponent(Class<? extends Component> type)
+    public void removeAllWithComponent(Class<? extends Component> type)
     {
-        logger.trace("removeComponent({}) called", type.getSimpleName());
-        components.remove(type);
+        logger.trace("removeAllWithComponent({}) called", type.getSimpleName());
+        components.removeIf(type::isInstance);
         logger.debug("{} detached from GameObject", type.getSimpleName());
     }
 
     /**
-     * <b>Syntax:</b> {@code gameObject.removeComponent(transform)}
+     * <b>Syntax:</b> {@code gameObject.removeAllWithComponent(transform)}
      * <br><br>
      * Removes the specified {@link Component} from this {@link GameObject} if it exists. If the specified
      * {@link Component} exists in this {@link GameObject}, it is removed; otherwise, nothing happens.
@@ -200,8 +268,8 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      */
     public void removeComponent(Component component)
     {
-        logger.trace("removeComponent(instance) called for {}", component.getClass().getSimpleName());
-        components.remove(component.getClass(), component);
+        logger.trace("removeAllWithComponent(instance) called for {}", component.getClass().getSimpleName());
+        components.remove(component);
         logger.debug("{} detached from GameObject", component.getClass().getSimpleName());
     }
 
@@ -220,8 +288,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      *
      * @param action The {@link Consumer} action to be performed for each component.
      */
-    public void forEachComponent(Consumer<Component> action) { components.values().forEach(action); }
-
+    public void forEachComponent(Consumer<Component> action) { components.forEach(action); }
 
     /**
      * A convenience method to directly access the default {@link Transform} component of this {@link GameObject}.
@@ -230,7 +297,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      */
     public @NotNull Transform getTransform()
     {
-        Transform transform = getComponent(Transform.class);
+        Transform transform = getFirstComponent(Transform.class);
         assert transform != null : "Transform component not present in GameObject";
         return transform;
     }
