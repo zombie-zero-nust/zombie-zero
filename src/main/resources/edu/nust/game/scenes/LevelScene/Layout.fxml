@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<StackPane styleClass="ui-root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
+
+
+
+    <StackPane fx:id="pauseOverlay" managed="false" styleClass="pauseOverlay" visible="false">
+
+        <VBox alignment="CENTER" spacing="20">
+
+            <Button onAction="#resumeGame" text="Resume" />
+
+            <Button onAction="#exitToMainMenu" text="Exit to Main Menu" />
+
+        </VBox>
+
+    </StackPane>
+
+</StackPane>
+

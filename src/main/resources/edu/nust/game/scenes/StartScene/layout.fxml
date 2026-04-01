@@ -13,6 +13,10 @@
             onAction="#switchToGameScene"
             styleClass="primary-button"/>
 
+    <Button text="LevelScene"
+            onAction="#switchToLevelScene"
+            styleClass="primary-button"/>
+
     <Button text="Exit"
             onAction="#exitApplication"
             styleClass="primary-button"/>

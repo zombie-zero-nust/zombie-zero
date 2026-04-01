@@ -43,6 +43,12 @@ public class StartScene extends GameScene
     }
 
     @FXML
+    private void switchToLevelScene()
+    {
+        this.getWindow().setScene(new LevelScene(this.getWindow()));
+    }
+
+    @FXML
     private void exitApplication()
     {
         this.getWindow().stop();
