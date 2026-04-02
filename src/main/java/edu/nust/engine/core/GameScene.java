@@ -532,7 +532,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     Region getUILayer() { return uiLayer; }
 
-    Region getWorldLayer() { return worldLayer; }
+    public Region getWorldLayer() { return worldLayer; }
 
     /**
      * Gets the {@link GameWorld} (window) that this scene belongs to.
