@@ -128,16 +128,19 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         if (active)
         {
             this.onUpdate(deltaTime);
-            this.gameObjects.forEach(obj -> obj.invokeUpdate(deltaTime));
+            // Create a copy of the list to iterate over to avoid ConcurrentModificationException
+            // This allows addGameObject() and removeGameObject() to be called during update cycles
+            new ArrayList<>(this.gameObjects).forEach(obj -> obj.invokeUpdate(deltaTime));
             // late update after all updates
-            this.gameObjects.forEach(obj -> obj.invokeLateUpdate(deltaTime));
+            new ArrayList<>(this.gameObjects).forEach(obj -> obj.invokeLateUpdate(deltaTime));
             this.lateUpdate(deltaTime);
         }
 
         this.clearCanvas();
 
         fetchWorldContextAndRun((ctx) -> {
-            this.gameObjects.forEach(obj -> obj.invokeRender(ctx));
+            // Create a copy of the list to iterate over to avoid ConcurrentModificationException
+            new ArrayList<>(this.gameObjects).forEach(obj -> obj.invokeRender(ctx));
 
             this.renderDebug(ctx);
         });
