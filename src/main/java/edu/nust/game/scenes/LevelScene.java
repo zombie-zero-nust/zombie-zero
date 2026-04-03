@@ -132,6 +132,18 @@ public class LevelScene extends GameScene {
         {
             // Enemy will move towards this position in its onUpdate()
             enemy.setTargetPosition(character.getTransform().getPosition());
+
+            // ===== COLLISION DETECTION - GAME OVER =====
+            // Check if player and enemy have collided (approximately at same position)
+            Vector2D playerPos = character.getTransform().getPosition();
+            Vector2D enemyPos = enemy.getTransform().getPosition();
+            double distance = Vector2D.subtract(playerPos, enemyPos).magnitude();
+
+            // If distance is very small (collision threshold ~50 units), game is over
+            if (distance < 50)
+            {
+                gameOver();
+            }
         }
 
         // ===== UPDATE CAMERA =====
@@ -311,6 +323,30 @@ public class LevelScene extends GameScene {
     private void exitToMainMenu()
     {
         this.getWindow().setScene(new StartScene(this.getWindow()));
+    }
+
+    /**
+     * Handle game over when player collides with enemy
+     * Pause the scene and show game over options
+     */
+    private void gameOver()
+    {
+        // Pause the game to stop all updates
+        setPaused(true);
+
+        // Show game over message in pause overlay
+        pauseOverlay.setVisible(true);
+        pauseOverlay.setManaged(true);
+    }
+
+    /**
+     * Retry the level (called from pause menu button)
+     * Reloads the level by creating a new LevelScene
+     */
+    @FXML
+    private void retryLevel()
+    {
+        this.getWindow().setScene(new LevelScene(this.getWindow()));
     }
 
 }
