@@ -421,13 +421,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
         return this;
     }
 
-    public void destroy()
-    {
-        if (scene != null)
-        {
-            scene.removeGameObject(this);
-        }
-    }
+    public void destroy() { if (scene != null) scene.removeGameObject(this); }
 
     /* SCENE */
 

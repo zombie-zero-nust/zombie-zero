@@ -62,6 +62,9 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     private final GameCamera worldCamera;
     private final Canvas worldCanvas;
     protected final List<GameObject> gameObjects = new ArrayList<>();
+    // we need to hold seperate lists to add or remove during updates
+    protected final List<GameObject> gameObjectsToAdd = new ArrayList<>();
+    protected final List<GameObject> gameObjectsToRemove = new ArrayList<>();
 
     // debug options
     private boolean debugGrid = false;
@@ -136,6 +139,12 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
             this.lateUpdate(deltaTime);
         }
 
+        // remove gameobjects
+        gameObjects.removeAll(gameObjectsToRemove);
+        gameObjectsToRemove.clear();
+        gameObjects.addAll(gameObjectsToAdd);
+        gameObjectsToAdd.clear();
+
         this.clearCanvas();
 
         fetchWorldContextAndRun((ctx) -> {
@@ -161,7 +170,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     {
         logger.trace("addGameObject({}) called", gameObject.getClass().getSimpleName());
         gameObject.setScene(this);
-        gameObjects.add(gameObject);
+        gameObjectsToAdd.add(gameObject);
         logger.debug("GameObject {} added to scene", gameObject.getClass().getSimpleName());
         return gameObject;
     }
@@ -332,7 +341,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     public void removeGameObject(GameObject gameObject)
     {
         logger.trace("removeGameObject({}) called", gameObject.getClass().getSimpleName());
-        gameObjects.remove(gameObject);
+        gameObjectsToRemove.add(gameObject);
         logger.debug("GameObject {} removed from scene", gameObject.getClass().getSimpleName());
     }
 
@@ -346,7 +355,9 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     public void removeGameObjectsOfType(Class<? extends GameObject> type)
     {
         logger.trace("removeGameObjectsOfType({}) called", type.getSimpleName());
-        gameObjects.removeIf(type::isInstance);
+        gameObjects.forEach(obj -> {
+            if (type.isInstance(obj)) gameObjectsToRemove.add(obj);
+        });
         logger.debug("All GameObjects of type {} removed from scene", type.getSimpleName());
     }
 
@@ -360,7 +371,9 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     public void removeGameObjectsWithTag(Class<? extends Tag> tag)
     {
         logger.trace("removeGameObjectsWithTag({}) called", tag.getSimpleName());
-        gameObjects.removeIf(obj -> obj.hasTag(tag));
+        gameObjectsToRemove.forEach(obj -> {
+            if (obj.hasTag(tag)) gameObjectsToRemove.add(obj);
+        });
         logger.debug("All GameObjects with tag {} removed from scene", tag.getSimpleName());
     }
 
@@ -372,7 +385,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     public void removeAllGameObjects()
     {
         logger.trace("removeAllGameObjects() called, removing {} objects", gameObjects.size());
-        gameObjects.clear();
+        gameObjectsToRemove.addAll(gameObjects);
         logger.debug("All GameObjects removed from scene");
     }
 
