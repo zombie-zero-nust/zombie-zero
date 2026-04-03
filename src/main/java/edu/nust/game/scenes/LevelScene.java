@@ -7,22 +7,25 @@ import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.core.components.renderers.BoxRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.game.gameobjects.Bullet;
 import edu.nust.game.gameobjects.Player;
 import edu.nust.game.gameobjects.PlayerTag;
 import edu.nust.game.gameobjects.OrbitingBox;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+
 public class LevelScene extends GameScene {
     @FXML
     private StackPane pauseOverlay;
     @FXML private VBox helpTextContainer;
-
     private boolean isPaused = false;
     private Player player;
     private GameObject weaponBox;
@@ -37,9 +40,10 @@ public class LevelScene extends GameScene {
     @Override
     public void onInit(){
         // Create character (logo)
-        Player player = new Player(new Vector2D(0,0),100,10, true);
-        this.player = player;
+        player = new Player(new Vector2D(0,0),100,500, true);
         this.addGameObject(player.addTag(PlayerTag.class));
+
+
 
         // Create weapon box
         weaponBox = GameObject.create();
@@ -69,7 +73,11 @@ public class LevelScene extends GameScene {
         }
 
         this.getWorldCamera().setPosition(character.getTransform().getPosition());
+
+
     }
+
+
     @Override
     public void onKeyPressed(KeyEvent event){
 
@@ -108,6 +116,18 @@ public class LevelScene extends GameScene {
         double worldY = cameraPos.getY() + (screenY - canvasH / 2) / zoom;
 
         this.mousePosition = new Vector2D(worldX, worldY);
+    }
+    @Override
+    public void onMousePressed(MouseEvent event){
+
+        //test for checking bullet
+        if(event.getButton()== MouseButton.PRIMARY){
+            this.addGameObject(new Bullet(1000,weaponBox.getTransform().getPosition(),1000,30,30,mousePosition));
+        }
+    }
+
+    public void addBullets(Bullet bullet){
+
     }
 
     private void setPaused(boolean newState)

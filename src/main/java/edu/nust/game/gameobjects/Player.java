@@ -19,29 +19,28 @@ public class Player extends Character {
 
     private final Set<KeyCode> activeKeys = new HashSet<>();
 
-
+    HitBox hitbox;
     private double size = 50;
     private ArrayList<Image> images = new ArrayList<>();
 
-    private TimeSpan moveTime = TimeSpan.fromSeconds(1);
+
 
 
 
 
     public Player(Vector2D pos,int health,int mSpeed,boolean moveable){
         super(pos,health,mSpeed,moveable);
-
+        hitbox = new HitBox(pos,size+2,size+2);
         try
         {
             images.add( Resources.loadImageOrThrow("assets", "images", "test.png"));
-
         }
         catch (FileNotFoundException ignored)
         {
         }
 
         this.getTransform().setPosition(getSpawnPos());
-        this.addComponent(new SpriteRenderer(50,50, images.getFirst()));
+        this.addComponent(new SpriteRenderer(size,size, images.getFirst()));
     }
 
 
@@ -60,18 +59,18 @@ public class Player extends Character {
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
-        movement();
+        movement(deltaTime);
         this.getTransform().setPosition(getMovePos());
     }
 
-    public void movement(){
+    public void movement(TimeSpan deltaTime){
         double dx= 0;
         double dy=0;
 
-        if (activeKeys.contains(KeyCode.W)) dy -= getMovementSpeed()* moveTime.asSeconds();
-        if (activeKeys.contains(KeyCode.S)) dy += getMovementSpeed()*moveTime.asSeconds();
-        if (activeKeys.contains(KeyCode.A)) dx -= getMovementSpeed()*moveTime.asSeconds();
-        if (activeKeys.contains(KeyCode.D)) dx += getMovementSpeed()*moveTime.asSeconds();
+        if (activeKeys.contains(KeyCode.W)) dy -= getMovementSpeed()* deltaTime.asSeconds();
+        if (activeKeys.contains(KeyCode.S)) dy += getMovementSpeed()*deltaTime.asSeconds();
+        if (activeKeys.contains(KeyCode.A)) dx -= getMovementSpeed()*deltaTime.asSeconds();
+        if (activeKeys.contains(KeyCode.D)) dx += getMovementSpeed()*deltaTime.asSeconds();
 
         setY(getY()+dy);
         setX(getX()+dx);
