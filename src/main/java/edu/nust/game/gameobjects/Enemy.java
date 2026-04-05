@@ -18,6 +18,9 @@ public class Enemy extends GameObject
     private double movementSpeed = 100; // units per second - how fast enemy moves
     private double size = 50; // Size of the red box renderer
     private int hitCount = 0; // Number of bullets that have hit this enemy
+    private static final double PLAYER_COLLISION_DISTANCE = 50; // Distance threshold for player collision
+    private static final double BULLET_COLLISION_DISTANCE = 40; // Distance threshold for bullet collision
+    private static final int HITS_TO_DEFEAT = 3; // Number of bullets needed to defeat enemy
 
     /**
      * Constructor - Initialize enemy at a starting position with movement speed
@@ -134,7 +137,44 @@ public class Enemy extends GameObject
      * Reset hit count (when enemy is destroyed)
      */
     public void resetHitCount() { this.hitCount = 0; }
+
+    /**
+     * Check if enemy has collided with player
+     * Used by LevelScene to detect player-enemy collisions
+     *
+     * @param playerPos The player's current position
+     * @return True if collision detected, false otherwise
+     */
+    public boolean checkPlayerCollision(Vector2D playerPos)
+    {
+        // Calculate distance between enemy and player
+        double distance = Vector2D.subtract(playerPos, this.getTransform().getPosition()).magnitude();
+        // Return true if distance is less than collision threshold
+        return distance < PLAYER_COLLISION_DISTANCE;
+    }
+
+    /**
+     * Check if a bullet has hit this enemy
+     * Used by LevelScene collision detection loop
+     *
+     * @param bulletPos The bullet's current position
+     * @return True if bullet is close enough to hit, false otherwise
+     */
+    public boolean checkBulletCollision(Vector2D bulletPos)
+    {
+        // Calculate distance between enemy and bullet
+        double distance = Vector2D.subtract(bulletPos, this.getTransform().getPosition()).magnitude();
+        // Return true if bullet is close enough
+        return distance < BULLET_COLLISION_DISTANCE;
+    }
+
+    /**
+     * Check if enemy has been defeated (hit enough times)
+     *
+     * @return True if hit count >= 3, false otherwise
+     */
+    public boolean isDefeated()
+    {
+        return hitCount >= HITS_TO_DEFEAT;
+    }
 }
-
-
-
