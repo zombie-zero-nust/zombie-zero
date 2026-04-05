@@ -8,23 +8,22 @@ import javafx.scene.paint.Color;
 
 /**
  * Enemy GameObjects that spawn and move towards the player
- *
- * Flow:
- * 1. Enemy spawned at a position with a given movement speed
- * 2. Every frame, targetPosition is updated (set by scene)
- * 3. onUpdate() calculates movement towards target
- * 4. Enemy moves and rotates to face target direction
+ * <br>
+ * Flow: 1. Enemy spawned at a position with a given movement speed 2. Every frame, targetPosition is updated (set by
+ * scene) 3. onUpdate() calculates movement towards target 4. Enemy moves and rotates to face target direction
  */
 public class Enemy extends GameObject
 {
     private Vector2D targetPosition = Vector2D.zero(); // The player position (updated each frame)
     private double movementSpeed = 100; // units per second - how fast enemy moves
     private double size = 50; // Size of the red box renderer
+    private int hitCount = 0; // Number of bullets that have hit this enemy
 
     /**
      * Constructor - Initialize enemy at a starting position with movement speed
+     *
      * @param startPosition Where the enemy spawns
-     * @param speed How fast the enemy moves (units/sec)
+     * @param speed         How fast the enemy moves (units/sec)
      */
     public Enemy(Vector2D startPosition, double speed)
     {
@@ -44,6 +43,7 @@ public class Enemy extends GameObject
 
     /**
      * Called every frame - handles enemy movement towards target
+     *
      * @param deltaTime Time elapsed since last frame
      */
     @Override
@@ -55,6 +55,7 @@ public class Enemy extends GameObject
 
     /**
      * Update the target position (called by scene to point at player)
+     *
      * @param target The player's current position
      */
     public void setTargetPosition(Vector2D target)
@@ -65,14 +66,10 @@ public class Enemy extends GameObject
 
     /**
      * Move the enemy step by step towards the target
-     *
-     * Algorithm:
-     * 1. Get current enemy position
-     * 2. Calculate direction vector from enemy to target
-     * 3. Normalize the direction (convert to unit vector)
-     * 4. Calculate how far to move this frame (speed * deltaTime)
-     * 5. Apply movement in that direction
-     * 6. Rotate enemy to face the target
+     * <br>
+     * Algorithm: 1. Get current enemy position 2. Calculate direction vector from enemy to target 3. Normalize the
+     * direction (convert to unit vector) 4. Calculate how far to move this frame (speed * deltaTime) 5. Apply movement
+     * in that direction 6. Rotate enemy to face the target
      *
      * @param deltaTime Time elapsed this frame (used for smooth movement)
      */
@@ -118,7 +115,25 @@ public class Enemy extends GameObject
 
     // Getter/Setter for movement speed
     public double getMovementSpeed() { return movementSpeed; }
+
     public void setMovementSpeed(double speed) { this.movementSpeed = speed; }
+
+    /**
+     * Get the number of hits this enemy has taken
+     *
+     * @return Current hit count
+     */
+    public int getHitCount() { return hitCount; }
+
+    /**
+     * Increment hit count by 1 (called when bullet hits this enemy)
+     */
+    public void addHit() { this.hitCount++; }
+
+    /**
+     * Reset hit count (when enemy is destroyed)
+     */
+    public void resetHitCount() { this.hitCount = 0; }
 }
 
 

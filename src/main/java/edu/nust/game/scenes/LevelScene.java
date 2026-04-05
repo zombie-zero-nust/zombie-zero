@@ -25,20 +25,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * LevelScene - Main game level with player, weapon, and enemy
- *
- * Game Flow:
- * 1. Scene initializes: Creates player at origin, weapon, and enemy
- * 2. Every frame:
- *    - Input handlers process keyboard and mouse events
- *    - lateUpdate() synchronizes all game objects
- *    - Weapon tracks mouse, enemy tracks player
- *    - Camera follows player
- * 3. Player moves with WASD, weapon aims with mouse, enemy chases player
+ * <br>
+ * Game Flow: 1. Scene initializes: Creates player at origin, weapon, and enemy 2. Every frame: - Input handlers process
+ * keyboard and mouse events - lateUpdate() synchronizes all game objects - Weapon tracks mouse, enemy tracks player -
+ * Camera follows player 3. Player moves with WASD, weapon aims with mouse, enemy chases player
  */
-import java.util.ArrayList;
-
 public class LevelScene extends GameScene
 {
     @FXML private StackPane pauseOverlay;
@@ -59,7 +55,11 @@ public class LevelScene extends GameScene
      *
      * @param level The GameWorld window
      */
-    public LevelScene(GameWorld level) { super(level); }
+    public LevelScene(GameWorld level)
+    {
+        super(level);
+
+    }
 
     /**
      * Initialize all game objects at the start of the level Called once when scene is created
@@ -184,6 +184,56 @@ public class LevelScene extends GameScene
             }
         }
 
+        // ===== BULLET-ENEMY COLLISION DETECTION =====
+        // Check all bullets in the scene and detect if they hit the enemy
+        if (enemy != null)
+        {
+            // Get all GameObjects in the scene
+            List<GameObject> allObjects = this.getAllGameObjects();
+
+            // Iterate through all objects to find bullets
+            for (GameObject obj : new ArrayList<>(allObjects))
+            {
+                // Check if this object is a Bullet
+                if (obj instanceof Bullet)
+                {
+                    Bullet bullet = (Bullet) obj;
+
+                    // Skip destroyed bullets
+                    if (bullet.isDestroyed()) continue;
+
+                    // Get positions of bullet and enemy
+                    Vector2D bulletPos = bullet.getTransform().getPosition();
+                    Vector2D enemyPos = enemy.getTransform().getPosition();
+                    double bulletEnemyDistance = Vector2D.subtract(bulletPos, enemyPos).magnitude();
+
+                    // If bullet is close to enemy (collision threshold ~40 units)
+                    if (bulletEnemyDistance < 40)
+                    {
+                        // Increment the enemy's hit count
+                        enemy.addHit();
+
+                        // Destroy the bullet on impact
+                        bullet.destroy();
+
+                        // Check if enemy has been hit 3 times
+                        if (enemy.getHitCount() >= 3)
+                        {
+                            // Remove the defeated enemy
+                            this.removeGameObject(enemy);
+
+                            // Award points for destroying enemy with bullets (bonus points)
+                            score.setScore(score.getScore() + 3);
+
+                            // Spawn a new enemy at a random edge position
+                            enemy = new Enemy(getRandomEdgePosition(), 100);
+                            this.addGameObject(enemy.addTag(EnemyTag.class));
+                        }
+                    }
+                }
+            }
+        }
+
         // ===== UPDATE CAMERA =====
         // Make camera follow the player so player stays centered
         this.getWorldCamera().setPosition(character.getTransform().getPosition());
@@ -259,6 +309,7 @@ public class LevelScene extends GameScene
         // Store the converted world position for weapon to use
         this.mousePosition = new Vector2D(worldX, worldY);
     }
+
 
     @Override
     public void onMousePressed(MouseEvent event)

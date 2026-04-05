@@ -17,7 +17,8 @@
 
         <VBox alignment="CENTER" spacing="20">
 
-            <Button onAction="#resumeGame" text="Retry" />
+            <Button onAction="#resumeGame" text="Resume" />
+            <Button onAction="#retryLevel" text="Retry" />
 
             <Button onAction="#exitToMainMenu" text="Exit to Main Menu" />
 
