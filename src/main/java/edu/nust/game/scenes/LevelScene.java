@@ -7,13 +7,14 @@ import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.core.components.renderers.BoxRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.game.Score;
+import edu.nust.game.gameobjects.*;
 import edu.nust.game.gameobjects.Bullet;
 import edu.nust.game.gameobjects.Player;
 import edu.nust.game.gameobjects.PlayerTag;
 import edu.nust.game.gameobjects.OrbitingBox;
 import edu.nust.game.gameobjects.Enemy;
 import edu.nust.game.gameobjects.EnemyTag;
-import edu.nust.game.Score;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -38,9 +39,9 @@ import javafx.scene.control.Label;
  */
 import java.util.ArrayList;
 
-public class LevelScene extends GameScene {
-    @FXML
-    private StackPane pauseOverlay;
+public class LevelScene extends GameScene
+{
+    @FXML private StackPane pauseOverlay;
     @FXML private VBox helpTextContainer;
     @FXML private Label scoreLabel; // Label to display current score
     private boolean isPaused = false;
@@ -55,29 +56,26 @@ public class LevelScene extends GameScene {
 
     /**
      * Constructor - Scene is created when level starts
+     *
      * @param level The GameWorld window
      */
-    public LevelScene(GameWorld level){
-        super(level);
-
-    }
+    public LevelScene(GameWorld level) { super(level); }
 
     /**
-     * Initialize all game objects at the start of the level
-     * Called once when scene is created
+     * Initialize all game objects at the start of the level Called once when scene is created
      */
     @Override
-    public void onInit(){
+    public void onInit()
+    {
         // ===== INITIALIZE SCORE SYSTEM =====
         // Create and initialize score tracker at start of game
         score = new Score();
 
         // ===== CREATE CHARACTER =====
         // Player spawns at origin (0,0) with 100 health, 500 movement speed
-        player = new Player(new Vector2D(0,0), 100, 500, true);
+        player = new Player(new Vector2D(0, 0), 100, 500, true);
         // Add player to scene and tag so we can find it later with getFirstWithTag()
         this.addGameObject(player.addTag(PlayerTag.class));
-
 
 
         // Create weapon box
@@ -103,23 +101,26 @@ public class LevelScene extends GameScene {
     }
 
     /**
-     * Called every frame - Handle game updates
-     * This is called before lateUpdate()
+     * Called every frame - Handle game updates This is called before lateUpdate()
+     *
      * @param deltaTime Time elapsed since last frame (seconds)
      */
     @Override
-    public void onUpdate(TimeSpan deltaTime){
+    public void onUpdate(TimeSpan deltaTime)
+    {
         // Main update logic is handled in lateUpdate()
         // This method is called first, but we do updates after all objects update
     }
 
     /**
-     * Called after all GameObjects update - Synchronize game state
-     * This is the perfect place to sync weapon/enemy with player position
+     * Called after all GameObjects update - Synchronize game state This is the perfect place to sync weapon/enemy with
+     * player position
+     *
      * @param deltaTime Time elapsed since last frame (seconds)
      */
     @Override
-    public void lateUpdate(TimeSpan deltaTime){
+    public void lateUpdate(TimeSpan deltaTime)
+    {
         // ===== UPDATE SCORE =====
         // Update score tracker every frame (increments score every 5 seconds)
         score.update(deltaTime);
@@ -133,7 +134,7 @@ public class LevelScene extends GameScene {
         GameObject character = this.getFirstWithTag(PlayerTag.class);
 
         // If no player found, exit early (shouldn't happen)
-        if(character == null) return;
+        if (character == null) return;
 
         // ===== UPDATE WEAPON =====
         // Tell weapon where the mouse is in world coordinates
@@ -190,19 +191,23 @@ public class LevelScene extends GameScene {
 
     /**
      * Handle keyboard input when a key is pressed
+     *
      * @param event The keyboard event (contains which key was pressed)
      */
     @Override
-    public void onKeyPressed(KeyEvent event){
+    public void onKeyPressed(KeyEvent event)
+    {
         // Pass the key press to the player (handles WASD movement)
         player.keyPress(event.getCode());
 
         // Handle scene-specific keys
-        if(event.getCode() == KeyCode.ESCAPE){
+        if (event.getCode() == KeyCode.ESCAPE)
+        {
             // ESC = Pause the game
             setPaused(true);
         }
-        else if(event.getCode() == KeyCode.G){
+        else if (event.getCode() == KeyCode.G)
+        {
             // G = Toggle debug grid to see movement better
             this.toggleDebugGrid();
         }
@@ -210,23 +215,22 @@ public class LevelScene extends GameScene {
 
     /**
      * Handle keyboard input when a key is released
+     *
      * @param event The keyboard event (contains which key was released)
      */
     @Override
-    public void onKeyReleased(KeyEvent event){
+    public void onKeyReleased(KeyEvent event)
+    {
         // Pass the key release to the player (stops movement when WASD released)
         player.keyRelease(event.getCode());
     }
 
     /**
-     * Handle mouse movement input
-     * Converts screen coordinates to world coordinates and stores position
-     *
-     * Coordinate Conversion:
-     * 1. Get screen pixel coordinates from event (0,0 is top-left of screen)
-     * 2. Get canvas dimensions and center point
-     * 3. Apply camera position and zoom to convert to world coordinates
-     * 4. Store for weapon to use
+     * Handle mouse movement input Converts screen coordinates to world coordinates and stores position
+     * <p>
+     * Coordinate Conversion: 1. Get screen pixel coordinates from event (0,0 is top-left of screen) 2. Get canvas
+     * dimensions and center point 3. Apply camera position and zoom to convert to world coordinates 4. Store for weapon
+     * to use
      *
      * @param event The mouse event (contains screen position)
      */
@@ -255,21 +259,26 @@ public class LevelScene extends GameScene {
         // Store the converted world position for weapon to use
         this.mousePosition = new Vector2D(worldX, worldY);
     }
+
     @Override
-    public void onMousePressed(MouseEvent event){
+    public void onMousePressed(MouseEvent event)
+    {
 
         //test for checking bullet
-        if(event.getButton()== MouseButton.PRIMARY){
-            this.addGameObject(new Bullet(1000,weaponBox.getTransform().getPosition(),1000,30,30,mousePosition));
+        if (event.getButton() == MouseButton.PRIMARY)
+        {
+            this.addGameObject(new Bullet(1000, weaponBox.getTransform().getPosition(), 1000, 30, 30, mousePosition));
         }
     }
 
-    public void addBullets(Bullet bullet){
+    public void addBullets(Bullet bullet)
+    {
 
     }
 
     /**
      * Pause or unpause the game
+     *
      * @param newState True to pause, false to resume
      */
     private void setPaused(boolean newState)
@@ -284,14 +293,10 @@ public class LevelScene extends GameScene {
     }
 
     /**
-     * Calculate a random position on the screen edge in world coordinates
-     * Used for spawning enemies at random edges
-     *
-     * Algorithm:
-     * 1. Calculate camera's visible world area bounds
-     * 2. Randomly pick one of 4 edges (top, bottom, left, right)
-     * 3. Randomly pick a position along that edge
-     * 4. Return the world coordinate
+     * Calculate a random position on the screen edge in world coordinates Used for spawning enemies at random edges
+     * <p>
+     * Algorithm: 1. Calculate camera's visible world area bounds 2. Randomly pick one of 4 edges (top, bottom, left,
+     * right) 3. Randomly pick a position along that edge 4. Return the world coordinate
      *
      * @return A Vector2D position on a random screen edge
      */
@@ -315,11 +320,12 @@ public class LevelScene extends GameScene {
         double bottom = cameraPos.getY() + halfH;
 
         // Randomly pick an edge: 0=top, 1=bottom, 2=left, 3=right
-        int edge = (int)(Math.random() * 4);
+        int edge = (int) (Math.random() * 4);
         double x, y;
 
         // Calculate random position along chosen edge
-        switch(edge) {
+        switch (edge)
+        {
             case 0: // Top edge - random x, y = top
                 x = left + Math.random() * (right - left);
                 y = top;
@@ -363,8 +369,7 @@ public class LevelScene extends GameScene {
     }
 
     /**
-     * Handle game over when player collides with enemy
-     * Pause the scene and show game over options
+     * Handle game over when player collides with enemy Pause the scene and show game over options
      */
     private void gameOver()
     {
@@ -377,8 +382,7 @@ public class LevelScene extends GameScene {
     }
 
     /**
-     * Retry the level (called from pause menu button)
-     * Reloads the level by creating a new LevelScene
+     * Retry the level (called from pause menu button) Reloads the level by creating a new LevelScene
      */
     @FXML
     private void retryLevel()
@@ -388,8 +392,7 @@ public class LevelScene extends GameScene {
     }
 
     /**
-     * Get the current score value
-     * Used for displaying score to player
+     * Get the current score value Used for displaying score to player
      *
      * @return Current score as integer
      */
