@@ -6,13 +6,18 @@
 
 <StackPane styleClass="ui-root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
 
+   <!-- Score Display in top right corner -->
+    <HBox alignment="TOP_RIGHT" spacing="5" style="-fx-padding: 15;">
+        <Label text="Score: " style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;" />
+        <Label fx:id="scoreLabel" text="0" style="-fx-text-fill: #00FF00; -fx-font-size: 18; -fx-font-weight: bold;" />
+    </HBox>
 
-
+    <!-- Pause Overlay -->
     <StackPane fx:id="pauseOverlay" managed="false" styleClass="pauseOverlay" visible="false">
 
         <VBox alignment="CENTER" spacing="20">
 
-            <Button onAction="#resumeGame" text="Resume" />
+            <Button onAction="#resumeGame" text="Retry" />
 
             <Button onAction="#exitToMainMenu" text="Exit to Main Menu" />
 

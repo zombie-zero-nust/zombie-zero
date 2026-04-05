@@ -13,6 +13,7 @@ import edu.nust.game.gameobjects.PlayerTag;
 import edu.nust.game.gameobjects.OrbitingBox;
 import edu.nust.game.gameobjects.Enemy;
 import edu.nust.game.gameobjects.EnemyTag;
+import edu.nust.game.Score;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -21,6 +22,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.control.Label;
 
 /**
  * LevelScene - Main game level with player, weapon, and enemy
@@ -40,11 +42,14 @@ public class LevelScene extends GameScene {
     @FXML
     private StackPane pauseOverlay;
     @FXML private VBox helpTextContainer;
+    @FXML private Label scoreLabel; // Label to display current score
     private boolean isPaused = false;
     private Player player;
     private GameObject weaponBox;
     private OrbitingBox weaponComponent;
     private Enemy enemy;
+    // Score tracking
+    private Score score; // Score system instance
     // Input tracking
     private Vector2D mousePosition = Vector2D.zero(); // Current mouse position in world coordinates
 
@@ -63,6 +68,10 @@ public class LevelScene extends GameScene {
      */
     @Override
     public void onInit(){
+        // ===== INITIALIZE SCORE SYSTEM =====
+        // Create and initialize score tracker at start of game
+        score = new Score();
+
         // ===== CREATE CHARACTER =====
         // Player spawns at origin (0,0) with 100 health, 500 movement speed
         player = new Player(new Vector2D(0,0), 100, 500, true);
@@ -111,6 +120,15 @@ public class LevelScene extends GameScene {
      */
     @Override
     public void lateUpdate(TimeSpan deltaTime){
+        // ===== UPDATE SCORE =====
+        // Update score tracker every frame (increments score every 5 seconds)
+        score.update(deltaTime);
+        // Update score display label on UI
+        if (scoreLabel != null)
+        {
+            scoreLabel.setText(String.valueOf(score.getScore()));
+        }
+
         // Get the player GameObject using the PlayerTag
         GameObject character = this.getFirstWithTag(PlayerTag.class);
 
@@ -133,16 +151,35 @@ public class LevelScene extends GameScene {
             // Enemy will move towards this position in its onUpdate()
             enemy.setTargetPosition(character.getTransform().getPosition());
 
-            // ===== COLLISION DETECTION - GAME OVER =====
+            // ===== COLLISION DETECTION - DEDUCT SCORE =====
             // Check if player and enemy have collided (approximately at same position)
             Vector2D playerPos = character.getTransform().getPosition();
             Vector2D enemyPos = enemy.getTransform().getPosition();
             double distance = Vector2D.subtract(playerPos, enemyPos).magnitude();
 
-            // If distance is very small (collision threshold ~50 units), game is over
+            // If distance is very small (collision threshold ~50 units), deduct points
             if (distance < 50)
             {
-                gameOver();
+                // Deduct 2 points when player hits enemy
+                score.setScore(score.getScore() - 2);
+
+                // Check if score went below or equal to 0 - game is over
+                if (score.getScore() < 0)
+                {
+                    // Set score to 0 and trigger game over
+                    score.setScore(0);
+                    gameOver();
+                }
+                else
+                {
+                    // Score is still positive, remove current enemy and spawn a new one
+                    // Remove enemy from scene
+                    this.removeGameObject(enemy);
+
+                    // Spawn new enemy at a random edge position
+                    enemy = new Enemy(getRandomEdgePosition(), 100);
+                    this.addGameObject(enemy.addTag(EnemyTag.class));
+                }
             }
         }
 
@@ -346,9 +383,19 @@ public class LevelScene extends GameScene {
     @FXML
     private void retryLevel()
     {
+        // Final score when player loses is stored in 'score' object before creating new scene
         this.getWindow().setScene(new LevelScene(this.getWindow()));
     }
 
+    /**
+     * Get the current score value
+     * Used for displaying score to player
+     *
+     * @return Current score as integer
+     */
+    public int getCurrentScore()
+    {
+        return score != null ? score.getScore() : 0;
+    }
+
 }
-
-
