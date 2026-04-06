@@ -117,6 +117,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         this.window.getRawScene().setOnMousePressed(this::onMousePressed);
         this.window.getRawScene().setOnMouseReleased(this::onMouseReleased);
         this.window.getRawScene().setOnMouseMoved(this::onMouseMoved);
+        this.window.getRawScene().setOnMouseDragged(this::onMouseDragged);
 
         // initialize camera
         logger.trace("Initializing world camera");

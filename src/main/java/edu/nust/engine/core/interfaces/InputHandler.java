@@ -53,4 +53,6 @@ public interface InputHandler
      * @param mEv The {@link MouseEvent} representing the mouse move event.
      */
     default void onMouseMoved(MouseEvent mEv) { }
+
+    default void onMouseDragged(MouseEvent mEv) { }
 }
