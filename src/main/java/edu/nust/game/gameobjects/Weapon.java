@@ -8,12 +8,13 @@ import javafx.scene.paint.Color;
 
 public class Weapon extends GameObject
 {
-    private OrbitingBox orbitComponent;
     private final double orbitDistance = 80;
-    private boolean isFiring = false;
-    private boolean autoFire = true;
-    private double fireRate = 20;
-    private double fireCooldown = 0;
+    private final double fireRate = 20;
+
+    private OrbitingBox orbitComponent;
+    private boolean isFiring;
+    private boolean autoFire;
+    private double fireCooldown;
     private Ammo ammo;
 
     public Weapon()
@@ -21,6 +22,10 @@ public class Weapon extends GameObject
         orbitComponent = new OrbitingBox(orbitDistance);
         this.addComponent(orbitComponent);
         this.addComponent(new BoxRenderer(40, 40, Color.CYAN));
+
+        isFiring = false;
+        autoFire = true;
+        fireCooldown = 0;
         ammo = new AmmoImpl();
     }
 
@@ -33,7 +38,7 @@ public class Weapon extends GameObject
         }
     }
 
-    public Bullet fireWeapon(Vector2D targetPos,TimeSpan deltaTime)
+    public Bullet fireWeapon(Vector2D targetPos, TimeSpan deltaTime)
     {
         Vector2D weaponPos = this.getTransform().getPosition();
         ammo.update(deltaTime);
@@ -41,23 +46,29 @@ public class Weapon extends GameObject
         if (ammo.isReloading() || !ammo.hasAmmo())
             return null;
 
-        if(isFiring){
-            if(!autoFire){
-                setFiring(false);
-                ammo.decreaseAmmo();
-                return new Bullet(2000, weaponPos, 1000, 30, 30, targetPos);
-            }
-            fireCooldown -= deltaTime.asSeconds();
-            if(fireCooldown <= 0.01) {
-                fireCooldown = 1.0/fireRate;
-                ammo.decreaseAmmo();
-                return new Bullet(2000, weaponPos, 1000, 30, 30, targetPos);
-            }
+        if(!isFiring)
+            return null;
+
+        if(!autoFire)
+        {
+            setFiring(false);
+            ammo.decreaseAmmo();
+            return new Bullet(2000, weaponPos, 1000, 30, 30, targetPos);
         }
+
+        fireCooldown -= deltaTime.asSeconds();
+        if(fireCooldown <= 0.01)
+        {
+            fireCooldown = 1.0 / fireRate;
+            ammo.decreaseAmmo();
+            return new Bullet(2000, weaponPos, 1000, 30, 30, targetPos);
+        }
+
         return null;
     }
 
-    public void setFiring(boolean isFiring){
+    public void setFiring(boolean isFiring)
+    {
         this.isFiring = isFiring;
     }
 

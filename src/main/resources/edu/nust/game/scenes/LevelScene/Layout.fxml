@@ -6,10 +6,67 @@
 
 <StackPane styleClass="ui-root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
 
-   <!-- Score Display in top right corner -->
-    <HBox alignment="TOP_RIGHT" spacing="5" style="-fx-padding: 15;">
-        <Label text="Score: " style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;" />
-        <Label fx:id="scoreLabel" text="0" style="-fx-text-fill: #00FF00; -fx-font-size: 18; -fx-font-weight: bold;" />
+    <!-- Professional Game HUD in top right corner -->
+    <HBox alignment="TOP_RIGHT" style="-fx-padding: 20;">
+
+        <!-- HUD Panel Container -->
+        <VBox maxWidth="280"
+              prefWidth="280"
+              maxHeight="250"
+              prefHeight="250"
+              style="-fx-background-color: rgba(0, 0, 0, 0.7);
+                     -fx-border-color: #00FF00;
+                     -fx-border-width: 2;
+                     -fx-padding: 12;
+                     -fx-spacing: 10;
+                     -fx-background-radius: 5;
+                     -fx-border-radius: 5;">
+
+            <!-- Score Section -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="SCORE" style="-fx-text-fill: #00FF00; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
+                <Label fx:id="scoreLabel" text="0" style="-fx-text-fill: #FFFF00; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
+            </HBox>
+
+            <!-- Gun Type Section -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="GUN" style="-fx-text-fill: #00FF00; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
+                <Label fx:id="gunTypeLabel" text="ASSAULT" style="-fx-text-fill: #FF00FF; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
+            </HBox>
+
+            <!-- Divider Line -->
+            <Separator style="-fx-padding: 0; -fx-border-color: #00FF00;" />
+
+            <!-- Ammo Section -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="AMMO" style="-fx-text-fill: #00FF00; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
+                <Label fx:id="ammoLabel" text="20 / 20" style="-fx-text-fill: #FFFF00; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
+            </HBox>
+
+            <!-- Ammo Bar Visualization -->
+            <VBox fx:id="ammoBarContainer" style="-fx-padding: 5 0 5 0;" />
+
+            <!-- Reload Status -->
+            <Label fx:id="reloadLabel" text="RELOADING: 10.0s"
+                   style="-fx-text-fill: #FF6600; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';"
+                   visible="false"
+                   managed="false"
+                   wrapText="true" />
+
+            <!-- Divider Line -->
+            <Separator style="-fx-padding: 0; -fx-border-color: #00FF00;" />
+
+            <!-- Health Section -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="HEALTH" style="-fx-text-fill: #00FF00; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
+                <Label fx:id="healthLabel" text="100 / 100" style="-fx-text-fill: #FF3333; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
+            </HBox>
+
+            <!-- Health Bar Visualization -->
+            <VBox fx:id="healthBarContainer" style="-fx-padding: 5 0 5 0;" />
+
+        </VBox>
+
     </HBox>
 
     <!-- Pause Overlay -->

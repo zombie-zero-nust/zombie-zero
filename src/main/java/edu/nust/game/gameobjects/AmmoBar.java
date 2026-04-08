@@ -40,19 +40,10 @@ public class AmmoBar extends Bar
     public void updateAmmo(int currentAmmo)
     {
         int filledCells = (currentAmmo + BULLETS_PER_CELL - 1) / BULLETS_PER_CELL;
-        
         for (int i = 0; i < TOTAL_CELLS; i++)
         {
-            if (i < filledCells)
-            {
-                cells[i].setFill(getFilledColor());
-                cells[i].setStroke(getFilledStrokeColor());
-            }
-            else
-            {
-                cells[i].setFill(getEmptyColor());
-                cells[i].setStroke(getEmptyStrokeColor());
-            }
+            cells[i].setFill(i < filledCells ? getFilledColor() : getEmptyColor());
+            cells[i].setStroke(i < filledCells ? getFilledStrokeColor() : getEmptyStrokeColor());
         }
     }
 
@@ -67,8 +58,7 @@ public class AmmoBar extends Bar
         {
             if (ammoSystem.isReloading())
             {
-                double timeRemaining = ammoSystem.getReloadTimeRemaining();
-                reloadLabel.setText(String.format("RELOADING: %.1fs", timeRemaining));
+                reloadLabel.setText(String.format("RELOADING: %.1fs", ammoSystem.getReloadTimeRemaining()));
                 reloadLabel.setStyle("-fx-text-fill: #FF6600; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';");
                 reloadLabel.setVisible(true);
                 reloadLabel.setManaged(true);
@@ -79,11 +69,6 @@ public class AmmoBar extends Bar
                 reloadLabel.setManaged(false);
             }
         }
-    }
-
-    public void reset()
-    {
-        updateAmmo(MAX_AMMO);
     }
 }
 

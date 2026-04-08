@@ -41,38 +41,35 @@ public class EnemyManager
         score.setScore(score.getScore() - 2);
 
         if (score.getScore() < 0)
-        {
             score.setScore(0);
-        }
-        else
-        {
-            respawnEnemy();
-        }
+    }
+
+    public void respawnEnemyAfterCollision()
+    {
+        respawnEnemy();
     }
 
     private void checkBulletEnemyCollisions()
     {
         List<GameObject> allObjects = this.scene.getAllGameObjects();
-
         for (GameObject obj : new ArrayList<>(allObjects))
         {
-            if (obj instanceof Bullet)
+            if (!(obj instanceof Bullet))
+                continue;
+
+            Bullet bullet = (Bullet) obj;
+            if (bullet.isDestroyed())
+                continue;
+
+            if (enemy.checkBulletCollision(bullet.getTransform().getPosition()))
             {
-                Bullet bullet = (Bullet) obj;
+                enemy.addHit();
+                bullet.destroy();
 
-                if (bullet.isDestroyed())
-                    continue;
-
-                if (enemy.checkBulletCollision(bullet.getTransform().getPosition()))
+                if (enemy.isDefeated())
                 {
-                    enemy.addHit();
-                    bullet.destroy();
-
-                    if (enemy.isDefeated())
-                    {
-                        score.setScore(score.getScore() + 3);
-                        respawnEnemy();
-                    }
+                    score.setScore(score.getScore() + 3);
+                    respawnEnemy();
                 }
             }
         }

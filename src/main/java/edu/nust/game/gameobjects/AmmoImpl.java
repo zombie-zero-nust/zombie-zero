@@ -11,12 +11,14 @@ public class AmmoImpl implements Ammo
     private static final double RELOAD_TIME = 10.0;
 
     private int currentAmmo;
-    private boolean isReloading = false;
-    private double reloadTimer = 0.0;
+    private boolean isReloading;
+    private double reloadTimer;
 
     public AmmoImpl()
     {
         this.currentAmmo = MAX_AMMO;
+        this.isReloading = false;
+        this.reloadTimer = 0.0;
         logger.debug("Ammo initialized: {} bullets", MAX_AMMO);
     }
 
@@ -26,8 +28,6 @@ public class AmmoImpl implements Ammo
         if (currentAmmo > 0)
         {
             currentAmmo--;
-            logger.debug("Ammo: {}", currentAmmo);
-
             if (currentAmmo == 0)
                 startReload();
         }
@@ -37,10 +37,7 @@ public class AmmoImpl implements Ammo
     public void increaseAmmo(int amount)
     {
         if (amount > 0)
-        {
             currentAmmo = Math.min(currentAmmo + amount, MAX_AMMO);
-            logger.debug("Ammo increased: {}", currentAmmo);
-        }
     }
 
     @Override
