@@ -6,9 +6,9 @@ import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.function.Function;
 
 public final class GameAudioManager
 {
@@ -27,52 +27,22 @@ public final class GameAudioManager
     /// @param relativePath Relative path from {@code edu/nust/game/assets/audio/}
     ///
     /// @see SoundEffectReference
-    public @Nullable SoundEffectReference loadSoundEffect(String... relativePath)
+    @Nullable
+    public SoundEffectReference loadSoundEffect(String... relativePath)
     {
-        String path = Resources.resolvePath(getAudioPath(relativePath));
-
-        URL url;
-        try { url = Resources.getResourceOrThrow(path); }
-        catch (FileNotFoundException e)
-        {
-            LOGGER.error(false, "Attempted to load Sound Effect with invalid URL, Check if path exists {}", path);
-            LOGGER.logException(e);
-            return null;
-        }
-
-        String name = SoundEffectReference.getFileNameFromURL(url);
-
-        // if already loaded, return that
-        if (loadedSoundEffects.containsKey(name)) return loadedSoundEffects.get(name);
-
-        try
-        {
-            AudioClip audio = new AudioClip(url.toExternalForm());
-            // create reference
-            SoundEffectReference ref = new SoundEffectReference(url, audio);
-
-            // store the reference
-            loadedSoundEffects.put(name, ref);
-
-            LOGGER.info("Loaded Sound Effect \"{}\"", name);
-            return ref;
-        }
-        catch (Exception e)
-        {
-            LOGGER.error(false, "Failed to load Sound Effect at \"{}\"", path);
-            LOGGER.logException(e);
-            return null;
-        }
+        return (SoundEffectReference) tryLoadAudioReference(
+                SoundEffectReference.class,
+                url -> new SoundEffectReference(url, new AudioClip(url.toExternalForm())),
+                loadedSoundEffects,
+                relativePath
+        );
     }
 
     /// @param name The filename without extension
-    public @Nullable SoundEffectReference getSoundEffectByName(String name)
+    @Nullable
+    public SoundEffectReference getSoundEffectByName(String name)
     {
-        for (SoundEffectReference ref : loadedSoundEffects.values())
-            if (ref.getFileName().equals(name)) return ref;
-
-        LOGGER.error(false, "Cannot find Sound Effect with name \"{}\"", name);
-        return null;
+        return (SoundEffectReference) getReferenceByName(SoundEffectReference.class, name, loadedSoundEffects);
     }
 
     /* MUSIC TRACK */
@@ -85,52 +55,22 @@ public final class GameAudioManager
     /// @param relativePath Relative path from {@code edu/nust/game/assets/audio/}
     ///
     /// @see SoundEffectReference
-    public @Nullable MusicTrackReference loadMusicTrack(String... relativePath)
+    @Nullable
+    public MusicTrackReference loadMusicTrack(String... relativePath)
     {
-        String path = Resources.resolvePath(getAudioPath(relativePath));
-
-        URL url;
-        try { url = Resources.getResourceOrThrow(path); }
-        catch (FileNotFoundException e)
-        {
-            LOGGER.error(false, "Attempted to load Music Track with invalid URL, Check if path exists {}", path);
-            LOGGER.logException(e);
-            return null;
-        }
-
-        String name = MusicTrackReference.getFileNameFromURL(url);
-
-        // if already loaded, return that
-        if (loadedMusicTracks.containsKey(name)) return loadedMusicTracks.get(name);
-
-        try
-        {
-            Media media = new Media(url.toExternalForm());
-            // create reference
-            MusicTrackReference ref = new MusicTrackReference(url, media);
-
-            // store the reference
-            loadedMusicTracks.put(name, ref);
-
-            LOGGER.info("Loaded Music Track \"{}\"", name);
-            return ref;
-        }
-        catch (Exception e)
-        {
-            LOGGER.error(false, "Failed to load Music Track at \"{}\"", path);
-            LOGGER.logException(e);
-            return null;
-        }
+        return (MusicTrackReference) tryLoadAudioReference(
+                MusicTrackReference.class,
+                url -> new MusicTrackReference(url, new Media(url.toExternalForm())),
+                loadedMusicTracks,
+                relativePath
+        );
     }
 
     /// @param name The filename without extension
-    public @Nullable MusicTrackReference getMusicTrackByName(String name)
+    @Nullable
+    public MusicTrackReference getMusicTrackByName(String name)
     {
-        for (MusicTrackReference ref : loadedMusicTracks.values())
-            if (ref.getFileName().equals(name)) return ref;
-
-        LOGGER.error(false, "Cannot find Music Track with name \"{}\"", name);
-        return null;
+        return (MusicTrackReference) getReferenceByName(MusicTrackReference.class, name, loadedMusicTracks);
     }
 
     /* HELPERS */
@@ -143,5 +83,57 @@ public final class GameAudioManager
         fullPath[1] = "audio";
         System.arraycopy(path, 0, fullPath, 2, path.length);
         return fullPath;
+    }
+
+    @Nullable
+    private <T extends AudioReference> AudioReference tryLoadAudioReference(Class<T> caller, Function<URL, T> onSuccess, HashMap<String, T> cachedList, String... relativePath)
+    {
+        String path = Resources.resolvePath(getAudioPath(relativePath));
+
+        URL url;
+        try { url = Resources.getResourceOrThrow(path); }
+        catch (Exception e)
+        {
+            LOGGER.error(
+                    false,
+                    "Attempted to load [{}] with invalid URL, Check if path exists {}",
+                    caller.getSimpleName(),
+                    path
+            );
+            LOGGER.logException(e);
+            return null;
+        }
+
+        String name = MusicTrackReference.getFileNameFromURL(url);
+
+        // if already loaded, return that
+        if (cachedList.containsKey(name)) return cachedList.get(name);
+
+        try
+        {
+            T ref = onSuccess.apply(url);
+
+            // store the reference
+            cachedList.put(name, ref);
+
+            LOGGER.info("Loaded [{}] \"{}\"", caller.getSimpleName(), name);
+            return ref;
+        }
+        catch (Exception e)
+        {
+            LOGGER.error(false, "Failed to load [{}] at \"{}\"", caller.getSimpleName(), path);
+            LOGGER.logException(e);
+            return null;
+        }
+    }
+
+    @Nullable
+    private <T extends AudioReference> AudioReference getReferenceByName(Class<T> caller, String name, HashMap<String, T> cachedList)
+    {
+        for (AudioReference ref : cachedList.values())
+            if (ref.getFileName().equals(name)) return ref;
+
+        LOGGER.error(false, "Cannot find [{}] with name \"{}\"", caller.getSimpleName(), name);
+        return null;
     }
 }
