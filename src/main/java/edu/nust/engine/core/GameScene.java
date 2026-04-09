@@ -62,7 +62,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     private final GameCamera worldCamera;
     private final Canvas worldCanvas;
     protected final List<GameObject> gameObjects = new ArrayList<>();
-    // we need to hold seperate lists to add or remove during updates
+    // we need to hold separate lists to add or remove during updates
     protected final List<GameObject> gameObjectsToAdd = new ArrayList<>();
     protected final List<GameObject> gameObjectsToRemove = new ArrayList<>();
 
