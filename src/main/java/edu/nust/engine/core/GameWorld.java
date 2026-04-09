@@ -1,6 +1,8 @@
 package edu.nust.engine.core;
 
 import edu.nust.Main;
+import edu.nust.engine.core.audio.AudioReference;
+import edu.nust.engine.core.audio.GameAudioManager;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.TimeSpan;
@@ -129,25 +131,6 @@ public abstract class GameWorld
         logger.success("Game stopped");
     }
 
-    private void loadFont()
-    {
-        try
-        {
-            Font font = Font.loadFont(
-                    Resources.getResourceOrThrow("assets", "fonts", "PixelifySans.ttf").openStream(),
-                    12
-            );
-
-            if (font == null) throw new RuntimeException("Font returned null");
-
-            logger.success("Loaded font: {}", font.getName());
-        }
-        catch (Exception e)
-        {
-            logger.error(false, "Failed to load font: {}", e.getMessage());
-        }
-    }
-
     /* SCENE */
 
     /// Switches to the given [GameScene]
@@ -190,6 +173,41 @@ public abstract class GameWorld
     Scene getRawScene() { return scene; }
 
     Stage getRawStage() { return stage; }
+
+    /* AUDIO */
+
+    public GameAudioManager getAudioManager() { return audioManager; }
+
+    public AudioReference loadSound(String location) { return audioManager.loadSound(location); }
+
+    public AudioReference getSound(String location) { return audioManager.get(location); }
+
+    public void playSound(AudioReference ref) { audioManager.play(ref); }
+
+    public void playSoundRepeating(AudioReference ref) { audioManager.playRepeating(ref); }
+
+    public void stopSound(AudioReference ref) { audioManager.stop(ref); }
+
+    /* FONT */
+
+    private void loadFont()
+    {
+        try
+        {
+            Font font = Font.loadFont(
+                    Resources.getResourceOrThrow("assets", "fonts", "PixelifySans.ttf").openStream(),
+                    12
+            );
+
+            if (font == null) throw new RuntimeException("Font returned null");
+
+            logger.success("Loaded font: {}", font.getName());
+        }
+        catch (Exception e)
+        {
+            logger.error(false, "Failed to load font: {}", e.getMessage());
+        }
+    }
 
     /* UTILITIES */
 
