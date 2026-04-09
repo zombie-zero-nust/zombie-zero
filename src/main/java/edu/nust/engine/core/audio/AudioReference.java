@@ -2,7 +2,11 @@ package edu.nust.engine.core.audio;
 
 import java.net.URL;
 
-/// **`INTERNAL`**
+/// **`INTERNAL`** Base class for all audio references. Subclasses represent specific audio types and provide playback control.
+/// <br><br>
+/// Use {@link SoundEffectReference} for short one-shot sounds, and {@link MusicTrackReference} for background music.
+/// <br><br>
+/// Instances are created and managed by {@link GameAudioManager}; do not instantiate directly.
 abstract sealed class AudioReference permits SoundEffectReference, MusicTrackReference
 {
     private static long counter = 0;
@@ -10,6 +14,9 @@ abstract sealed class AudioReference permits SoundEffectReference, MusicTrackRef
     private final long id;
     private final URL location;
 
+    /// **`INTERNAL`** Creates a new {@link AudioReference} with the given location.
+    ///
+    /// @param location The URL of the audio file
     AudioReference(URL location)
     {
         this.id = counter++;
@@ -18,16 +25,26 @@ abstract sealed class AudioReference permits SoundEffectReference, MusicTrackRef
 
     /* GETTERS */
 
+    /// **`INTERNAL`** Returns the unique ID of this {@link AudioReference}.
     long getId() { return id; }
 
+    /// Gets the URL location of the audio file.
+    ///
+    /// @return The URL of the audio file
     public URL getLocation() { return location; }
 
-    /* UTILS */
+    /* UTILITIES */
 
-    /// Gets the file name of the {@link  AudioReference}, e.g. `foo.wav`
+    /// Gets the filename with extension of this audio file, e.g. {@code foo.wav}.
+    ///
+    /// @return The filename with extension
     public String getFileName() { return getFileNameFromURL(location); }
 
-    /// Gets the file name with extension from the URL, e.g. `foo.txt`
+    /// Extracts the filename with extension from the given URL, e.g. {@code foo.wav}.
+    ///
+    /// @param url The URL to extract the filename from
+    ///
+    /// @return The filename with extension
     public static String getFileNameFromURL(URL url)
     {
         String path = url.getPath();

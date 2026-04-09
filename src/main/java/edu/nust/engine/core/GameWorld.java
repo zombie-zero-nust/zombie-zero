@@ -1,9 +1,9 @@
 package edu.nust.engine.core;
 
 import edu.nust.Main;
-import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.core.audio.GameAudioManager;
 import edu.nust.engine.core.audio.MusicTrackReference;
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.TimeSpan;
@@ -53,6 +53,15 @@ public abstract class GameWorld
      */
     protected abstract void initStage();
 
+    /**
+     * Use this to preload audios using {@link GameAudioManager}.
+     * <br><br>
+     * Call {@link #loadSoundEffect(String...)} and {@link #loadMusicTrack(String...)} here to preload assets before the
+     * first scene initializes.
+     *
+     * @see #loadSoundEffect(String...)
+     * @see #loadMusicTrack(String...)
+     */
     protected abstract void loadAudios();
 
     public GameWorld(Stage stage)
@@ -179,21 +188,66 @@ public abstract class GameWorld
      */
     Scene getRawScene() { return scene; }
 
-    Stage getRawStage() { return stage; }
-
     /* AUDIO */
 
+    /**
+     * @return {@link GameAudioManager}
+     */
     public GameAudioManager getAudioManager() { return audioManager; }
 
+    /**
+     * Retrieves a loaded {@link SoundEffectReference} by filename (with extension).
+     * <br><br>
+     * Shorthand for {@link GameAudioManager#getSoundEffectByName(String)}.
+     *
+     * @param name The filename with extension, e.g. {@code "click.wav"}
+     *
+     * @return The {@link SoundEffectReference}, or {@code null} if not found
+     */
     @Nullable
     public SoundEffectReference getSoundEffectByName(String name) { return audioManager.getSoundEffectByName(name); }
 
+    /**
+     * Loads a {@link SoundEffectReference} from the given path relative to {@code edu/nust/game/assets/audio/}. If the
+     * file has already been loaded, the cached reference is returned.
+     * <br><br>
+     * Shorthand for {@code  world.getAudioManager().loadSoundEffect(relPath)}.
+     * <br><br>
+     * <b>{@code Use .wav instead of .mp3}</b>
+     *
+     * @param relPath Path relative to {@code edu/nust/game/assets/audio/} split, e.g. {@code ("sfx", "click.wav")} for
+     *                {@code edu/nust/game/assets/audio/sfx/click.wav}
+     *
+     * @return The loaded {@link SoundEffectReference}, or {@code null} if the file could not be found or loaded
+     */
     @Nullable
     public SoundEffectReference loadSoundEffect(String... relPath) { return audioManager.loadSoundEffect(relPath); }
 
+    /**
+     * Retrieves a loaded {@link MusicTrackReference} by filename (with extension).
+     * <br><br>
+     * Shorthand for {@link GameAudioManager#getMusicTrackByName(String)}.
+     *
+     * @param name The filename with extension, e.g. {@code "bg_music.wav"}
+     *
+     * @return The {@link MusicTrackReference}, or {@code null} if not found
+     */
     @Nullable
     public MusicTrackReference getMusicTrackByName(String name) { return audioManager.getMusicTrackByName(name); }
 
+    /**
+     * Loads a {@link MusicTrackReference} from the given path relative to {@code edu/nust/game/assets/audio/}. If the
+     * file has already been loaded, the cached reference is returned.
+     * <br><br>
+     * Shorthand for {@code  world.getAudioManager().loadMusicTrack(relPath)}.
+     * <br><br>
+     * <b>{@code Use .wav instead of .mp3}</b>
+     *
+     * @param relPath Path relative to {@code edu/nust/game/assets/audio/} split, e.g. {@code ("sfx", "bg_music.wav")}
+     *                for {@code edu/nust/game/assets/audio/sfx/click.wav}
+     *
+     * @return The loaded {@link MusicTrackReference}, or {@code null} if the file could not be found or loaded
+     */
     @Nullable
     public MusicTrackReference loadMusicTrack(String... relPath) { return audioManager.loadMusicTrack(relPath); }
 
