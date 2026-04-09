@@ -1,4 +1,24 @@
-.helpTextContainer{
+/* Override common.css root padding so the background reaches window edges */
+.root {
+    -fx-padding: 0;
+}
+
+/* Background Image - Fills entire screen */
+.ui-root {
+    -fx-background-image: url('../../assets/images/background%20game%20start%20scene.jpeg');
+    -fx-background-size: 100% 100%;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-pref-width: Infinity;
+    -fx-pref-height: Infinity;
+}
+
+/* UI Container Styling */
+.helpTextContainer {
     -fx-padding: 16px;
     -fx-spacing: 12px;
 }
@@ -7,3 +27,34 @@
     -fx-font-size: 16px;
     -fx-fill: #ffffff;
 }
+
+/* Title Label with semi-transparent background for contrast */
+.title-label {
+    -fx-font-size: 48px;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-padding: 20px;
+    -fx-background-color: rgba(0, 0, 0, 0.6);
+    -fx-background-radius: 10px;
+}
+
+/* Primary Button with semi-transparent background */
+.primary-button {
+    -fx-font-size: 18px;
+    -fx-padding: 12px 30px;
+    -fx-background-color: rgba(0, 102, 204, 0.8);
+    -fx-text-fill: #ffffff;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: rgba(0, 102, 204, 1.0);
+    -fx-font-size: 19px;
+}
+
+.primary-button:pressed {
+    -fx-background-color: rgba(0, 51, 153, 0.9);
+}
+

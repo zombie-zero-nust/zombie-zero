@@ -88,6 +88,10 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         // add CSS
         String sceneName = this.getClass().getSimpleName();
         URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
+        // Keep common/global stylesheets, but remove previously attached scene-local style.css files.
+        this.window.getRawScene().getStylesheets().removeIf(
+                stylesheet -> stylesheet.contains("/scenes/") && stylesheet.endsWith("/style.css")
+        );
         if (cssUrl == null)
         {
             logger.warn("Missing CSS for: {}", sceneName);
@@ -95,7 +99,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         else
         {
             logger.trace("Adding CSS stylesheet");
-            // add CSS to raw scene to allow overriding
+            // Add this scene's stylesheet after removing the previous scene stylesheet.
             this.window.getRawScene().getStylesheets().add(cssUrl.toExternalForm());
         }
 
