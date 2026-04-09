@@ -116,9 +116,7 @@ public class MainGameScene extends GameScene
         pauseOverlay.setVisible(newState);
         pauseOverlay.setManaged(newState);
         this.setActive(!newState);
-        Audios.forEach((audio) -> {
-            this.getWorld().stopAudio(this.getWorld().getAudioWithName(audio));
-        });
+        Audios.forEach((audio) -> this.getWorld().getAudioManager().getWithName(audio).getClip().stop());
     }
 
     private void toggleHelpText()
@@ -126,7 +124,7 @@ public class MainGameScene extends GameScene
         boolean isVisible = helpTextContainer.isVisible();
         helpTextContainer.setVisible(!isVisible);
         helpTextContainer.setManaged(!isVisible);
-        this.getWorld().playAudio(Audios.testAudioRef());
+        Audios.testAudioRef().getClip().play();
     }
 
     /* FXML Button Callbacks */

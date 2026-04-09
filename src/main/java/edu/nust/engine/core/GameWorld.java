@@ -15,6 +15,7 @@ import javafx.scene.SubScene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 import java.util.function.Supplier;
@@ -183,15 +184,9 @@ public abstract class GameWorld
 
     public GameAudioManager getAudioManager() { return audioManager; }
 
-    public AudioReference loadAudioClip(String... path) { return audioManager.loadClip(path); }
+    public @Nullable AudioReference getAudioWithName(String name) { return audioManager.getWithName(name); }
 
-    public AudioReference getAudioWithName(String path) { return audioManager.getWithName(path); }
-
-    public void playAudio(AudioReference ref) { audioManager.play(ref); }
-
-    public void playAudioLooping(AudioReference ref) { audioManager.playLooping(ref); }
-
-    public void stopAudio(AudioReference ref) { audioManager.stop(ref); }
+    public @Nullable AudioReference loadAudioClip(String... relativePath) { return audioManager.loadClip(relativePath); }
 
     /* FONT */
 

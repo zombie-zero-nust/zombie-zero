@@ -66,27 +66,6 @@ public final class GameAudioManager
         return null;
     }
 
-    /* PLAY & STOP */
-
-    public void play(AudioReference ref)
-    {
-        if (ref == null) return;
-        ref.getClip().play();
-    }
-
-    public void playLooping(AudioReference ref)
-    {
-        if (ref == null) return;
-        ref.getClip().setCycleCount(AudioClip.INDEFINITE);
-        ref.getClip().play();
-    }
-
-    public void stop(AudioReference ref)
-    {
-        if (ref == null) return;
-        stopAndDispose(ref);
-    }
-
     /* HELPERS */
 
     /// Gets the path relative to {@code `edu/nust/game/assets/audio/`}
@@ -97,11 +76,5 @@ public final class GameAudioManager
         fullPath[1] = "audio";
         System.arraycopy(path, 0, fullPath, 2, path.length);
         return fullPath;
-    }
-
-    private void stopAndDispose(AudioReference ref)
-    {
-        if (ref == null) return;
-        ref.getClip().stop();
     }
 }
