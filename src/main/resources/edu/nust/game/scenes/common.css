@@ -1,3 +1,12 @@
+@font-face {
+    font-family: "Pixelify Sans";
+    src: url("/edu/nust/game/assets/fonts/PixelifySans.ttf");
+}
+
+* {
+    -fx-font-family: "Pixelify Sans";
+}
+
 .root {
     -fx-padding: 40;
     -fx-background-color: #1e1e1e;

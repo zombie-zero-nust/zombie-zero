@@ -11,6 +11,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -22,9 +23,9 @@ import java.util.function.Supplier;
  * The GameWorld is responsible for initializing the main window ({@link Stage}), switching between {@link GameScene}s,
  * and running the main game loop.
  * <br><br>
- * To use, create a subclass of GameWorld and implement the {@link GameWorld#initStage} method to set up window properties. Then, in the
- * program entry point (e.g., {@link Main#start(Stage stage)}), create an instance of your GameWorld subclass and call
- * {@link GameWorld#start }to begin the game loop.
+ * To use, create a subclass of GameWorld and implement the {@link GameWorld#initStage} method to set up window
+ * properties. Then, in the program entry point (e.g., {@link Main#start(Stage stage)}), create an instance of your
+ * GameWorld subclass and call {@link GameWorld#start }to begin the game loop.
  */
 public abstract class GameWorld
 {
@@ -38,6 +39,8 @@ public abstract class GameWorld
     private GameScene currentGameScene;
 
     private final AnimationTimer gameLoop;
+
+    private final GameAudioManager audioManager;
 
     /**
      * Use this to set up window ({@link GameWorld#stage}) properties
@@ -101,6 +104,10 @@ public abstract class GameWorld
             }
         };
 
+        this.audioManager = new GameAudioManager();
+
+        this.loadFont();
+
         logger.success("Game World initialized successfully");
     }
 
@@ -120,6 +127,25 @@ public abstract class GameWorld
         gameLoop.stop();
         stage.close();
         logger.success("Game stopped");
+    }
+
+    private void loadFont()
+    {
+        try
+        {
+            Font font = Font.loadFont(
+                    Resources.getResourceOrThrow("assets", "fonts", "PixelifySans.ttf").openStream(),
+                    12
+            );
+
+            if (font == null) throw new RuntimeException("Font returned null");
+
+            logger.success("Loaded font: {}", font.getName());
+        }
+        catch (Exception e)
+        {
+            logger.error(false, "Failed to load font: {}", e.getMessage());
+        }
     }
 
     /* SCENE */
@@ -162,6 +188,8 @@ public abstract class GameWorld
      * Used for adding stylesheets, events, etc.
      */
     Scene getRawScene() { return scene; }
+
+    Stage getRawStage() { return stage; }
 
     /* UTILITIES */
 
