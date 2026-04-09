@@ -1,9 +1,9 @@
 package edu.nust.engine.core;
 
 import edu.nust.Main;
-import edu.nust.engine.core.audio.AudioClipReference;
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.core.audio.GameAudioManager;
-import edu.nust.engine.core.audio.LongAudioReference;
+import edu.nust.engine.core.audio.MusicTrackReference;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.TimeSpan;
@@ -185,19 +185,17 @@ public abstract class GameWorld
 
     public GameAudioManager getAudioManager() { return audioManager; }
 
-    public @Nullable AudioClipReference getAudioWithName(String name) { return audioManager.getClipWithName(name); }
+    @Nullable
+    public SoundEffectReference getSoundEffectByName(String name) { return audioManager.getSoundEffectByName(name); }
 
-    public @Nullable AudioClipReference loadAudioClip(String... relativePath)
-    {
-        return audioManager.loadAudioClip(relativePath);
-    }
+    @Nullable
+    public SoundEffectReference loadSoundEffect(String... relPath) { return audioManager.loadSoundEffect(relPath); }
 
-    public @Nullable LongAudioReference getLongWithName(String name) { return audioManager.getLongAudioWithName(name); }
+    @Nullable
+    public MusicTrackReference getMusicTrackByName(String name) { return audioManager.getMusicTrackByName(name); }
 
-    public @Nullable LongAudioReference loadLoadAudio(String... relativePath)
-    {
-        return audioManager.loadLongAudio(relativePath);
-    }
+    @Nullable
+    public MusicTrackReference loadMusicTrack(String... relPath) { return audioManager.loadMusicTrack(relPath); }
 
     /* FONT */
 

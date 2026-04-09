@@ -8,7 +8,7 @@ import java.net.URL;
 /// Does not play immediately, use for long sounds, such as background music etc.
 /// <br>
 /// **`Use .wav instead of .mp3`**
-public final class LongAudioReference
+public final class MusicTrackReference
 {
     private static long counter = 0;
 
@@ -18,7 +18,7 @@ public final class LongAudioReference
     private final MediaPlayer player;
 
     // can only be called in this package
-    LongAudioReference(URL location, Media media)
+    MusicTrackReference(URL location, Media media)
     {
         this.id = counter++;
         this.location = location;
@@ -80,7 +80,7 @@ public final class LongAudioReference
     {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        LongAudioReference that = (LongAudioReference) obj;
+        MusicTrackReference that = (MusicTrackReference) obj;
         return id == that.id;
     }
 

@@ -14,10 +14,10 @@ public final class GameAudioManager
 {
     private static final GameLogger LOGGER = GameLogger.getLogger(GameAudioManager.class);
 
-    private final HashMap<String, AudioClipReference> loadedClipReferences = new HashMap<>();
-    private final HashMap<String, LongAudioReference> loadedLongReferences = new HashMap<>();
+    private final HashMap<String, SoundEffectReference> loadedSoundEffects = new HashMap<>();
+    private final HashMap<String, MusicTrackReference> loadedMusicTracks = new HashMap<>();
 
-    /* Audio Clip */
+    /* SOUND EFFECT */
 
     /// Use for small clips such as Button Clicks etc.
     /// <br>
@@ -26,8 +26,8 @@ public final class GameAudioManager
     ///
     /// @param relativePath Relative path from {@code edu/nust/game/assets/audio/}
     ///
-    /// @see AudioClipReference
-    public @Nullable AudioClipReference loadAudioClip(String... relativePath)
+    /// @see SoundEffectReference
+    public @Nullable SoundEffectReference loadSoundEffect(String... relativePath)
     {
         String path = Resources.resolvePath(getAudioPath(relativePath));
 
@@ -35,47 +35,47 @@ public final class GameAudioManager
         try { url = Resources.getResourceOrThrow(path); }
         catch (FileNotFoundException e)
         {
-            LOGGER.error(false, "Attempted to load Audio Clip with invalid URL, Check if path exists {}", path);
+            LOGGER.error(false, "Attempted to load Sound Effect with invalid URL, Check if path exists {}", path);
             LOGGER.logException(e);
             return null;
         }
 
-        String name = AudioClipReference.getFileNameFromURL(url);
+        String name = SoundEffectReference.getFileNameFromURL(url);
 
         // if already loaded, return that
-        if (loadedClipReferences.containsKey(name)) return loadedClipReferences.get(name);
+        if (loadedSoundEffects.containsKey(name)) return loadedSoundEffects.get(name);
 
         try
         {
             AudioClip audio = new AudioClip(url.toExternalForm());
             // create reference
-            AudioClipReference ref = new AudioClipReference(url, audio);
+            SoundEffectReference ref = new SoundEffectReference(url, audio);
 
             // store the reference
-            loadedClipReferences.put(name, ref);
+            loadedSoundEffects.put(name, ref);
 
-            LOGGER.info("Loaded Audio Clip \"{}\"", name);
+            LOGGER.info("Loaded Sound Effect \"{}\"", name);
             return ref;
         }
         catch (Exception e)
         {
-            LOGGER.error(false, "Failed to load Audio Clip at \"{}\"", path);
+            LOGGER.error(false, "Failed to load Sound Effect at \"{}\"", path);
             LOGGER.logException(e);
             return null;
         }
     }
 
     /// @param name The filename without extension
-    public @Nullable AudioClipReference getClipWithName(String name)
+    public @Nullable SoundEffectReference getSoundEffectByName(String name)
     {
-        for (AudioClipReference ref : loadedClipReferences.values())
+        for (SoundEffectReference ref : loadedSoundEffects.values())
             if (ref.getFileName().equals(name)) return ref;
 
-        LOGGER.error(false, "Cannot find Audio Clip with name \"{}\"", name);
+        LOGGER.error(false, "Cannot find Sound Effect with name \"{}\"", name);
         return null;
     }
 
-    /* LONG AUDIO */
+    /* MUSIC TRACK */
 
     /// Use for small clips such as Button Clicks etc.
     /// <br>
@@ -84,8 +84,8 @@ public final class GameAudioManager
     ///
     /// @param relativePath Relative path from {@code edu/nust/game/assets/audio/}
     ///
-    /// @see AudioClipReference
-    public @Nullable LongAudioReference loadLongAudio(String... relativePath)
+    /// @see SoundEffectReference
+    public @Nullable MusicTrackReference loadMusicTrack(String... relativePath)
     {
         String path = Resources.resolvePath(getAudioPath(relativePath));
 
@@ -93,43 +93,43 @@ public final class GameAudioManager
         try { url = Resources.getResourceOrThrow(path); }
         catch (FileNotFoundException e)
         {
-            LOGGER.error(false, "Attempted to load Long Audio with invalid URL, Check if path exists {}", path);
+            LOGGER.error(false, "Attempted to load Music Track with invalid URL, Check if path exists {}", path);
             LOGGER.logException(e);
             return null;
         }
 
-        String name = LongAudioReference.getFileNameFromURL(url);
+        String name = MusicTrackReference.getFileNameFromURL(url);
 
         // if already loaded, return that
-        if (loadedLongReferences.containsKey(name)) return loadedLongReferences.get(name);
+        if (loadedMusicTracks.containsKey(name)) return loadedMusicTracks.get(name);
 
         try
         {
             Media media = new Media(url.toExternalForm());
             // create reference
-            LongAudioReference ref = new LongAudioReference(url, media);
+            MusicTrackReference ref = new MusicTrackReference(url, media);
 
             // store the reference
-            loadedLongReferences.put(name, ref);
+            loadedMusicTracks.put(name, ref);
 
-            LOGGER.info("Loaded Long Audio \"{}\"", name);
+            LOGGER.info("Loaded Music Track \"{}\"", name);
             return ref;
         }
         catch (Exception e)
         {
-            LOGGER.error(false, "Failed to load Long Audio at \"{}\"", path);
+            LOGGER.error(false, "Failed to load Music Track at \"{}\"", path);
             LOGGER.logException(e);
             return null;
         }
     }
 
     /// @param name The filename without extension
-    public @Nullable LongAudioReference getLongAudioWithName(String name)
+    public @Nullable MusicTrackReference getMusicTrackByName(String name)
     {
-        for (LongAudioReference ref : loadedLongReferences.values())
+        for (MusicTrackReference ref : loadedMusicTracks.values())
             if (ref.getFileName().equals(name)) return ref;
 
-        LOGGER.error(false, "Cannot find Long Audio with name \"{}\"", name);
+        LOGGER.error(false, "Cannot find Music Track with name \"{}\"", name);
         return null;
     }
 

@@ -20,7 +20,7 @@ public class MainWorld extends GameWorld
     @Override
     protected void loadAudios()
     {
-        Audios.forEachClip(this::loadAudioClip);
-        Audios.forEachLong(this::loadLoadAudio);
+        Audios.forEachSoundEffect(this::loadSoundEffect);
+        Audios.forEachMusicTrack(this::loadMusicTrack);
     }
 }

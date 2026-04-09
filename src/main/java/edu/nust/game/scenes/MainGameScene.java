@@ -3,7 +3,7 @@ package edu.nust.game.scenes;
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
-import edu.nust.engine.core.audio.AudioClipReference;
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
@@ -119,8 +119,8 @@ public class MainGameScene extends GameScene
         pauseOverlay.setVisible(newState);
         pauseOverlay.setManaged(newState);
         this.setActive(!newState);
-        Audios.forEachClip((audio) -> {
-            AudioClipReference ref = this.getWorld().getAudioManager().getClipWithName(audio);
+        Audios.forEachSoundEffect((audio) -> {
+            SoundEffectReference ref = this.getWorld().getAudioManager().getSoundEffectByName(audio);
             if (ref != null) ref.stopAll();
         });
         Audios.testLongAudioRef().togglePause();

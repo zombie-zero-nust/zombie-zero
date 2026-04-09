@@ -7,7 +7,7 @@ import java.net.URL;
 /// Plays immediately, use for small clips such as Button Clicks etc.
 /// <br>
 /// **`Use .wav instead of .mp3`**
-public final class AudioClipReference
+public final class SoundEffectReference
 {
     private static long counter = 0;
 
@@ -16,7 +16,7 @@ public final class AudioClipReference
     private final AudioClip clip;
 
     // can only be called in this package
-    AudioClipReference(URL location, AudioClip clip)
+    SoundEffectReference(URL location, AudioClip clip)
     {
         this.id = counter++;
         this.location = location;
@@ -63,7 +63,7 @@ public final class AudioClipReference
     {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        AudioClipReference that = (AudioClipReference) obj;
+        SoundEffectReference that = (SoundEffectReference) obj;
         return id == that.id;
     }
 
