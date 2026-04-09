@@ -51,6 +51,8 @@ public abstract class GameWorld
      */
     protected abstract void initStage();
 
+    protected abstract void loadAudios();
+
     public GameWorld(Stage stage)
     {
         logger.trace("Constructing GameWorld: {}", this.getClass().getSimpleName());
@@ -109,6 +111,9 @@ public abstract class GameWorld
         this.audioManager = new GameAudioManager();
 
         this.loadFont();
+
+        logger.info("Loading audio assets");
+        this.loadAudios();
 
         logger.success("Game World initialized successfully");
     }
@@ -178,13 +183,13 @@ public abstract class GameWorld
 
     public GameAudioManager getAudioManager() { return audioManager; }
 
-    public AudioReference loadSound(String location) { return audioManager.loadSound(location); }
+    public AudioReference loadSound(String... path) { return audioManager.loadSound(path); }
 
-    public AudioReference getSound(String location) { return audioManager.get(location); }
+    public AudioReference getSoundWithName(String path) { return audioManager.getWithName(path); }
 
     public void playSound(AudioReference ref) { audioManager.play(ref); }
 
-    public void playSoundRepeating(AudioReference ref) { audioManager.playRepeating(ref); }
+    public void playSoundRepeating(AudioReference ref) { audioManager.playLooping(ref); }
 
     public void stopSound(AudioReference ref) { audioManager.stop(ref); }
 

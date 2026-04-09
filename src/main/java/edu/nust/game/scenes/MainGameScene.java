@@ -7,6 +7,7 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.audio.Audios;
 import edu.nust.game.gameobjects.MovingObject;
 import edu.nust.game.gameobjects.MovingTag;
 import javafx.fxml.FXML;
@@ -34,6 +35,8 @@ public class MainGameScene extends GameScene
     @Override
     public void onInit()
     {
+        this.getWindow().playSoundRepeating(Audios.bookClose());
+
         this.addGameObject(new MovingObject(
                         new Vector2D(100, 100),
                         new Vector2D(200, 100),

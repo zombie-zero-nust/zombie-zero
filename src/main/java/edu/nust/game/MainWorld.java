@@ -18,4 +18,10 @@ public class MainWorld extends GameWorld
         stage.setHeight(768);
         stage.centerOnScreen();
     }
+
+    @Override
+    protected void loadAudios()
+    {
+        this.loadSound("abc.mp3");
+    }
 }
