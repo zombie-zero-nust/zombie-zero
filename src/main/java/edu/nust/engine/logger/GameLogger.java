@@ -115,7 +115,18 @@ public class GameLogger
     /// @see GameLogger#error(boolean, String, Object...)
     public static void logException(GameLogger logger, Exception e)
     {
-        logger.error(false, "Exception: {}", e.getMessage());
-        logger.error(false, "Stack trace: {}", e);
+        logger.error(false, "Exception ({}): {}", e.getClass().getSimpleName(), e.getMessage());
+        // log each element
+        for (StackTraceElement element : e.getStackTrace())
+        {
+            logger.error(
+                    false,
+                    "    at {}.{}({}:{})",
+                    element.getClassName(),
+                    element.getMethodName(),
+                    element.getFileName(),
+                    element.getLineNumber()
+            );
+        }
     }
 }
