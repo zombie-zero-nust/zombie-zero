@@ -1,10 +1,13 @@
 package edu.nust.game.gameobjects;
 
 import edu.nust.engine.core.GameObject;
-import edu.nust.engine.core.components.renderers.BoxRenderer;
+import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
-import javafx.scene.paint.Color;
+import edu.nust.engine.resources.Resources;
+import javafx.scene.image.Image;
+
+import java.io.FileNotFoundException;
 
 public class Weapon extends GameObject
 {
@@ -21,7 +24,21 @@ public class Weapon extends GameObject
     {
         orbitComponent = new OrbitingBox(orbitDistance);
         this.addComponent(orbitComponent);
-        this.addComponent(new BoxRenderer(40, 40, Color.CYAN));
+
+        // Load weapon sprite instead of cyan box
+        try
+        {
+            Image weaponSprite = Resources.loadImageOrThrow(
+                "assets", "raw", "PostApocalypse", "Objects", "Pickable", "Gun.png"
+            );
+            this.addComponent(new SpriteRenderer(40, 40, weaponSprite));
+        }
+        catch (FileNotFoundException e)
+        {
+            // Fallback to cyan box if sprite not found
+            System.out.println("[ERROR] Failed to load weapon sprite: " + e.getMessage());
+            this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(40, 40, javafx.scene.paint.Color.CYAN));
+        }
 
         isFiring = false;
         autoFire = true;

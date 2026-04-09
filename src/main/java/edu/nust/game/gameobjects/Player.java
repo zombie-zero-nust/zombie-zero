@@ -4,6 +4,7 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.assets.CharacterAsset;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -29,14 +30,36 @@ public class Player extends Character
 
         try
         {
-            images.add(Resources.loadImageOrThrow("assets", "images", "test.png"));
+            // Load character sprite from PostApocalypse assets
+            CharacterAsset characterAsset = CharacterAsset.MAIN;
+            Image idleSprite = Resources.loadImageOrThrow(
+                "assets",
+                characterAsset.getPath() + "/Idle",
+                "Character_down_idle-Sheet6.png"
+            );
+
+            // Create sprite renderer with 6 frames (idle animation)
+            SpriteRenderer spriteRenderer = new SpriteRenderer(size, size, idleSprite, 6, 1);
+            spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(100))
+                         .startAnimation();
+
+            this.addComponent(spriteRenderer);
+            images.add(idleSprite);
         }
-        catch (FileNotFoundException ignored)
+        catch (FileNotFoundException e)
         {
+            // Fallback to test.png if character sprite not found
+            try
+            {
+                images.add(Resources.loadImageOrThrow("assets", "images", "test.png"));
+                this.addComponent(new SpriteRenderer(size, size, images.getFirst()));
+            }
+            catch (FileNotFoundException ignored)
+            {
+            }
         }
 
         this.getTransform().setPosition(getSpawnPos());
-        this.addComponent(new SpriteRenderer(size, size, images.getFirst()));
     }
 
     public void keyPress(KeyCode key)
