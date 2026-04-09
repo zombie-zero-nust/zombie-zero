@@ -35,8 +35,6 @@ public class MainGameScene extends GameScene
     @Override
     public void onInit()
     {
-        this.getWindow().playSoundRepeating(Audios.bookClose());
-
         this.addGameObject(new MovingObject(
                         new Vector2D(100, 100),
                         new Vector2D(200, 100),
@@ -118,6 +116,9 @@ public class MainGameScene extends GameScene
         pauseOverlay.setVisible(newState);
         pauseOverlay.setManaged(newState);
         this.setActive(!newState);
+        Audios.forEach((audio) -> {
+            this.getWindow().stopAudio(this.getWindow().getAudioWithName(audio));
+        });
     }
 
     private void toggleHelpText()
@@ -125,6 +126,7 @@ public class MainGameScene extends GameScene
         boolean isVisible = helpTextContainer.isVisible();
         helpTextContainer.setVisible(!isVisible);
         helpTextContainer.setManaged(!isVisible);
+        this.getWindow().playAudio(Audios.testAudioRef());
     }
 
     /* FXML Button Callbacks */

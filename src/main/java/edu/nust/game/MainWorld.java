@@ -1,6 +1,7 @@
 package edu.nust.game;
 
 import edu.nust.engine.core.GameWorld;
+import edu.nust.game.audio.Audios;
 import javafx.stage.Stage;
 
 public class MainWorld extends GameWorld
@@ -22,6 +23,6 @@ public class MainWorld extends GameWorld
     @Override
     protected void loadAudios()
     {
-        this.loadSound("abc.mp3");
+        Audios.forEach(this::loadAudioClip);
     }
 }

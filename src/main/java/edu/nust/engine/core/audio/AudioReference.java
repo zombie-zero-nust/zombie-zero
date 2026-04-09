@@ -1,6 +1,6 @@
 package edu.nust.engine.core.audio;
 
-import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.AudioClip;
 
 import java.net.URL;
 
@@ -10,36 +10,34 @@ public final class AudioReference
 
     private final long id;
     private final URL location;
-    private final MediaPlayer player;
+    private final AudioClip clip;
 
     // can only be called in this package
-    AudioReference(URL location, MediaPlayer player)
+    AudioReference(URL location, AudioClip clip)
     {
         this.id = counter++;
         this.location = location;
-        this.player = player;
+        this.clip = clip;
     }
 
-    /* GETTERS */
+    /* GETTERS & SETTERS */
 
     // can only be called in this package
     long getId() { return id; }
 
-    MediaPlayer getPlayer() { return player; }
+    public AudioClip getClip() { return clip; }
 
     public URL getLocation() { return location; }
 
     /* UTILITIES */
 
-    /// Gets the filename without extension
+    /// Gets the filename with extension
     public String getName() { return getFileNameFromURL(location); }
 
     public static String getFileNameFromURL(URL url)
     {
         String path = url.getPath();
-        String filename = path.substring(path.lastIndexOf('/') + 1);
-        int dotIndex = filename.lastIndexOf('.');
-        return (dotIndex == -1) ? filename : filename.substring(0, dotIndex);
+        return path.substring(path.lastIndexOf('/') + 1);
     }
 
     /* OVERRIDES */
@@ -51,6 +49,11 @@ public final class AudioReference
         if (obj == null || getClass() != obj.getClass()) return false;
         AudioReference that = (AudioReference) obj;
         return id == that.id;
+    }
+
+    public boolean equals(AudioReference other)
+    {
+        return this.id == other.id;
     }
 
     @Override

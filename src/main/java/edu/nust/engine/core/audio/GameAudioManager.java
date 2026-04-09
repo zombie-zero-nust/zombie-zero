@@ -2,8 +2,7 @@ package edu.nust.engine.core.audio;
 
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.resources.Resources;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.AudioClip;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.FileNotFoundException;
@@ -19,7 +18,7 @@ public final class GameAudioManager
     /* LOADER */
 
     /// Relative path from {@code edu/nust/game/assets/audio/}
-    public @Nullable AudioReference loadSound(String... relativePath)
+    public @Nullable AudioReference loadClip(String... relativePath)
     {
         String path = Resources.resolvePath(getAudioPath(relativePath));
 
@@ -39,29 +38,12 @@ public final class GameAudioManager
 
         try
         {
-            Media media = new Media(url.toExternalForm());
-            MediaPlayer player = new MediaPlayer(media);
+            AudioClip audio = new AudioClip(url.toExternalForm());
             // create reference
-            AudioReference ref = new AudioReference(url, player);
+            AudioReference ref = new AudioReference(url, audio);
 
             // store the reference
             loadedSounds.put(name, ref);
-
-            // preload: wait for ready state before priming
-            player.setOnReady(() -> {
-                player.seek(player.getStartTime());
-                // brief silent prime to initialize native pipeline
-                player.setMute(true);
-                player.play();
-            });
-
-            // stop and unmute after the prime completes
-            player.setOnPlaying(() -> {
-                player.stop();
-                player.seek(player.getStartTime());
-                player.setMute(false);
-                player.setOnPlaying(null); // remove so normal playback isn't affected
-            });
 
             LOGGER.info("Loaded sound \"{}\"", name);
             return ref;
@@ -88,37 +70,24 @@ public final class GameAudioManager
 
     public void play(AudioReference ref)
     {
-        if (cannotPlay(ref)) return;
-
-        MediaPlayer player = ref.getPlayer();
-        player.stop();
-        player.setCycleCount(1);
-        player.seek(player.getStartTime());
-        player.play();
+        if (ref == null) return;
+        ref.getClip().play();
     }
 
     public void playLooping(AudioReference ref)
     {
-        if (cannotPlay(ref)) return;
-
-        MediaPlayer player = ref.getPlayer();
-        player.stop();
-        player.setCycleCount(MediaPlayer.INDEFINITE);
-        player.seek(player.getStartTime());
-        player.play();
+        if (ref == null) return;
+        ref.getClip().setCycleCount(AudioClip.INDEFINITE);
+        ref.getClip().play();
     }
 
     public void stop(AudioReference ref)
     {
-        if (cannotPlay(ref)) return;
-        MediaPlayer player = ref.getPlayer();
-        player.stop();
-        player.seek(player.getStartTime());
+        if (ref == null) return;
+        stopAndDispose(ref);
     }
 
     /* HELPERS */
-
-    private static boolean cannotPlay(AudioReference ref) { return ref == null || ref.getPlayer() == null; }
 
     /// Gets the path relative to {@code `edu/nust/game/assets/audio/`}
     private String[] getAudioPath(String... path)
@@ -128,5 +97,11 @@ public final class GameAudioManager
         fullPath[1] = "audio";
         System.arraycopy(path, 0, fullPath, 2, path.length);
         return fullPath;
+    }
+
+    private void stopAndDispose(AudioReference ref)
+    {
+        if (ref == null) return;
+        ref.getClip().stop();
     }
 }

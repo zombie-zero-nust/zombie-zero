@@ -183,15 +183,15 @@ public abstract class GameWorld
 
     public GameAudioManager getAudioManager() { return audioManager; }
 
-    public AudioReference loadSound(String... path) { return audioManager.loadSound(path); }
+    public AudioReference loadAudioClip(String... path) { return audioManager.loadClip(path); }
 
-    public AudioReference getSoundWithName(String path) { return audioManager.getWithName(path); }
+    public AudioReference getAudioWithName(String path) { return audioManager.getWithName(path); }
 
-    public void playSound(AudioReference ref) { audioManager.play(ref); }
+    public void playAudio(AudioReference ref) { audioManager.play(ref); }
 
-    public void playSoundRepeating(AudioReference ref) { audioManager.playLooping(ref); }
+    public void playAudioLooping(AudioReference ref) { audioManager.playLooping(ref); }
 
-    public void stopSound(AudioReference ref) { audioManager.stop(ref); }
+    public void stopAudio(AudioReference ref) { audioManager.stop(ref); }
 
     /* FONT */
 
