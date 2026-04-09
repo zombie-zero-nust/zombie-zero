@@ -22,7 +22,7 @@ public class Main extends Application
         world.setScene(new StartScene(world));
         world.start();
 
-        Audios.setWorld(world);
+        Audios.setManagerFromWorld(world);
     }
 
     public static void main(String[] ignored)

@@ -1,8 +1,9 @@
 package edu.nust.engine.core;
 
 import edu.nust.Main;
-import edu.nust.engine.core.audio.AudioReference;
+import edu.nust.engine.core.audio.AudioClipReference;
 import edu.nust.engine.core.audio.GameAudioManager;
+import edu.nust.engine.core.audio.LongAudioReference;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.TimeSpan;
@@ -184,9 +185,19 @@ public abstract class GameWorld
 
     public GameAudioManager getAudioManager() { return audioManager; }
 
-    public @Nullable AudioReference getAudioWithName(String name) { return audioManager.getWithName(name); }
+    public @Nullable AudioClipReference getAudioWithName(String name) { return audioManager.getClipWithName(name); }
 
-    public @Nullable AudioReference loadAudioClip(String... relativePath) { return audioManager.loadClip(relativePath); }
+    public @Nullable AudioClipReference loadAudioClip(String... relativePath)
+    {
+        return audioManager.loadAudioClip(relativePath);
+    }
+
+    public @Nullable LongAudioReference getLongWithName(String name) { return audioManager.getLongAudioWithName(name); }
+
+    public @Nullable LongAudioReference loadLoadAudio(String... relativePath)
+    {
+        return audioManager.loadLongAudio(relativePath);
+    }
 
     /* FONT */
 

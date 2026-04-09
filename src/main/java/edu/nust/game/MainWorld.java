@@ -6,10 +6,7 @@ import javafx.stage.Stage;
 
 public class MainWorld extends GameWorld
 {
-    public MainWorld(Stage stage)
-    {
-        super(stage);
-    }
+    public MainWorld(Stage stage) { super(stage); }
 
     @Override
     protected void initStage()
@@ -23,6 +20,7 @@ public class MainWorld extends GameWorld
     @Override
     protected void loadAudios()
     {
-        Audios.forEach(this::loadAudioClip);
+        Audios.forEachClip(this::loadAudioClip);
+        Audios.forEachLong(this::loadLoadAudio);
     }
 }
