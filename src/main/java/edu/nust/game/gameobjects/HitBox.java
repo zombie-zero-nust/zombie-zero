@@ -1,5 +1,6 @@
 package edu.nust.game.gameobjects;
 
+import edu.nust.engine.core.Component;
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.components.renderers.BoxRenderer;
 import edu.nust.engine.math.TimeSpan;
@@ -10,21 +11,49 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 
 //currently only a framework
-public class HitBox extends GameObject {
+public class HitBox extends Component {
     private Vector2D pos;
     private double height,width;
+    private BoxRenderer box;
     private boolean visible = false;
+    private boolean topTouching = false;
+    private boolean bottomTouching = false;
+    private boolean leftTouching = false;
+    private boolean rightTouching = false;
+    private boolean touching = false;
+    private Vector2D topLeftCorner;
+    private Vector2D topRightCorner;
+    private Vector2D bottomLeftCorner;
+    private Vector2D bottomRightCorner;
 
     public HitBox(Vector2D pos,double height,double width){
         this.pos = pos;
         this.width = width;
         this.height = height;
-        this.addComponent(new BoxRenderer(this.width,this.height, Color.RED));
+        box = new BoxRenderer(width,height,Color.RED);
+        this.gameObject.addComponent(box).setVisible(visible);
     }
 
 
-    public void getDamage(){
+    public void getDamage(GameObject damageableObj,GameObject damagingObj){
 
+    }
+
+    public boolean isTouching(HitBox touchedHB){
+        return false;
+    }
+    public boolean isTopTouching(HitBox touchedHB) {
+
+        return false;
+    }
+    public boolean isBottomTouching(HitBox touchedHB){
+        return false;
+    }
+    public boolean isLeftTouching(HitBox touchedHB){
+        return false;
+    }
+    public boolean isRightTouching(HitBox touchedHB){
+        return false;
     }
 
     @Override
@@ -33,13 +62,14 @@ public class HitBox extends GameObject {
     }
     @Override
     public void onUpdate(TimeSpan deltaTime){
-        this.getTransform().setPosition(pos);
+        this.setVisible(visible);
     }
 
     @Override
     public void onRender(GraphicsContext context){}
 
     public void changeVisible() {
+
         visible = !visible;
     }
 
@@ -48,4 +78,59 @@ public class HitBox extends GameObject {
     }
 
 
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public boolean getTopTouching() {
+        return topTouching;
+    }
+
+    public void setTopTouching(boolean topTouching) {
+        this.topTouching = topTouching;
+    }
+
+    public boolean getBottomTouching() {
+        return bottomTouching;
+    }
+
+    public void setBottomTouching(boolean bottomTouching) {
+        this.bottomTouching = bottomTouching;
+    }
+
+    public boolean getLeftTouching() {
+        return leftTouching;
+    }
+
+    public void setLeftTouching(boolean leftTouching) {
+        this.leftTouching = leftTouching;
+    }
+
+    public boolean getRightTouching() {
+        return rightTouching;
+    }
+
+    public void setRightTouching(boolean rightTouching) {
+        this.rightTouching = rightTouching;
+    }
+
+    public boolean getTouching() {
+        return touching;
+    }
+
+    public void setTouching(boolean touching) {
+        this.touching = touching;
+    }
 }

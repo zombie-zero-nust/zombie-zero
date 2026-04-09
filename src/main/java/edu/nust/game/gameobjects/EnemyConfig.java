@@ -2,7 +2,7 @@ package edu.nust.game.gameobjects;
 
 public enum EnemyConfig
 {
-    PLAYER_COLLISION_DISTANCE(50),
+    ENEMY_ATTACK_DISTANCE(50),
     BULLET_COLLISION_DISTANCE(40),
     HITS_TO_DEFEAT(3),
     DEFAULT_SIZE(50),
