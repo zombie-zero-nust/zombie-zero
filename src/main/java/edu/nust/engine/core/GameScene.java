@@ -50,7 +50,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 {
     protected final GameLogger logger = GameLogger.getLogger(this.getClass());
 
-    private final GameWorld window;
+    private final GameWorld gameWorld;
     /// Whether to update this scene or not
     private boolean active = true;
 
@@ -69,13 +69,13 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     // debug options
     private boolean debugGrid = false;
 
-    public GameScene(GameWorld window)
+    public GameScene(GameWorld gameWorld)
     {
         logger.trace("Constructing GameScene: {}", this.getClass().getSimpleName());
         LogProgress initSceneLogger = LogProgress.create("SCENE", logger);
         initSceneLogger.begin("Initializing scene: {}", this.getClass().getSimpleName());
 
-        this.window = window;
+        this.gameWorld = gameWorld;
         logger.trace("Canvas initialization starting");
         this.worldCanvas = initCanvas();
 
@@ -89,7 +89,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         String sceneName = this.getClass().getSimpleName();
         URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
         // Keep common/global stylesheets, but remove previously attached scene-local style.css files.
-        this.window.getRawScene().getStylesheets().removeIf(
+        this.gameWorld.getRawScene().getStylesheets().removeIf(
                 stylesheet -> stylesheet.contains("/scenes/") && stylesheet.endsWith("/style.css")
         );
         if (cssUrl == null)
@@ -99,8 +99,8 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         else
         {
             logger.trace("Adding CSS stylesheet");
-            // Add this scene's stylesheet after removing the previous scene stylesheet.
-            this.window.getRawScene().getStylesheets().add(cssUrl.toExternalForm());
+            // add CSS to raw scene to allow overriding
+            this.gameWorld.getRawScene().getStylesheets().add(cssUrl.toExternalForm());
         }
 
         // bind canvas size to world layer, which is bound to `window.root`
@@ -116,12 +116,12 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
         // add events
         logger.trace("Registering input event handlers");
-        this.window.getRawScene().setOnKeyPressed(this::onKeyPressed);
-        this.window.getRawScene().setOnKeyReleased(this::onKeyReleased);
-        this.window.getRawScene().setOnMousePressed(this::onMousePressed);
-        this.window.getRawScene().setOnMouseReleased(this::onMouseReleased);
-        this.window.getRawScene().setOnMouseMoved(this::onMouseMoved);
-        this.window.getRawScene().setOnMouseDragged(this::onMouseDragged);
+        this.gameWorld.getRawScene().setOnKeyPressed(this::onKeyPressed);
+        this.gameWorld.getRawScene().setOnKeyReleased(this::onKeyReleased);
+        this.gameWorld.getRawScene().setOnMousePressed(this::onMousePressed);
+        this.gameWorld.getRawScene().setOnMouseReleased(this::onMouseReleased);
+        this.gameWorld.getRawScene().setOnMouseMoved(this::onMouseMoved);
+        this.gameWorld.getRawScene().setOnMouseDragged(this::onMouseDragged);
 
         // initialize camera
         logger.trace("Initializing world camera");
@@ -560,7 +560,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
      *
      * @return The GameWorld (window) that this scene belongs to
      */
-    public GameWorld getWindow() { return window; }
+    public GameWorld getWorld() { return gameWorld; }
 
     /**
      * Gets the {@link GameCamera} used for rendering the world layer of this scene.
