@@ -1,0 +1,7 @@
+# gif files here are just for reference
+**/*.gif
+**/*.GIF
+
+# add guides
+!Little Guide_Environment.gif
+!Little Guide_Player.gif
