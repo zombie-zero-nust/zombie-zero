@@ -37,7 +37,6 @@ public class GameLogger
         return getPrefix(type.getName() + " " + progress.getName(), progress.getAnsi()) + String.join("", message);
     }
 
-
     /* INTERNAL */
 
     private void logMessage(LogLevel level, String message, Object... args)
@@ -51,6 +50,27 @@ public class GameLogger
     {
         if (!ENABLED || !LogLevel.isEnabled(GLOBAL_LEVEL, LogLevel.INFO)) return;
         rawLogger.info(withProgressMessage(type, progress, message), args);
+    }
+
+
+    /* PROGRESS */
+
+    /// **`INTERNAL`** Use {@link LogProgress#begin(String, Object...)} instead
+    void beginProgress(LogProgress progress, String message, Object... args)
+    {
+        logProgressMessage(LogProgressType.BEGIN, progress, message, args);
+    }
+
+    /// **`INTERNAL`** Use {@link LogProgress#log(String, Object...)} instead
+    void logProgress(LogProgress progress, String message, Object... args)
+    {
+        logProgressMessage(LogProgressType.LOG, progress, message, args);
+    }
+
+    /// **`INTERNAL`** Use {@link LogProgress#end(String, Object...)} instead
+    void endProgress(LogProgress progress, String message, Object... args)
+    {
+        logProgressMessage(LogProgressType.END, progress, message, args);
     }
 
     /* LOG TYPES */
@@ -77,29 +97,25 @@ public class GameLogger
         if (shouldThrow) throw new RuntimeException(MessageFormatter.arrayFormat(message, args).getMessage());
     }
 
-    /* PROGRESS */
-
-    /// **`INTERNAL`** Use {@link LogProgress#begin(String, Object...)} instead
-    void beginProgress(LogProgress progress, String message, Object... args)
-    {
-        logProgressMessage(LogProgressType.BEGIN, progress, message, args);
-    }
-
-    /// **`INTERNAL`** Use {@link LogProgress#log(String, Object...)} instead
-    void logProgress(LogProgress progress, String message, Object... args)
-    {
-        logProgressMessage(LogProgressType.LOG, progress, message, args);
-    }
-
-    /// **`INTERNAL`** Use {@link LogProgress#end(String, Object...)} instead
-    void endProgress(LogProgress progress, String message, Object... args)
-    {
-        logProgressMessage(LogProgressType.END, progress, message, args);
-    }
-
     /* CONFIGURATION */
 
     public static void setGlobalLevel(LogLevel level) { GLOBAL_LEVEL = level; }
 
     public static void setEnabled(boolean enabled) { ENABLED = enabled; }
+
+    /* EXCEPTION */
+
+    /// Logs an exception's message and stack trace as error logs as an error log without throwing
+    ///
+    /// @see GameLogger#error(boolean, String, Object...)
+    public void logException(Exception e) { logException(this, e); }
+
+    /// Logs an exception's message and stack trace as error logs as an error log without throwing
+    ///
+    /// @see GameLogger#error(boolean, String, Object...)
+    public static void logException(GameLogger logger, Exception e)
+    {
+        logger.error(false, "Exception: {}", e.getMessage());
+        logger.error(false, "Stack trace: {}", e);
+    }
 }
