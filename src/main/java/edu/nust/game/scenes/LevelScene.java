@@ -50,8 +50,8 @@ public class LevelScene extends GameScene
     {
         // Build the level with restricted play area
         levelBuilder = new LevelBuilder(30, 20, 64);
-        levelBuilder.fillBackground(TilesetAsset.GRASS_ON_TOP)
-                   .addBoundaries()
+        levelBuilder.fillBackground(TilesetAsset.BUILDINGS_BEIGE)
+                   .addBoundaries(TilesetAsset.BRICK_WALL)
                    .preloadAssets();
 
         // Add tilemap as GameObject - the TilemapRenderer component will handle rendering

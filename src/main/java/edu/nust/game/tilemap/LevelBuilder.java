@@ -37,7 +37,13 @@ public class LevelBuilder
     /** Adds boundary walls and computes the playable inner bounds. */
     public LevelBuilder addBoundaries()
     {
-        renderer.registerTileset(BOUNDARY_TILESET, TilesetAsset.BRICK_WALL);
+        return addBoundaries(TilesetAsset.BRICK_WALL);
+    }
+
+    /** Adds boundary walls and computes bounds using the specified boundary tileset. */
+    public LevelBuilder addBoundaries(TilesetAsset boundaryAsset)
+    {
+        renderer.registerTileset(BOUNDARY_TILESET, boundaryAsset);
 
         int width = tilemap.getWidth();
         int height = tilemap.getHeight();

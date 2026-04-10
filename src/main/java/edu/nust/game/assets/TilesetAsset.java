@@ -15,7 +15,11 @@ public enum TilesetAsset implements AssetEnum
     BACKGROUND_DARK_GREEN("Tiles/Background_Dark-Green_TileSet.png"),
     BACKGROUND_GREEN("Tiles/Background_Green_TileSet.png"),
     BACKGROUND_BLEAK_YELLOW("Tiles/Background_Bleak-Yellow_TileSet.png"),
-    GUTTER_AND_DOWNSPOUT("Tiles/Gutter-And-Downspout.png");
+    GUTTER_AND_DOWNSPOUT("Tiles/Gutter-And-Downspout.png"),
+    BUILDINGS_BEIGE("Tiles/Buildings/Buildings_beige_TileSet.png"),
+    BUILDINGS_DARK("Tiles/Buildings/Buildings_dark_TileSet.png"),
+    BUILDINGS_GRAY("Tiles/Buildings/Buildings_gray_TileSet.png"),
+    BUILDINGS_WHITE("Tiles/Buildings/Buildings_white_TileSet.png");
 
     private final String path;
 

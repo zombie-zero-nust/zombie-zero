@@ -35,7 +35,6 @@ public class Weapon extends GameObject
         orbitComponent = new OrbitingBox(orbitDistance);
         this.addComponent(orbitComponent);
 
-        // Load weapon sprite instead of cyan box
         try
         {
             Image weaponSprite = Resources.loadImageOrThrow(
@@ -45,7 +44,6 @@ public class Weapon extends GameObject
         }
         catch (FileNotFoundException e)
         {
-            // Fallback to cyan box if sprite not found
             System.out.println("[ERROR] Failed to load weapon sprite: " + e.getMessage());
             this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(40, 40, javafx.scene.paint.Color.CYAN));
         }
