@@ -1,9 +1,6 @@
 package edu.nust.game.tilemap;
 
-/**
- * Represents a single tile in a tilemap.
- * Stores the tileset reference and tile index within that tileset.
- */
+/** Immutable tile reference (tileset + tile index). */
 public class TileData
 {
     public static final int EMPTY_TILE = -1;
@@ -11,20 +8,14 @@ public class TileData
     private final int tilesetId;
     private final int tileIndex;
 
-    /**
-     * Creates an empty tile (no tile rendered)
-     */
+    /** Creates an empty tile. */
     public TileData()
     {
         this.tilesetId = EMPTY_TILE;
         this.tileIndex = EMPTY_TILE;
     }
 
-    /**
-     * Creates a tile with the given tileset and index
-     * @param tilesetId Reference to the tileset ID
-     * @param tileIndex Index of the tile within the tileset
-     */
+    /** Creates a tile with the given tileset and index. */
     public TileData(int tilesetId, int tileIndex)
     {
         this.tilesetId = tilesetId;

@@ -2,10 +2,7 @@ package edu.nust.game.tilemap;
 
 import edu.nust.engine.logger.GameLogger;
 
-/**
- * Represents a 2D grid-based tilemap for efficient level rendering.
- * Each cell contains a TileData reference pointing to a specific tileset and tile.
- */
+/** 2D grid-based tilemap container. */
 public class Tilemap
 {
     private final GameLogger logger = GameLogger.getLogger(this.getClass());
@@ -15,12 +12,7 @@ public class Tilemap
     private final int tileSize;
     private final TileData[][] grid;
 
-    /**
-     * Creates a new tilemap
-     * @param width Number of tiles wide
-     * @param height Number of tiles tall
-     * @param tileSize Pixel size of each tile
-     */
+    /** Creates a new tilemap. */
     public Tilemap(int width, int height, int tileSize)
     {
         this.width = width;
@@ -39,9 +31,7 @@ public class Tilemap
         logger.debug("Created tilemap: {}x{} (tile size: {}px)", width, height, tileSize);
     }
 
-    /**
-     * Sets a tile at the given grid position
-     */
+    /** Sets a tile at grid position. */
     public void setTile(int col, int row, TileData tile)
     {
         if (isValidPosition(col, row))
@@ -54,9 +44,7 @@ public class Tilemap
         }
     }
 
-    /**
-     * Gets the tile at the given grid position
-     */
+    /** Gets a tile at grid position. */
     public TileData getTile(int col, int row)
     {
         if (isValidPosition(col, row))
@@ -66,9 +54,7 @@ public class Tilemap
         return new TileData();
     }
 
-    /**
-     * Gets the tile at world position (converts pixels to grid coordinates)
-     */
+    /** Gets a tile from world coordinates. */
     public TileData getTileAtWorldPos(double worldX, double worldY)
     {
         int col = (int) (worldX / tileSize);
@@ -76,9 +62,7 @@ public class Tilemap
         return getTile(col, row);
     }
 
-    /**
-     * Fills the entire tilemap with a single tile type
-     */
+    /** Fills the full map with a tile. */
     public void fillAll(TileData tile)
     {
         for (int row = 0; row < height; row++)
@@ -91,9 +75,7 @@ public class Tilemap
         logger.debug("Filled entire tilemap with tile: {}", tile);
     }
 
-    /**
-     * Fills a rectangular region with a tile type
-     */
+    /** Fills a rectangular region. */
     public void fillRect(int startCol, int startRow, int width, int height, TileData tile)
     {
         for (int row = startRow; row < startRow + height; row++)
@@ -108,9 +90,7 @@ public class Tilemap
         }
     }
 
-    /**
-     * Checks if a grid position is within tilemap bounds
-     */
+    /** Returns true when a grid position is inside bounds. */
     private boolean isValidPosition(int col, int row)
     {
         return col >= 0 && col < width && row >= 0 && row < height;
@@ -123,8 +103,4 @@ public class Tilemap
     public int getPixelHeight() { return height * tileSize; }
     public TileData[][] getGrid() { return grid; }
 }
-
-
-
-
 

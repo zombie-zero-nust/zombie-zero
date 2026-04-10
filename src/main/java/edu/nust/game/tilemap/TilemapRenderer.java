@@ -1,7 +1,6 @@
 package edu.nust.game.tilemap;
 
 import edu.nust.engine.core.Component;
-import edu.nust.engine.core.GameObject;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.game.assets.AssetManager;
 import edu.nust.game.assets.TilesetAsset;
@@ -11,10 +10,7 @@ import javafx.scene.image.Image;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Component for rendering a tilemap efficiently.
- * Caches tileset images and renders only visible tiles.
- */
+/** Renders a tilemap using registered tilesets. */
 public class TilemapRenderer extends Component
 {
     private final GameLogger logger = GameLogger.getLogger(this.getClass());
@@ -23,10 +19,7 @@ public class TilemapRenderer extends Component
     private final Map<Integer, TilesetAsset> tilesetMap;
     private final Map<Integer, Image> loadedTilesets;
 
-    /**
-     * Creates a tilemap renderer
-     * @param tilemap The tilemap to render
-     */
+    /** Creates a renderer for a tilemap. */
     public TilemapRenderer(Tilemap tilemap)
     {
         this.tilemap = tilemap;
@@ -35,20 +28,14 @@ public class TilemapRenderer extends Component
         logger.debug("TilemapRenderer created for {}x{} tilemap", tilemap.getWidth(), tilemap.getHeight());
     }
 
-    /**
-     * Registers a tileset with an ID for use in the tilemap
-     * @param tilesetId The ID to associate with this tileset
-     * @param asset The tileset asset to use
-     */
+    /** Registers a tileset ID mapping. */
     public void registerTileset(int tilesetId, TilesetAsset asset)
     {
         tilesetMap.put(tilesetId, asset);
         logger.debug("Registered tileset ID {} -> {}", tilesetId, asset);
     }
 
-    /**
-     * Pre-loads all registered tilesets for faster rendering
-     */
+    /** Preloads all registered tilesets. */
     public void preloadTilesets()
     {
         AssetManager assetManager = AssetManager.getInstance();
@@ -63,40 +50,58 @@ public class TilemapRenderer extends Component
     @Override
     public void onRender(GraphicsContext ctx)
     {
-        if (!visible || tilemap == null)
+        if (tilemap == null)
+        {
+            logger.warn("TilemapRenderer.onRender() - tilemap is NULL!");
             return;
+        }
 
         TileData[][] grid = tilemap.getGrid();
         int tileSize = tilemap.getTileSize();
+        int mapWidth = tilemap.getPixelWidth();
+        int mapHeight = tilemap.getPixelHeight();
+
+        ctx.setFill(javafx.scene.paint.Color.web("#2d5016")); // Dark green grass
+        ctx.fillRect(0, 0, mapWidth, mapHeight);
 
         for (int row = 0; row < tilemap.getHeight(); row++)
         {
             for (int col = 0; col < tilemap.getWidth(); col++)
             {
                 TileData tile = grid[row][col];
-
                 if (!tile.isEmpty())
                 {
                     renderTile(ctx, tile, col * tileSize, row * tileSize, tileSize);
                 }
             }
         }
+
     }
 
-    /**
-     * Renders a single tile
-     */
+    /** Renders a single tile. */
     private void renderTile(GraphicsContext ctx, TileData tile, double x, double y, int tileSize)
     {
         Image tileset = loadedTilesets.get(tile.getTilesetId());
 
         if (tileset == null)
         {
-            logger.warn("Tileset not loaded for ID: {}", tile.getTilesetId());
+            if (tile.getTilesetId() == 1)
+            {
+                ctx.setFill(javafx.scene.paint.Color.web("#8B4513"));
+            }
+            else
+            {
+                ctx.setFill(javafx.scene.paint.Color.web("#2d5016"));
+            }
+            ctx.fillRect(x, y, tileSize, tileSize);
             return;
         }
 
-        ctx.drawImage(tileset, x, y, tileSize, tileSize);
+        int tileIndex = tile.getTileIndex();
+        double sourceX = tileIndex * tileSize;
+        double sourceY = 0;
+
+        ctx.drawImage(tileset, sourceX, sourceY, tileSize, tileSize, x, y, tileSize, tileSize);
     }
 
     @Override

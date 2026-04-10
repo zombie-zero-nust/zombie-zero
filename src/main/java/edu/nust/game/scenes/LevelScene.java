@@ -5,7 +5,9 @@ import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.Score;
+import edu.nust.game.assets.TilesetAsset;
 import edu.nust.game.gameobjects.*;
+import edu.nust.game.tilemap.LevelBuilder;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -33,6 +35,8 @@ public class LevelScene extends GameScene
     private Score score;
     private AmmoBar ammoBar;
     private HealthBar healthBar;
+    private LevelBuilder levelBuilder;
+    private LevelBuilder.PlayAreaBounds playAreaBounds;
     private Vector2D mousePosition = Vector2D.zero();
     private double screenX;
     private double screenY;
@@ -46,6 +50,16 @@ public class LevelScene extends GameScene
     @Override
     public void onInit()
     {
+        // Build the level with restricted play area
+        levelBuilder = new LevelBuilder(30, 20, 64);
+        levelBuilder.fillBackground(TilesetAsset.GRASS_ON_TOP)
+                   .addBoundaries()
+                   .preloadAssets();
+
+        // Add tilemap as GameObject - the TilemapRenderer component will handle rendering
+        this.addGameObject(levelBuilder.build());
+        this.playAreaBounds = levelBuilder.getPlayAreaBounds();
+
         score = new Score();
         player = new Player(new Vector2D(0,0), 100, 500, true);
         this.addGameObject(player.addTag(PlayerTag.class));
@@ -108,6 +122,14 @@ public class LevelScene extends GameScene
         if(player == null) return;
         Vector2D playerPos = player.getTransform().getPosition();
 
+        // Restrict player movement to play area bounds
+        if (playAreaBounds != null)
+        {
+            Vector2D clampedPos = playAreaBounds.clampPosition(playerPos);
+            player.getTransform().setPosition(clampedPos);
+            playerPos = clampedPos;
+        }
+
         if (weapon != null)
             weapon.updatePosition(mousePosition, playerPos);
 
@@ -123,7 +145,37 @@ public class LevelScene extends GameScene
                 gameOver();
         }
 
-        this.getWorldCamera().setPosition(playerPos);
+        // Clamp camera to full tilemap bounds so viewport never reveals outside-map black space.
+        Vector2D cameraTarget = playerPos;
+        if (levelBuilder != null)
+        {
+            double mapWidth = levelBuilder.getTilemap().getPixelWidth();
+            double mapHeight = levelBuilder.getTilemap().getPixelHeight();
+
+            double halfViewportW = (canvasW / 2.0) / zoom;
+            double halfViewportH = (canvasH / 2.0) / zoom;
+
+            double minCamX = halfViewportW;
+            double maxCamX = mapWidth - halfViewportW;
+            double minCamY = halfViewportH;
+            double maxCamY = mapHeight - halfViewportH;
+
+            double camX = cameraTarget.getX();
+            double camY = cameraTarget.getY();
+
+            if (minCamX <= maxCamX)
+                camX = Math.max(minCamX, Math.min(camX, maxCamX));
+            else
+                camX = mapWidth / 2.0;
+
+            if (minCamY <= maxCamY)
+                camY = Math.max(minCamY, Math.min(camY, maxCamY));
+            else
+                camY = mapHeight / 2.0;
+
+            cameraTarget = new Vector2D(camX, camY);
+        }
+        this.getWorldCamera().setPosition(cameraTarget);
     }
 
     @Override
