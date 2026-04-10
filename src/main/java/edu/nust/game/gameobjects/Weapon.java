@@ -11,12 +11,11 @@ import java.io.FileNotFoundException;
 
 public class Weapon extends GameObject
 {
-    private final double orbitDistance = 80;
+    private static final double WEAPON_OFFSET = 30;
     private final double fireRate = 20;
     private static final double MUZZLE_FRAME_DURATION = 0.04;
     private static final int MUZZLE_FRAMES = 3;
 
-    private OrbitingBox orbitComponent;
     private SpriteRenderer muzzleFlashRenderer;
     private boolean isFiring;
     private boolean autoFire;
@@ -32,20 +31,16 @@ public class Weapon extends GameObject
 
     public Weapon()
     {
-        orbitComponent = new OrbitingBox(orbitDistance);
-        this.addComponent(orbitComponent);
-
         try
         {
             Image weaponSprite = Resources.loadImageOrThrow(
                 "assets", "raw", "PostApocalypse", "Objects", "Pickable", "Gun.png"
             );
-            this.addComponent(new SpriteRenderer(40, 40, weaponSprite));
+            this.addComponent(new SpriteRenderer(36, 18, weaponSprite));
         }
         catch (FileNotFoundException e)
         {
-            System.out.println("[ERROR] Failed to load weapon sprite: " + e.getMessage());
-            this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(40, 40, javafx.scene.paint.Color.CYAN));
+            this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(36, 18, javafx.scene.paint.Color.CYAN));
         }
 
         loadMuzzleFireAssets();
@@ -79,11 +74,43 @@ public class Weapon extends GameObject
 
     public void updatePosition(Vector2D mousePos, Vector2D playerPos)
     {
-        if (orbitComponent != null)
+        Vector2D delta = mousePos.subtract(playerPos);
+
+        double dx = delta.getX();
+        double dy = delta.getY();
+        double weaponX = playerPos.getX();
+        double weaponY = playerPos.getY();
+        double rotation;
+
+        if (Math.abs(dx) >= Math.abs(dy))
         {
-            orbitComponent.updateMousePosition(mousePos);
-            orbitComponent.updatePositionBasedOnMouse(playerPos);
+            if (dx >= 0)
+            {
+                weaponX += WEAPON_OFFSET;
+                rotation = 0;
+            }
+            else
+            {
+                weaponX -= WEAPON_OFFSET;
+                rotation = Math.PI;
+            }
         }
+        else
+        {
+            if (dy >= 0)
+            {
+                weaponY += WEAPON_OFFSET;
+                rotation = Math.PI / 2.0;
+            }
+            else
+            {
+                weaponY -= WEAPON_OFFSET;
+                rotation = -Math.PI / 2.0;
+            }
+        }
+
+        this.getTransform().setPosition(new Vector2D(weaponX, weaponY));
+        this.getTransform().setRotationRadians(rotation);
     }
 
     public Bullet fireWeapon(Vector2D targetPos, TimeSpan deltaTime)

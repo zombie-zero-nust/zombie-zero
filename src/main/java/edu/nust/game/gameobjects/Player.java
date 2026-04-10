@@ -16,11 +16,33 @@ import java.util.ArrayList;
 
 public class Player extends Character
 {
+    private enum Facing { UP, DOWN, LEFT, RIGHT }
+
     private final Set<KeyCode> activeKeys = new HashSet<>();
     private HitBox hitbox;
     private double size = 50;
     private ArrayList<Image> images = new ArrayList<>();
     private Health health;
+    private SpriteRenderer spriteRenderer;
+    private SpriteRenderer handsRenderer;
+    private Image idleUp;
+    private Image idleDown;
+    private Image idleLeft;
+    private Image idleRight;
+    private Image runUp;
+    private Image runDown;
+    private Image runLeft;
+    private Image runRight;
+
+    private Image handsIdleUp;
+    private Image handsIdleDown;
+    private Image handsIdleLeft;
+    private Image handsIdleRight;
+    private Image handsRunUp;
+    private Image handsRunDown;
+    private Image handsRunLeft;
+    private Image handsRunRight;
+    private Facing facing = Facing.DOWN;
 
     public Player(Vector2D pos, int initialHealth, int mSpeed, boolean moveable)
     {
@@ -29,21 +51,39 @@ public class Player extends Character
 
         try
         {
-            // Load character sprite from PostApocalypse assets
             CharacterAsset characterAsset = CharacterAsset.MAIN;
-            Image idleSprite = Resources.loadImageOrThrow(
-                "assets",
-                characterAsset.getPath() + "/Idle",
-                "Character_down_idle-Sheet6.png"
-            );
+            String idlePath = characterAsset.getPath() + "/Idle";
+            String runPath = characterAsset.getPath() + "/Run";
 
-            // Create sprite renderer with 6 frames (idle animation)
-            SpriteRenderer spriteRenderer = new SpriteRenderer(size, size, idleSprite, 6, 1);
-            spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(100))
-                         .startAnimation();
+            idleDown = Resources.loadImageOrThrow("assets", idlePath, "Character_down_idle_no-hands-Sheet6.png");
+            idleUp = Resources.loadImageOrThrow("assets", idlePath, "Character_up_idle_no-hands-Sheet6.png");
+            idleLeft = Resources.loadImageOrThrow("assets", idlePath, "Character_side-left_idle_no-hands-Sheet6.png");
+            idleRight = Resources.loadImageOrThrow("assets", idlePath, "Character_side_idle_no-hands-Sheet6.png");
 
+            runDown = Resources.loadImageOrThrow("assets", runPath, "Character_down_run_no-hands-Sheet6.png");
+            runUp = Resources.loadImageOrThrow("assets", runPath, "Character_up_run_no-hands-Sheet6.png");
+            runLeft = Resources.loadImageOrThrow("assets", runPath, "Character_side-left_run_no-hands-Sheet6.png");
+            runRight = Resources.loadImageOrThrow("assets", runPath, "Character_side_run_no-hands-Sheet6.png");
+
+            handsIdleDown = Resources.loadImageOrThrow("assets", idlePath, "Hands_down_idle-Sheet6.png");
+            handsIdleUp = Resources.loadImageOrThrow("assets", idlePath, "Hands_Up_idle-Sheet6.png");
+            handsIdleLeft = Resources.loadImageOrThrow("assets", idlePath, "Hands_Side-left_idle-Sheet6.png");
+            handsIdleRight = Resources.loadImageOrThrow("assets", idlePath, "Hands_Side_idle-Sheet6.png");
+
+            handsRunDown = Resources.loadImageOrThrow("assets", runPath, "Hands_down_run-Sheet6.png");
+            handsRunUp = Resources.loadImageOrThrow("assets", runPath, "Hands_Up_run-Sheet6.png");
+            handsRunLeft = Resources.loadImageOrThrow("assets", runPath, "Hands_side-left_run-Sheet6.png");
+            handsRunRight = Resources.loadImageOrThrow("assets", runPath, "Hands_Side_run-Sheet6.png");
+
+            spriteRenderer = new SpriteRenderer(size, size, idleDown, 6, 1);
+            spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).setFrame(0, 0);
             this.addComponent(spriteRenderer);
-            images.add(idleSprite);
+
+            handsRenderer = new SpriteRenderer(size, size, handsIdleDown, 6, 1);
+            handsRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).setFrame(0, 0);
+            this.addComponent(handsRenderer);
+
+            images.add(idleDown);
         }
         catch (FileNotFoundException e)
         {
@@ -51,7 +91,8 @@ public class Player extends Character
             try
             {
                 images.add(Resources.loadImageOrThrow("assets", "images", "test.png"));
-                this.addComponent(new SpriteRenderer(size, size, images.getFirst()));
+                spriteRenderer = new SpriteRenderer(size, size, images.getFirst());
+                this.addComponent(spriteRenderer);
             }
             catch (FileNotFoundException ignored)
             {
@@ -96,8 +137,84 @@ public class Player extends Character
         if (activeKeys.contains(KeyCode.A)) dx -= getMovementSpeed() * deltaTime.asSeconds();
         if (activeKeys.contains(KeyCode.D)) dx += getMovementSpeed() * deltaTime.asSeconds();
 
+        updateFacingSprite(dx, dy);
+
+        if (spriteRenderer != null)
+        {
+            if (dx == 0 && dy == 0)
+                spriteRenderer.stopAnimation().setFrame(0, 0);
+            else
+                spriteRenderer.startAnimation();
+        }
+
+        if (handsRenderer != null)
+        {
+            if (dx == 0 && dy == 0)
+                handsRenderer.stopAnimation().setFrame(0, 0);
+            else
+                handsRenderer.startAnimation();
+        }
+
         setY(getY() + dy);
         setX(getX() + dx);
+    }
+
+    private void updateFacingSprite(double dx, double dy)
+    {
+        if (spriteRenderer == null)
+            return;
+
+        boolean moving = dx != 0 || dy != 0;
+
+        if (moving)
+        {
+            if (Math.abs(dx) >= Math.abs(dy))
+                facing = dx >= 0 ? Facing.RIGHT : Facing.LEFT;
+            else
+                facing = dy >= 0 ? Facing.DOWN : Facing.UP;
+        }
+
+        Image target;
+        switch (facing)
+        {
+            case UP:
+                target = moving ? runUp : idleUp;
+                break;
+            case LEFT:
+                target = moving ? runLeft : idleLeft;
+                break;
+            case RIGHT:
+                target = moving ? runRight : idleRight;
+                break;
+            case DOWN:
+            default:
+                target = moving ? runDown : idleDown;
+                break;
+        }
+
+        Image handsTarget;
+        switch (facing)
+        {
+            case UP:
+                handsTarget = moving ? handsRunUp : handsIdleUp;
+                break;
+            case LEFT:
+                handsTarget = moving ? handsRunLeft : handsIdleLeft;
+                break;
+            case RIGHT:
+                handsTarget = moving ? handsRunRight : handsIdleRight;
+                break;
+            case DOWN:
+            default:
+                handsTarget = moving ? handsRunDown : handsIdleDown;
+                break;
+        }
+
+        if (target != null && spriteRenderer.getImage() != target)
+            spriteRenderer.setImage(target, 6, 1).setFrame(0, 0);
+
+        if (handsRenderer != null && handsTarget != null && handsRenderer.getImage() != handsTarget)
+            handsRenderer.setImage(handsTarget, 6, 1).setFrame(0, 0);
     }
 
     @Override
