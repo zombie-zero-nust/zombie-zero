@@ -60,6 +60,7 @@ public class Player extends Character
         }
 
         this.getTransform().setPosition(getSpawnPos());
+        this.addComponent(new SpriteRenderer(size, size, images.getFirst()));
     }
 
     public void keyPress(KeyCode key)
