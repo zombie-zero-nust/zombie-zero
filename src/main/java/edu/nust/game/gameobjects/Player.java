@@ -48,6 +48,7 @@ public class Player extends Character
     {
         super(pos, initialHealth, mSpeed, moveable);
         health = new HealthImpl();
+        this.addTag(PlayerTag.class);
 
         try
         {

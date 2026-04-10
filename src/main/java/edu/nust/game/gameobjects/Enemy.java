@@ -85,8 +85,6 @@ public class Enemy extends GameObject
 
             this.getTransform().setPosition(newPosition);
 
-            double angleToTarget = Math.atan2(directionToTarget.getY(), directionToTarget.getX());
-            this.getTransform().setRotationRadians(angleToTarget);
         }
     }
 

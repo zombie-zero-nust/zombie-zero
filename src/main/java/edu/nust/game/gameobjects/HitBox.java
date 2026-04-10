@@ -1,7 +1,8 @@
 package edu.nust.game.gameobjects;
 
-import edu.nust.engine.core.Component;
+import com.sun.javafx.scene.text.TextLayout;
 import edu.nust.engine.core.GameObject;
+import edu.nust.engine.core.Component;
 import edu.nust.engine.core.components.renderers.BoxRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
@@ -19,11 +20,8 @@ public class HitBox extends Component
     private boolean bottomTouching = false;
     private boolean leftTouching = false;
     private boolean rightTouching = false;
-    private boolean touching = false;
-    private Vector2D topLeftCorner;
-    private Vector2D topRightCorner;
-    private Vector2D bottomLeftCorner;
-    private Vector2D bottomRightCorner;
+    private double minX;
+    private double minY;
 
     public HitBox(Vector2D pos,double height,double width){
         this.pos = pos;
@@ -33,26 +31,46 @@ public class HitBox extends Component
     }
 
 
+
     public void getDamage(GameObject damageableObj,GameObject damagingObj){
 
     }
 
     public boolean isTouching(HitBox touchedHB){
-        return false;
-    }
-    public boolean isTopTouching(HitBox touchedHB) {
 
+        double xDistance = this.pos.getX()-touchedHB.pos.getX();
+        double yDistance = this.pos.getX()-touchedHB.pos.getY();
+
+
+        double overlapX = minX - Math.abs(xDistance);
+        double overlapY = minY - Math.abs(yDistance);
+
+
+        if(Math.abs(xDistance) <= minX && Math.abs(yDistance) < minY){
+
+            if(overlapX < overlapY) {
+                if(yDistance > 0) {
+                    topTouching = true;
+
+                }
+                else {
+                    bottomTouching = true;
+                }
+            }
+            else{
+                if(xDistance > 0) {
+                    leftTouching = true;
+
+                }
+                else{
+                    rightTouching = true;
+                }
+            }
+            return true;
+        }
         return false;
     }
-    public boolean isBottomTouching(HitBox touchedHB){
-        return false;
-    }
-    public boolean isLeftTouching(HitBox touchedHB){
-        return false;
-    }
-    public boolean isRightTouching(HitBox touchedHB){
-        return false;
-    }
+
 
     @Override
     public void onInit(){
@@ -67,6 +85,8 @@ public class HitBox extends Component
     @Override
     public void onRender(GraphicsContext context){}
 
+
+
     public void changeVisible() {
 
         visible = !visible;
@@ -77,74 +97,34 @@ public class HitBox extends Component
         this.pos = pos;
     }
 
-
-    public double getHeight()
-    {
-        return height;
-    }
-
-    public void setHeight(double height)
-    {
-        this.height = height;
-    }
-
-    public double getWidth()
-    {
-        return width;
-    }
-
-    public void setWidth(double width)
-    {
-        this.width = width;
-    }
-
-    public boolean getTopTouching()
-    {
-        return topTouching;
-    }
-
-    public void setTopTouching(boolean topTouching)
-    {
-        this.topTouching = topTouching;
-    }
-
-    public boolean getBottomTouching()
-    {
-        return bottomTouching;
-    }
-
-    public void setBottomTouching(boolean bottomTouching)
-    {
-        this.bottomTouching = bottomTouching;
-    }
-
-    public boolean getLeftTouching()
-    {
+    public boolean isLeftTouching() {
         return leftTouching;
     }
 
-    public void setLeftTouching(boolean leftTouching)
-    {
+    public void setLeftTouching(boolean leftTouching) {
         this.leftTouching = leftTouching;
     }
 
-    public boolean getRightTouching()
-    {
+    public boolean isRightTouching() {
         return rightTouching;
     }
 
-    public void setRightTouching(boolean rightTouching)
-    {
+    public void setRightTouching(boolean rightTouching) {
         this.rightTouching = rightTouching;
     }
 
-    public boolean getTouching()
-    {
-        return touching;
+    public void setMin(HitBox touchedHB){
+        minX = this.width + touchedHB.width;
+        minY = this.height + touchedHB.height;
     }
 
-    public void setTouching(boolean touching)
-    {
-        this.touching = touching;
+
+
+    public void setTouchingFalse(){
+        topTouching = false;
+        bottomTouching = false;
+        leftTouching = false;
+        rightTouching = false;
     }
+
 }

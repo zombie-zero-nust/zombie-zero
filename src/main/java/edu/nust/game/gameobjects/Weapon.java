@@ -12,18 +12,24 @@ import java.io.FileNotFoundException;
 public class Weapon extends GameObject
 {
     private static final double WEAPON_OFFSET = 30;
-    private final double fireRate = 20;
+    private final double fireRate = 10;
     private static final double MUZZLE_FRAME_DURATION = 0.04;
     private static final int MUZZLE_FRAMES = 3;
+    private double width = 54;
+    private double height= 18;
+
+
+    private String preDirection;
 
     private SpriteRenderer muzzleFlashRenderer;
     private boolean isFiring;
     private boolean autoFire;
-    private double fireCooldown;
+    private double fireCooldown = 0;
     private double muzzleElapsed;
     private boolean muzzlePlaying;
     private Ammo ammo;
 
+    private Image weaponSprite;
     private Image fireUpSheet;
     private Image fireDownSheet;
     private Image fireRightSheet;
@@ -33,10 +39,10 @@ public class Weapon extends GameObject
     {
         try
         {
-            Image weaponSprite = Resources.loadImageOrThrow(
+            weaponSprite = Resources.loadImageOrThrow(
                 "assets", "raw", "PostApocalypse", "Objects", "Pickable", "Gun.png"
             );
-            this.addComponent(new SpriteRenderer(36, 18, weaponSprite));
+            this.addComponent(new SpriteRenderer(width, height, weaponSprite));
         }
         catch (FileNotFoundException e)
         {
@@ -78,45 +84,45 @@ public class Weapon extends GameObject
 
         double dx = delta.getX();
         double dy = delta.getY();
-        double weaponX = playerPos.getX();
-        double weaponY = playerPos.getY();
         double rotation;
-
-        if (Math.abs(dx) >= Math.abs(dy))
+        Vector2D orbitingDistance = delta.normalize().multiply(30);
+        String currDirection;
+        if (dx == 0)
         {
-            if (dx >= 0)
-            {
-                weaponX += WEAPON_OFFSET;
-                rotation = 0;
-            }
-            else
-            {
-                weaponX -= WEAPON_OFFSET;
-                rotation = Math.PI;
-            }
+            if(dy < 0) rotation = Math.PI/2;
+            else rotation = 3*Math.PI/2;
         }
         else
         {
-            if (dy >= 0)
-            {
-                weaponY += WEAPON_OFFSET;
-                rotation = Math.PI / 2.0;
-            }
-            else
-            {
-                weaponY -= WEAPON_OFFSET;
-                rotation = -Math.PI / 2.0;
+            rotation = Math.atan2(dy,dx);
+        }
+
+        if(Math.abs(rotation) < Math.PI/2){
+            currDirection = "LEFT";
+        }
+        else{
+            currDirection = "RIGHT";
+        }
+        if(preDirection == null) preDirection = currDirection;
+        SpriteRenderer spriteRenderer = this.getFirstComponent(SpriteRenderer.class);
+        if(spriteRenderer != null){
+            if(!currDirection.equals(preDirection)) {
+
+                spriteRenderer.flipVertical();
+                preDirection = currDirection;
             }
         }
 
-        this.getTransform().setPosition(new Vector2D(weaponX, weaponY));
+        this.getTransform().setPosition(playerPos.add(orbitingDistance));
         this.getTransform().setRotationRadians(rotation);
     }
 
     public Bullet fireWeapon(Vector2D targetPos, TimeSpan deltaTime)
     {
         Vector2D weaponPos = this.getTransform().getPosition();
+        Vector2D bulletPos = weaponPos.add(targetPos.subtract(weaponPos).normalize().multiply(width));
         ammo.update(deltaTime);
+
 
         if (ammo.isReloading() || !ammo.hasAmmo())
             return null;
@@ -128,8 +134,8 @@ public class Weapon extends GameObject
         {
             setFiring(false);
             ammo.decreaseAmmo();
-            triggerMuzzleFlash(weaponPos, targetPos);
-            return new Bullet(2000, weaponPos, 1000, 30, 30, targetPos);
+            triggerMuzzleFlash(bulletPos, targetPos);
+            return new Bullet(2000, bulletPos, 1000, 10, 30, targetPos);
         }
 
         fireCooldown -= deltaTime.asSeconds();
@@ -138,7 +144,7 @@ public class Weapon extends GameObject
             fireCooldown = 1.0 / fireRate;
             ammo.decreaseAmmo();
             triggerMuzzleFlash(weaponPos, targetPos);
-            return new Bullet(2000, weaponPos, 1000, 30, 30, targetPos);
+            return new Bullet(2000, bulletPos, 1000, 30, 30, targetPos);
         }
 
         return null;
