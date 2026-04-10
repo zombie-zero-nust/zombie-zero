@@ -30,9 +30,9 @@ public class StartScene extends GameScene
         {
             // Load and display start scene background
             Image backgroundImage = Resources.loadImageOrThrow(
-                "assets",
-                "images",
-                "background_start.jpeg"
+                    "assets",
+                    "images",
+                    "background_start.jpeg"
             );
 
             // Create background GameObject that spans the screen

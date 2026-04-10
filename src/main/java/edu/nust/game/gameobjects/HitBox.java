@@ -25,62 +25,49 @@ public class HitBox extends Component
     private Vector2D bottomLeftCorner;
     private Vector2D bottomRightCorner;
 
-    public HitBox(Vector2D pos, double height, double width)
-    {
+    public HitBox(Vector2D pos,double height,double width){
         this.pos = pos;
         this.width = width;
         this.height = height;
+        box = new BoxRenderer(width,height,Color.RED);
     }
 
-    public void getDamage(GameObject damageableObj, GameObject damagingObj)
-    {
+
+    public void getDamage(GameObject damageableObj,GameObject damagingObj){
 
     }
 
-    public boolean isTouching(HitBox touchedHB)
-    {
+    public boolean isTouching(HitBox touchedHB){
         return false;
     }
-
-    public boolean isTopTouching(HitBox touchedHB)
-    {
+    public boolean isTopTouching(HitBox touchedHB) {
 
         return false;
     }
-
-    public boolean isBottomTouching(HitBox touchedHB)
-    {
+    public boolean isBottomTouching(HitBox touchedHB){
         return false;
     }
-
-    public boolean isLeftTouching(HitBox touchedHB)
-    {
+    public boolean isLeftTouching(HitBox touchedHB){
         return false;
     }
-
-    public boolean isRightTouching(HitBox touchedHB)
-    {
+    public boolean isRightTouching(HitBox touchedHB){
         return false;
     }
 
     @Override
-    public void onInit()
-    {
-        box = new BoxRenderer(width, height, Color.RED);
-        this.gameObject.getFirstOrAddComponent(box).setVisible(visible);
+    public void onInit(){
+        // Add BoxRenderer component when GameObject is ready
+        this.gameObject.addComponent(box).setVisible(visible);
     }
-
     @Override
-    public void onUpdate(TimeSpan deltaTime)
-    {
+    public void onUpdate(TimeSpan deltaTime){
         this.setVisible(visible);
     }
 
     @Override
-    public void onRender(GraphicsContext context) { }
+    public void onRender(GraphicsContext context){}
 
-    public void changeVisible()
-    {
+    public void changeVisible() {
 
         visible = !visible;
     }

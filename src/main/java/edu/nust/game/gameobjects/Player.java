@@ -25,7 +25,6 @@ public class Player extends Character
     public Player(Vector2D pos, int initialHealth, int mSpeed, boolean moveable)
     {
         super(pos, initialHealth, mSpeed, moveable);
-        hitbox = new HitBox(pos, size + 2, size + 2);
         health = new HealthImpl();
 
         try
@@ -60,7 +59,6 @@ public class Player extends Character
         }
 
         this.getTransform().setPosition(getSpawnPos());
-        this.addComponent(new SpriteRenderer(size, size, images.getFirst()));
     }
 
     public void keyPress(KeyCode key)
@@ -76,6 +74,9 @@ public class Player extends Character
     @Override
     public void onInit()
     {
+        // Initialize hitbox here when GameObject is properly set up
+        hitbox = new HitBox(getSpawnPos(), size + 2, size + 2);
+        this.addComponent(hitbox);
     }
 
     @Override

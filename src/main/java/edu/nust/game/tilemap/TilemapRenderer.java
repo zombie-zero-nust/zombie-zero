@@ -96,7 +96,6 @@ public class TilemapRenderer extends Component
             return;
         }
 
-        // TODO: Extract specific tile from tileset if organized in grid
         ctx.drawImage(tileset, x, y, tileSize, tileSize);
     }
 
