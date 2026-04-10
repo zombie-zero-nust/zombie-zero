@@ -1,14 +1,19 @@
 package edu.nust.engine.core.audio;
 
 import edu.nust.engine.core.GameWorld;
+import edu.nust.engine.core.files.URLUtils;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.resources.Resources;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -33,6 +38,10 @@ public final class GameAudioManager
 
     private final HashMap<String, SoundEffectReference> loadedSoundEffects = new HashMap<>();
     private final HashMap<String, MusicTrackReference> loadedMusicTracks = new HashMap<>();
+
+    private double globalVolume = 1.0;
+    private double volumeBeforeMute = 1.0;
+    private boolean muted = false;
 
     /* SOUND EFFECT */
 
@@ -108,9 +117,244 @@ public final class GameAudioManager
         return getReferenceByName(MusicTrackReference.class, name, loadedMusicTracks);
     }
 
+    /* CACHE QUERIES */
+
+    /**
+     * Returns whether a sound effect with the given filename has been loaded into the cache.
+     *
+     * @param filename The filename with extension, e.g. {@code "click.wav"}
+     *
+     * @return {@code true} if the sound effect is loaded
+     */
+    public boolean isSoundEffectLoaded(String filename) { return loadedSoundEffects.containsKey(filename); }
+
+    /**
+     * Returns whether a music track with the given filename has been loaded into the cache.
+     *
+     * @param filename The filename with extension, e.g. {@code "bg_music.wav"}
+     *
+     * @return {@code true} if the music track is loaded
+     */
+    public boolean isMusicTrackLoaded(String filename) { return loadedMusicTracks.containsKey(filename); }
+
+    /* UNLOAD */
+
+    /**
+     * Removes the sound effect with the given filename from the cache and notifies its listeners. If no such effect is
+     * loaded, this is a no-op.
+     *
+     * @param filename The filename with extension to unload
+     */
+    public void unloadSoundEffect(String filename)
+    {
+        SoundEffectReference ref = loadedSoundEffects.remove(filename);
+        if (ref != null)
+        {
+            LOGGER.info("Unloaded [SoundEffectReference] \"{}\"", ref.getFileName());
+        }
+    }
+
+    /**
+     * Removes the music track with the given filename from the cache, notifies its listeners, and disposes the
+     * underlying {@link MediaPlayer}. If no such track is loaded, this is a no-op.
+     *
+     * @param filename The filename with extension to unload
+     */
+    public void unloadMusicTrack(String filename)
+    {
+        MusicTrackReference ref = loadedMusicTracks.remove(filename);
+        if (ref != null)
+        {
+            ref.dispose();
+            LOGGER.info("Unloaded [MusicTrackReference] \"{}\"", filename);
+        }
+    }
+
+    /**
+     * Removes and releases all loaded sound effects.
+     */
+    public void unloadAllSoundEffects()
+    {
+        loadedSoundEffects.clear();
+        LOGGER.info("Unloaded all SoundEffectReferences");
+    }
+
+    /**
+     * Removes and disposes all loaded music tracks. underlying {@link MediaPlayer} is disposed.
+     */
+    public void unloadAllMusicTracks()
+    {
+        for (MusicTrackReference ref : loadedMusicTracks.values())
+        {
+            ref.dispose();
+        }
+        loadedMusicTracks.clear();
+        LOGGER.info("Unloaded all MusicTrackReferences");
+    }
+
+    /**
+     * Unloads all audio resources; equivalent to calling {@link #unloadAllSoundEffects()} and
+     * {@link #unloadAllMusicTracks()}.
+     */
+    public void unloadAll()
+    {
+        unloadAllSoundEffects();
+        unloadAllMusicTracks();
+    }
+
+    /* LISTING */
+
+    /**
+     * Returns a list of filenames for all currently loaded sound effects.
+     *
+     * @return A new {@link List} of filenames; never {@code null}
+     */
+    public List<String> listLoadedSoundEffectNames() { return new ArrayList<>(loadedSoundEffects.keySet()); }
+
+    /**
+     * Returns a list of filenames for all currently loaded music tracks.
+     *
+     * @return A new {@link List} of filenames; never {@code null}
+     */
+    public List<String> listLoadedMusicTrackNames() { return new ArrayList<>(loadedMusicTracks.keySet()); }
+
+    /* OPTIONAL GETTERS */
+
+    /**
+     * Returns the loaded {@link SoundEffectReference} for the given filename.
+     * <br><br>
+     * Does not log an error if the effect is not found.
+     *
+     * @param filename The filename with extension, e.g. {@code "click.wav"}
+     *
+     * @return The {@link SoundEffectReference}, or {@code null} if not loaded
+     */
+    public @Nullable SoundEffectReference tryGetSoundEffect(String filename)
+    {
+        return loadedSoundEffects.get(filename);
+    }
+
+    /**
+     * Returns the loaded {@link MusicTrackReference} for the given filename.
+     * <br><br>
+     * Does not log an error if the effect is not found.
+     *
+     * @param filename The filename with extension, e.g. {@code "click.wav"}
+     *
+     * @return The {@link MusicTrackReference}, or {@code null} if not loaded
+     */
+    public @Nullable MusicTrackReference tryGetMusicTrack(String filename)
+    {
+        return loadedMusicTracks.get(filename);
+    }
+
+    /* COUNTS */
+
+    /**
+     * Returns the number of sound effects currently held in the cache.
+     *
+     * @return The loaded sound effect count
+     */
+    public int getLoadedSoundEffectCount() { return loadedSoundEffects.size(); }
+
+    /**
+     * Returns the number of music tracks currently held in the cache.
+     *
+     * @return The loaded music track count
+     */
+    public int getLoadedMusicTrackCount() { return loadedMusicTracks.size(); }
+
+    /* GLOBAL VOLUME */
+
+    /**
+     * Sets the master volume for all {@link AudioReference}. Individual {@link AudioReference} volumes are multiplied
+     * by this value.
+     *
+     * @param volume Master volume between {@code 0.0} (silent) and {@code 1.0} (full); clamped automatically
+     */
+    public void setGlobalVolume(double volume)
+    {
+        this.globalVolume = Math.clamp(volume, 0.0, 1.0);
+        if (muted) return; // mute is applied on top; don't propagate until unmuted
+        applyGlobalVolumeToAll();
+    }
+
+    /// Returns the current master volume, unaffected by the mute state.
+    public double getGlobalVolume() { return globalVolume; }
+
+    /* MUTE */
+
+    /**
+     * Mutes all audio by setting the effective global volume to {@code 0.0}. Stores the current volume so it can be
+     * restored by {@link #unmuteAll()}. Has no effect if already muted.
+     */
+    public void muteAll()
+    {
+        if (muted) return;
+        volumeBeforeMute = globalVolume;
+        muted = true;
+        applyGlobalVolumeToAll();
+    }
+
+    /**
+     * Restores audio to the volume that was active before {@link #muteAll()} was called. Has no effect if not muted.
+     */
+    public void unmuteAll()
+    {
+        if (!muted) return;
+        muted = false;
+        globalVolume = volumeBeforeMute;
+        applyGlobalVolumeToAll();
+    }
+
+    /**
+     * Returns whether all audio is currently muted.
+     *
+     * @return {@code true} if muted
+     */
+    public boolean isMuted() { return muted; }
+
+    /* FADE */
+
+    /**
+     * Smoothly fades out the given music track over the specified duration. Delegates to
+     * {@link MusicTrackReference#fadeOut(Duration)}.
+     *
+     * @param ref      The {@link MusicTrackReference} to fade out; must not be {@code null}
+     * @param duration The fade duration; must not be {@code null}
+     */
+    public void fadeOutMusic(MusicTrackReference ref, Duration duration) { ref.fadeOut(duration); }
+
+    /**
+     * Smoothly fades in the given music track over the specified duration. Delegates to
+     * {@link MusicTrackReference#fadeIn(Duration)}.
+     *
+     * @param ref      The {@link MusicTrackReference} to fade in; must not be {@code null}
+     * @param duration The fade duration; must not be {@code null}
+     */
+    public void fadeInMusic(MusicTrackReference ref, Duration duration) { ref.fadeIn(duration); }
+
+    /* STOP ALL */
+
+    /**
+     * Stops playback of all loaded music tracks, respecting any fade-on-stop configuration set on individual tracks.
+     */
+    public void stopAllMusic()
+    {
+        for (MusicTrackReference ref : loadedMusicTracks.values()) ref.stop();
+    }
+
+    /**
+     * Stops all currently playing instances of all loaded sound effects.
+     */
+    public void stopAllSoundEffects()
+    {
+        for (SoundEffectReference ref : loadedSoundEffects.values()) ref.stopAll();
+    }
+
     /* HELPERS */
 
-    /// **`INTERNAL`** Adds {@code assets/audio} to the given path.
+    /// <b>{@code INTERNAL}</b> Adds {@code assets/audio} to the given path.
     private String[] getAudioPath(String... path)
     {
         String[] fullPath = new String[2 + path.length];
@@ -121,7 +365,7 @@ public final class GameAudioManager
     }
 
     /**
-     * **`INTERNAL`**
+     * <b>{@code INTERNAL}</b>
      *
      * @param caller       The {@link AudioReference} subclass; used for <b>logging</b>
      * @param onSuccess    Function to call On Successful loading audio from given path ({@link URL})
@@ -149,7 +393,7 @@ public final class GameAudioManager
             return null;
         }
 
-        String name = AudioReference.getFileNameFromURL(url);
+        String name = URLUtils.getFileNameFromURL(url);
 
         // if already loaded, return that
         if (cachedList.containsKey(name)) return cachedList.get(name);
@@ -173,7 +417,7 @@ public final class GameAudioManager
     }
 
     /**
-     * **`INTERNAL`**
+     * <b>{@code INTERNAL}</b>
      *
      * @param caller     The {@link AudioReference} subclass; used for <b>logging</b>
      * @param name       The filename with extension
@@ -189,5 +433,14 @@ public final class GameAudioManager
 
         LOGGER.error(false, "Cannot find [{}] with name \"{}\"", caller.getSimpleName(), name);
         return null;
+    }
+
+    /// <b>{@code INTERNAL}</b> Propagates the effective global volume to all loaded references. When muted, applies
+    /// {@code 0.0}; otherwise applies the configured {@link #globalVolume}.
+    private void applyGlobalVolumeToAll()
+    {
+        double effective = muted ? 0.0 : globalVolume;
+        for (SoundEffectReference ref : loadedSoundEffects.values()) ref.applyGlobalVolumeToSelf(effective);
+        for (MusicTrackReference ref : loadedMusicTracks.values()) ref.applyGlobalVolumeToSelf(effective);
     }
 }
