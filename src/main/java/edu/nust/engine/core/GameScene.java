@@ -87,11 +87,11 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
         // add CSS
         String sceneName = this.getClass().getSimpleName();
-        URL cssUrl = Resources.tryGetResource("scenes", sceneName, "style.css");
-        // Keep common/global stylesheets, but remove previously attached scene-local style.css files.
-        this.gameWorld.getRawScene().getStylesheets().removeIf(
-                stylesheet -> stylesheet.contains("/scenes/") && stylesheet.endsWith("/style.css")
-        );
+        URL cssUrl = Resources.tryGetResource(GameURLs.SCENES_ROOT_DIR, sceneName, GameURLs.SCENE_CSS_FILENAME);
+        // Remove previous stylesheets, except common
+        this.gameWorld.getRawScene()
+                .getStylesheets()
+                .removeIf(stylesheet -> !stylesheet.contains(GameURLs.COMMON_CSS_FILENAME));
         if (cssUrl == null)
         {
             logger.warn("Missing CSS for: {}", sceneName);
@@ -403,7 +403,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         String sceneName = this.getClass().getSimpleName();
 
         // FXML
-        URL fxmlUrl = Resources.tryGetResource("scenes", sceneName, "layout.fxml");
+        URL fxmlUrl = Resources.tryGetResource(GameURLs.SCENES_ROOT_DIR, sceneName, GameURLs.SCENE_FXML_FILENAME);
         if (fxmlUrl == null) logger.error(true, "Missing FXML for: " + sceneName);
 
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
@@ -442,10 +442,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     /**
      * Clears the world canvas. When called everything in the frame will be cleared.
      */
-    public void clearCanvas()
-    {
-        getRawContext().clearRect(0, 0, worldCanvas.getWidth(), worldCanvas.getHeight());
-    }
+    public void clearCanvas() { getRawContext().clearRect(0, 0, worldCanvas.getWidth(), worldCanvas.getHeight()); }
 
     private GraphicsContext getRawContext() { return worldCanvas.getGraphicsContext2D(); }
 

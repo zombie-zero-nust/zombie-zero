@@ -1,5 +1,6 @@
 package edu.nust.engine.resources;
 
+import edu.nust.engine.core.GameURLs;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,8 +10,6 @@ import java.net.URL;
 
 public final class Resources
 {
-    public static final String BASE_PATH = "/edu/nust/game/";
-
     // no instance
     private Resources() { }
 
@@ -88,7 +87,7 @@ public final class Resources
      */
     public static String resolvePath(String... path)
     {
-        URI uri = URI.create(BASE_PATH);
+        URI uri = URI.create(GameURLs.BASE_PATH);
 
         for (String segment : path)
         {

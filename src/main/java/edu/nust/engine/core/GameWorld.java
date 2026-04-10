@@ -18,7 +18,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.URL;
 import java.util.function.Supplier;
 
 /**
@@ -81,15 +80,19 @@ public abstract class GameWorld
         this.sceneRoot.prefHeightProperty().bind(this.stage.heightProperty());
 
         logger.trace("Loading common CSS stylesheet");
-        URL commonCssUrl = Resources.tryGetResource("scenes", "common.css");
-        if (commonCssUrl != null)
+        if (GameURLs.COMMON_CSS_URL != null)
         {
-            this.scene.getStylesheets().add(commonCssUrl.toExternalForm());
-            logger.debug("Loaded common.css");
+            this.scene.getStylesheets().add(GameURLs.COMMON_CSS_URL.toExternalForm());
+            logger.debug("Loaded {}", GameURLs.COMMON_CSS_FILENAME);
         }
         else
         {
-            logger.warn("\"common.css\" not found, ensure 'edu/nust/game/scenes/common.css' if not intentional.");
+            logger.warn(
+                    "\"{}\" not found, ensure 'resources/edu/nust/game/{}/{}' if not intentional.",
+                    GameURLs.COMMON_CSS_FILENAME,
+                    GameURLs.SCENES_ROOT_DIR,
+                    GameURLs.COMMON_CSS_FILENAME
+            );
         }
 
         logger.trace("Calling initStage() for subclass setup");
