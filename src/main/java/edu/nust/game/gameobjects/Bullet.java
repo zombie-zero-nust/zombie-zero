@@ -32,7 +32,11 @@ public class Bullet extends GameObject {
         this.width = width;
         direction = mousePos.subtract(pos).normalize();
         try {
-            image = (Resources.loadImageOrThrow("assets", "images", "test.png"));
+            image = Resources.loadImageOrThrow(
+                    "assets",
+                    "raw/PostApocalypse/Character/Guns/Bullets",
+                    "Gun-bullet_Bullet.png"
+            );
 
         } catch (FileNotFoundException ignored) {
         }

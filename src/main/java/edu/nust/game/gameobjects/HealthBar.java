@@ -3,27 +3,21 @@ package edu.nust.game.gameobjects;
 import edu.nust.engine.resources.Resources;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
-import java.util.EnumMap;
-import java.util.Map;
 
 public class HealthBar extends Bar
 {
     private static final int MAX_HEALTH = 100;
     private static final String HP_UI_BASE = "raw/PostApocalypse/UI/HP";
 
-    private final ImageView heartImageView = new ImageView();
     private final ImageView hpFillImageView = new ImageView();
     private final ImageView hpFrameImageView = new ImageView();
     private final Rectangle hpFillClip = new Rectangle();
-
-    private final Map<HealthState, Image> stateImages = new EnumMap<>(HealthState.class);
 
     private Image hpBarFrameImage;
     private Image hpFillImage;
@@ -73,13 +67,10 @@ public class HealthBar extends Bar
 
     public void updateUI(Health healthSystem, Label healthLabel)
     {
-        if (healthLabel != null)
-            healthLabel.setText(healthSystem.getCurrentHealth() + " / 100");
+        // Keep health numeric value internal; UI shows only the visual HP bar.
 
         if (spritesReady)
         {
-            HealthState state = getHealthState(healthSystem.getCurrentHealth());
-            heartImageView.setImage(stateImages.get(state));
             updateHpFillClip(healthSystem.getCurrentHealth());
         }
         else
@@ -90,24 +81,11 @@ public class HealthBar extends Bar
 
     private void loadStateSprites()
     {
-        for (HealthState state : HealthState.values())
-        {
-            URL url = Resources.tryGetResource("assets", HP_UI_BASE, state.getSpriteFile());
-            if (url == null)
-            {
-                spritesReady = false;
-                stateImages.clear();
-                return;
-            }
-            stateImages.put(state, new Image(url.toExternalForm()));
-        }
-
         URL barFrameUrl = Resources.tryGetResource("assets", HP_UI_BASE, "HP-Bar.png");
         URL barFillUrl = Resources.tryGetResource("assets", HP_UI_BASE, "HP.png");
         if (barFrameUrl == null || barFillUrl == null)
         {
             spritesReady = false;
-            stateImages.clear();
             return;
         }
 
@@ -119,10 +97,7 @@ public class HealthBar extends Bar
 
     private void buildSpriteUi()
     {
-        heartImageView.setPreserveRatio(true);
-        heartImageView.setFitHeight(34);
-
-        double targetBarHeight = 24;
+        double targetBarHeight = 40;
         double scale = targetBarHeight / hpBarFrameImage.getHeight();
         displayBarWidth = hpBarFrameImage.getWidth() * scale;
         displayBarHeight = targetBarHeight;
@@ -145,8 +120,7 @@ public class HealthBar extends Bar
         updateHpFillClip(MAX_HEALTH);
 
         StackPane hpBarStack = new StackPane(hpFillImageView, hpFrameImageView);
-        HBox composite = new HBox(8, heartImageView, hpBarStack);
-        this.getChildren().add(composite);
+        this.getChildren().add(hpBarStack);
     }
 
     private void updateHpFillClip(int currentHealth)
@@ -161,41 +135,6 @@ public class HealthBar extends Bar
         hpFillClip.setHeight(fillableHeight);
     }
 
-    /**
-     * Gets the health state for sprite-based UI display 0-33% = EMPTY, 34-66% = HALF, 67-100% = FULL
-     */
-    public HealthState getHealthState(int currentHealth)
-    {
-        int percentage = (currentHealth * 100) / MAX_HEALTH;
-        if (percentage <= 33)
-            return HealthState.EMPTY;
-        else if (percentage <= 66)
-            return HealthState.HALF;
-        else
-            return HealthState.FULL;
-    }
-
-    /**
-     * Enum representing health states for sprite display
-     */
-    public enum HealthState
-    {
-        FULL("Heart_Full.png"),
-        HALF("Heart_Half.png"),
-        EMPTY("Heart_Empty.png");
-
-        private final String spriteFile;
-
-        HealthState(String spriteFile)
-        {
-            this.spriteFile = spriteFile;
-        }
-
-        public String getSpriteFile()
-        {
-            return spriteFile;
-        }
-    }
 }
 
 
