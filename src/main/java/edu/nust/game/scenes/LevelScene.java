@@ -20,12 +20,10 @@ import javafx.scene.control.Label;
 public class LevelScene extends GameScene
 {
     @FXML private StackPane pauseOverlay;
-    @FXML private VBox helpTextContainer;
     @FXML private Label scoreLabel;
     @FXML private Label ammoLabel;
     @FXML private Label reloadLabel;
     @FXML private Label healthLabel;
-    @FXML private Label gunTypeLabel;
     @FXML private VBox ammoBarContainer;
     @FXML private VBox healthBarContainer;
     private boolean isPaused = false;
@@ -98,17 +96,36 @@ public class LevelScene extends GameScene
         Vector2D cameraPos = this.getWorldCamera().getPosition();
         double zoom = this.getWorldCamera().getZoom();
 
+        updateMouseWorldPosition(canvasW, canvasH, cameraPos, zoom);
+        handleWeaponFiring(deltaTime);
+        refreshHud(deltaTime);
+
+        if(player == null) return;
+        Vector2D playerPos = clampPlayerToPlayArea(player.getTransform().getPosition());
+        updateWeaponTracking(playerPos);
+        updateEnemyAndCollision(playerPos, deltaTime);
+        updateCameraPosition(playerPos, canvasW, canvasH, zoom);
+    }
+
+    private void updateMouseWorldPosition(double canvasW, double canvasH, Vector2D cameraPos, double zoom)
+    {
         double worldX = cameraPos.getX() + (screenX - canvasW / 2) / zoom;
         double worldY = cameraPos.getY() + (screenY - canvasH / 2) / zoom;
         this.mousePosition = new Vector2D(worldX, worldY);
+    }
 
-        if (weapon != null)
-        {
-            Bullet bullet = weapon.fireWeapon(mousePosition, deltaTime);
-            if(bullet != null)
-                this.addGameObject(bullet);
-        }
+    private void handleWeaponFiring(TimeSpan deltaTime)
+    {
+        if (weapon == null)
+            return;
 
+        Bullet bullet = weapon.fireWeapon(mousePosition, deltaTime);
+        if (bullet != null)
+            this.addGameObject(bullet);
+    }
+
+    private void refreshHud(TimeSpan deltaTime)
+    {
         score.update(deltaTime);
         if (scoreLabel != null)
             scoreLabel.setText(String.valueOf(score.getScore()));
@@ -118,21 +135,26 @@ public class LevelScene extends GameScene
 
         if (healthBar != null && player != null)
             healthBar.updateUI(player.getHealthSystem(), healthLabel);
+    }
 
-        if(player == null) return;
-        Vector2D playerPos = player.getTransform().getPosition();
+    private Vector2D clampPlayerToPlayArea(Vector2D playerPos)
+    {
+        if (playAreaBounds == null)
+            return playerPos;
 
-        // Restrict player movement to play area bounds
-        if (playAreaBounds != null)
-        {
-            Vector2D clampedPos = playAreaBounds.clampPosition(playerPos);
-            player.getTransform().setPosition(clampedPos);
-            playerPos = clampedPos;
-        }
+        Vector2D clampedPos = playAreaBounds.clampPosition(playerPos);
+        player.getTransform().setPosition(clampedPos);
+        return clampedPos;
+    }
 
+    private void updateWeaponTracking(Vector2D playerPos)
+    {
         if (weapon != null)
             weapon.updatePosition(mousePosition, playerPos);
+    }
 
+    private void updateEnemyAndCollision(Vector2D playerPos, TimeSpan deltaTime)
+    {
         enemyManager.updateEnemyLogic(playerPos);
 
         collisionCooldown -= deltaTime.asSeconds();
@@ -144,8 +166,10 @@ public class LevelScene extends GameScene
             if (!player.getHealthSystem().isAlive())
                 gameOver();
         }
+    }
 
-        // Clamp camera to full tilemap bounds so viewport never reveals outside-map black space.
+    private void updateCameraPosition(Vector2D playerPos, double canvasW, double canvasH, double zoom)
+    {
         Vector2D cameraTarget = playerPos;
         if (levelBuilder != null)
         {
