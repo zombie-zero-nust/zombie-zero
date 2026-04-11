@@ -1,0 +1,149 @@
+@font-face {
+    font-family: "Share Tech Mono";
+    src: url("/edu/nust/game/assets/fonts/ShareTechMono-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Oxanium";
+    src: url("/edu/nust/game/assets/fonts/Oxanium-VariableFont_wght.ttf");
+}
+
+/* Keep visuals consistent with menu scenes. */
+.root {
+    -fx-padding: 0;
+}
+
+.ui-root {
+    -fx-background-image: url('../../assets/images/background_start.jpeg');
+    -fx-background-size: 100% 100%;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 0;
+}
+
+.screen-content {
+    -fx-padding: 24px;
+}
+
+.title-label {
+    -fx-font-size: 44px;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 24px;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-background-color: linear-gradient(to bottom, #be6253 0%, #a64d3f 45%, #8d3f32 46%, #793428 100%);
+    -fx-border-color: #4d251f;
+    -fx-border-width: 2px;
+}
+
+.banner-box {
+    -fx-min-width: 820px;
+    -fx-padding: 14px;
+    -fx-background-color: rgba(0, 0, 0, 0.55);
+    -fx-border-color: rgba(255, 255, 255, 0.35);
+    -fx-border-width: 1px;
+}
+
+.banner-title {
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fff1c7;
+}
+
+.banner-subtitle {
+    -fx-font-size: 17px;
+    -fx-text-fill: #f2f2f2;
+    -fx-font-family: "Share Tech Mono";
+}
+
+.table-header-row {
+    -fx-min-width: 820px;
+    -fx-max-width: 820px;
+    -fx-padding: 8px 0;
+    -fx-background-color: rgba(0, 0, 0, 0.55);
+}
+
+.header-cell {
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 0 12 0 12;
+    -fx-font-family: "Oxanium";
+}
+
+#timestampHeader {
+    -fx-font-family: "Share Tech Mono";
+}
+
+.rows-container {
+    -fx-min-width: 820px;
+    -fx-max-width: 820px;
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-padding: 4px 0 8px 0;
+}
+
+.score-row {
+    -fx-padding: 8px 0;
+    -fx-border-color: rgba(255, 255, 255, 0.18);
+    -fx-border-width: 0 0 1 0;
+}
+
+.score-cell {
+    -fx-font-size: 16px;
+    -fx-text-fill: #f2f2f2;
+    -fx-padding: 0 12 0 12;
+}
+
+.empty-row {
+    -fx-font-size: 18px;
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-padding: 14px;
+}
+
+.col-rank {
+    -fx-min-width: 90px;
+    -fx-pref-width: 90px;
+    -fx-max-width: 90px;
+    -fx-alignment: center;
+}
+
+.col-name {
+    -fx-min-width: 280px;
+    -fx-pref-width: 280px;
+    -fx-max-width: 280px;
+}
+
+.col-score {
+    -fx-min-width: 130px;
+    -fx-pref-width: 130px;
+    -fx-max-width: 130px;
+    -fx-alignment: center;
+}
+
+.col-time {
+    -fx-min-width: 320px;
+    -fx-pref-width: 320px;
+    -fx-max-width: 320px;
+    -fx-font-family: "Share Tech Mono";
+}
+
+.primary-button {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f2f2f2;
+    -fx-padding: 12px 30px;
+    -fx-min-width: 240px;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-background-color: linear-gradient(to bottom, #ef6a55 0%, #d64a33 45%, #ba3220 46%, #a92718 100%);
+    -fx-border-color: #631b12;
+    -fx-border-width: 3px;
+}
+
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #ff7c66 0%, #e45a43 45%, #c93b28 46%, #b7301f 100%);
+}
+
+
+

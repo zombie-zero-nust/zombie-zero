@@ -70,6 +70,12 @@ public class StartScene extends GameScene
     }
 
     @FXML
+    private void switchToHighscoresScene()
+    {
+        this.getWorld().setScene(new HighscoresScene(this.getWorld()));
+    }
+
+    @FXML
     private void exitApplication()
     {
         this.getWorld().stop();
