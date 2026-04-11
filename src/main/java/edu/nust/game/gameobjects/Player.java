@@ -1,5 +1,6 @@
 package edu.nust.game.gameobjects;
 
+import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
@@ -14,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.ArrayList;
 
-public class Player extends Character
+public class Player extends Character implements DamageableObj
 {
     private enum Facing { UP, DOWN, LEFT, RIGHT }
 
@@ -223,6 +224,23 @@ public class Player extends Character
     {
     }
 
+    @Override
+    public void takeDamage(GameObject damagingObj){
+
+    }
+    @Override
+    public Health getHealth(){
+        return health;
+    }
+    @Override
+    public void setHealth(Health health){
+        this.health = health;
+    }
+
+    @Override
+    public boolean isDead(){
+        return false;
+    }
     public void setSize(double size)
     {
         this.size = size;

@@ -56,7 +56,6 @@ public abstract class Character extends GameObject {
         if(health < 0){ health = 0;}
         else this.health = health;
     }
-    public int getHealth(){ return health; }
 
     public void setMovementSpeed(int mSpeed){ movementSpeed = mSpeed;}
     public int getMovementSpeed(){ return movementSpeed; }
