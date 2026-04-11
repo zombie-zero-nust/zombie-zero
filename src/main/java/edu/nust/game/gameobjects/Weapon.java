@@ -5,6 +5,7 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
@@ -40,7 +41,7 @@ public class Weapon extends GameObject
         try
         {
             weaponSprite = Resources.loadImageOrThrow(
-                "assets", "raw", "PostApocalypse", "Objects", "Pickable", "Gun.png"
+                    "assets", "raw", "PostApocalypse", "Objects", "Pickable", "Gun.png"
             );
             this.addComponent(new SpriteRenderer(width, height, weaponSprite));
         }
@@ -78,10 +79,41 @@ public class Weapon extends GameObject
         muzzleFlashRenderer.setFrame(frame, 0);
     }
 
+    //manually rendering the muzzle
+    @Override
+    public void onRender(GraphicsContext context)
+    {
+        if (!muzzlePlaying || muzzleFlashRenderer == null)
+            return;
+
+        double rotation = this.getTransform().getRotation().getRadians();
+        Vector2D weaponPos = this.getTransform().getPosition();
+        Vector2D barrelDirection = new Vector2D(Math.cos(rotation), Math.sin(rotation));
+        Vector2D barrelTip = weaponPos.add(barrelDirection.multiply(width));
+
+        double w = muzzleFlashRenderer.getWidth();
+        double h = muzzleFlashRenderer.getHeight();
+
+        double sx = muzzleFlashRenderer.getFrameX() * muzzleFlashRenderer.getFrameWidth();
+        double sy = muzzleFlashRenderer.getFrameY() * muzzleFlashRenderer.getFrameHeight();
+
+        context.save();
+        context.translate(barrelTip.getX(), barrelTip.getY());
+        context.rotate(this.getTransform().getRotation().getDegrees());
+        context.drawImage(
+                muzzleFlashRenderer.getImage(),
+                sx, sy,
+                muzzleFlashRenderer.getFrameWidth(),
+                muzzleFlashRenderer.getFrameHeight(),
+                -w / 2 -2, -h / 2 -2,
+                w, h
+        );
+        context.restore();
+    }
+
     public void updatePosition(Vector2D mousePos, Vector2D playerPos)
     {
         Vector2D delta = mousePos.subtract(playerPos);
-
         double dx = delta.getX();
         double dy = delta.getY();
         double rotation;
@@ -89,32 +121,25 @@ public class Weapon extends GameObject
         String currDirection;
         if (dx == 0)
         {
-            if(dy < 0) rotation = Math.PI/2;
-            else rotation = 3*Math.PI/2;
+            if(dy > 0) rotation = Math.PI/2;
+            else rotation = -Math.PI/2;
         }
         else
         {
             rotation = Math.atan2(dy,dx);
         }
 
-        if(Math.abs(rotation) < Math.PI/2){
-            currDirection = "LEFT";
-        }
-        else{
-            currDirection = "RIGHT";
-        }
-        if(preDirection == null) preDirection = currDirection;
         SpriteRenderer spriteRenderer = this.getFirstComponent(SpriteRenderer.class);
-        if(spriteRenderer != null){
-            if(!currDirection.equals(preDirection)) {
-
+        if(spriteRenderer!= null) {
+            if (rotation > Math.PI / 2 || rotation < -Math.PI / 2) {
                 spriteRenderer.flipVertical();
-                preDirection = currDirection;
+            } else {
+                spriteRenderer.unFlipVertical();
             }
         }
-
         this.getTransform().setPosition(playerPos.add(orbitingDistance));
         this.getTransform().setRotationRadians(rotation);
+
     }
 
     public Bullet fireWeapon(Vector2D targetPos, TimeSpan deltaTime)
@@ -189,7 +214,6 @@ public class Weapon extends GameObject
 
             muzzleFlashRenderer = new SpriteRenderer(44, 44, fireRightSheet, MUZZLE_FRAMES, 1);
             muzzleFlashRenderer.setVisible(false);
-            this.addComponent(muzzleFlashRenderer);
         }
         catch (FileNotFoundException e)
         {
@@ -227,4 +251,3 @@ public class Weapon extends GameObject
         return direction.getY() >= 0 ? fireDownSheet : fireUpSheet;
     }
 }
-

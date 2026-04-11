@@ -208,6 +208,11 @@ public class SpriteRenderer extends Component
         this.height = -Math.abs(this.height);
         return this;
     }
+    public SpriteRenderer unFlipVertical()
+    {
+        this.height = Math.abs(this.height);
+        return this;
+    }
 
     /* GETTERS AND SETTERS */
 
