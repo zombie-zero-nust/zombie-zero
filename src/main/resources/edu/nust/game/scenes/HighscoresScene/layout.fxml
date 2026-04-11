@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           styleClass="ui-root"
+           maxWidth="Infinity"
+           maxHeight="Infinity"
+           minWidth="0"
+           minHeight="0">
+
+    <VBox alignment="TOP_CENTER" spacing="14" styleClass="screen-content">
+        <Label text="High Scores" styleClass="title-label" />
+
+        <VBox alignment="CENTER" spacing="4" styleClass="banner-box">
+            <Label fx:id="bannerLabel" text="#1 ---" styleClass="banner-title" />
+            <Label fx:id="bannerSubLabel" text="No highscores yet" styleClass="banner-subtitle" />
+        </VBox>
+
+        <HBox styleClass="table-header-row" spacing="8">
+            <Label text="Rank" styleClass="header-cell" minWidth="90" prefWidth="90" maxWidth="90" />
+            <Label text="Player" styleClass="header-cell" minWidth="280" prefWidth="280" maxWidth="280" />
+            <Label text="Score" styleClass="header-cell" minWidth="130" prefWidth="130" maxWidth="130" />
+            <Label id="timestampHeader" text="Timestamp" styleClass="header-cell" minWidth="320" prefWidth="320" maxWidth="320" />
+        </HBox>
+
+        <VBox fx:id="scoreRowsContainer" styleClass="rows-container" />
+
+        <Button text="Back" onAction="#backToMainMenu" styleClass="primary-button" />
+    </VBox>
+</StackPane>
+
+
+

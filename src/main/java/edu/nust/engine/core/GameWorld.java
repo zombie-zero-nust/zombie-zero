@@ -258,20 +258,27 @@ public abstract class GameWorld
 
     private void loadFont()
     {
+        loadFontFile("PixelifySans.ttf");
+        loadFontFile("ShareTechMono-Regular.ttf");
+        loadFontFile("Oxanium-VariableFont_wght.ttf");
+    }
+
+    private void loadFontFile(String fileName)
+    {
         try
         {
             Font font = Font.loadFont(
-                    Resources.getResourceOrThrow("assets", "fonts", "PixelifySans.ttf").openStream(),
+                    Resources.getResourceOrThrow("assets", "fonts", fileName).openStream(),
                     12
             );
 
             if (font == null) throw new RuntimeException("Font returned null");
 
-            logger.success("Loaded font: {}", font.getName());
+            logger.success("Loaded font '{}': {}", fileName, font.getName());
         }
         catch (Exception e)
         {
-            logger.error(false, "Failed to load font: {}", e.getMessage());
+            logger.error(false, "Failed to load font '{}': {}", fileName, e.getMessage());
         }
     }
 

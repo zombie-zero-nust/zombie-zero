@@ -24,6 +24,10 @@
                 onAction="#switchToLevelScene"
                 styleClass="primary-button"/>
 
+        <Button text="High Scores"
+                onAction="#switchToHighscoresScene"
+                styleClass="primary-button"/>
+
         <Button text="Exit"
                 onAction="#exitApplication"
                 styleClass="primary-button"/>
