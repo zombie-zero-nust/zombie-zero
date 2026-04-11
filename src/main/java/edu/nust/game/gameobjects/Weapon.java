@@ -19,7 +19,6 @@ public class Weapon extends GameObject
     private double width = 54;
     private double height= 18;
 
-
     private static final int GUN_IDLE_FRAMES = 6;
     private SpriteRenderer muzzleFlashRenderer;
     private SpriteRenderer weaponRenderer;
