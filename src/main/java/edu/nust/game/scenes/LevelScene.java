@@ -19,6 +19,8 @@ import javafx.scene.control.Label;
 
 public class LevelScene extends GameScene
 {
+    private final LevelId selectedLevel;
+
     @FXML private StackPane pauseOverlay;
     @FXML private Label scoreLabel;
     @FXML private Label ammoLabel;
@@ -40,9 +42,12 @@ public class LevelScene extends GameScene
     private double screenY;
     private double collisionCooldown = 0;
 
-    public LevelScene(GameWorld level)
+    public LevelScene(GameWorld level) { this(level, LevelId.LEVEL_1); }
+
+    public LevelScene(GameWorld level, LevelId selectedLevel)
     {
         super(level);
+        this.selectedLevel = selectedLevel;
     }
 
     @Override
@@ -280,7 +285,7 @@ public class LevelScene extends GameScene
     @FXML
     private void retryLevel()
     {
-        this.getWorld().setScene(new LevelScene(this.getWorld()));
+        this.getWorld().setScene(new LevelScene(this.getWorld(), selectedLevel));
     }
 
     public int getCurrentScore()

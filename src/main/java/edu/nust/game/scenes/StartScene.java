@@ -66,7 +66,7 @@ public class StartScene extends GameScene
     @FXML
     private void switchToLevelScene()
     {
-        this.getWorld().setScene(new LevelScene(this.getWorld()));
+        this.getWorld().setScene(new LevelSelectScene(this.getWorld()));
     }
 
     @FXML

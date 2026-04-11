@@ -20,7 +20,7 @@
                 onAction="#switchToGameScene"
                 styleClass="primary-button"/>
 
-        <Button text="LevelScene"
+        <Button text="Levels"
                 onAction="#switchToLevelScene"
                 styleClass="primary-button"/>
 
