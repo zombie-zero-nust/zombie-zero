@@ -20,9 +20,9 @@ public class Weapon extends GameObject
     private double height= 18;
 
 
-    private String preDirection;
-
+    private static final int GUN_IDLE_FRAMES = 6;
     private SpriteRenderer muzzleFlashRenderer;
+    private SpriteRenderer weaponRenderer;
     private boolean isFiring;
     private boolean autoFire;
     private double fireCooldown = 0;
@@ -30,7 +30,10 @@ public class Weapon extends GameObject
     private boolean muzzlePlaying;
     private Ammo ammo;
 
-    private Image weaponSprite;
+    private Image gunIdleUpSheet;
+    private Image gunIdleDownSheet;
+    private Image gunIdleRightSheet;
+    private Image gunIdleLeftSheet;
     private Image fireUpSheet;
     private Image fireDownSheet;
     private Image fireRightSheet;
@@ -38,17 +41,7 @@ public class Weapon extends GameObject
 
     public Weapon()
     {
-        try
-        {
-            weaponSprite = Resources.loadImageOrThrow(
-                    "assets", "raw", "PostApocalypse", "Objects", "Pickable", "Gun.png"
-            );
-            this.addComponent(new SpriteRenderer(width, height, weaponSprite));
-        }
-        catch (FileNotFoundException e)
-        {
-            this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(36, 18, javafx.scene.paint.Color.CYAN));
-        }
+        loadWeaponAimAssets();
 
         loadMuzzleFireAssets();
 
@@ -58,6 +51,34 @@ public class Weapon extends GameObject
         muzzleElapsed = 0;
         muzzlePlaying = false;
         ammo = new AmmoImpl();
+    }
+
+    private void loadWeaponAimAssets()
+    {
+        try
+        {
+            gunIdleUpSheet = Resources.loadImageOrThrow(
+                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Gun", "Gun_up_idle-and-run-Sheet6.png"
+            );
+            gunIdleDownSheet = Resources.loadImageOrThrow(
+                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Gun", "Gun_down_idle-and-run-Sheet6.png"
+            );
+            gunIdleRightSheet = Resources.loadImageOrThrow(
+                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Gun", "Gun_side_idle-and-run-Sheet6.png"
+            );
+            gunIdleLeftSheet = Resources.loadImageOrThrow(
+                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Gun", "Gun_side-left_idle-and-run-Sheet6.png"
+            );
+
+            weaponRenderer = new SpriteRenderer(width, height, gunIdleRightSheet, GUN_IDLE_FRAMES, 1);
+            weaponRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).startAnimation();
+            this.addComponent(weaponRenderer);
+        }
+        catch (FileNotFoundException e)
+        {
+            weaponRenderer = null;
+            this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(36, 18, javafx.scene.paint.Color.CYAN));
+        }
     }
 
     @Override
@@ -114,29 +135,21 @@ public class Weapon extends GameObject
     public void updatePosition(Vector2D mousePos, Vector2D playerPos)
     {
         Vector2D delta = mousePos.subtract(playerPos);
+        if (delta.isZeroEpsilon(0.0001))
+            delta = Vector2D.right();
+
         double dx = delta.getX();
         double dy = delta.getY();
-        double rotation;
-        Vector2D orbitingDistance = delta.normalize().multiply(30);
-        String currDirection;
-        if (dx == 0)
+        double rotation = Math.atan2(dy, dx);
+        Vector2D orbitingDistance = delta.normalize().multiply(WEAPON_OFFSET);
+
+        if (weaponRenderer != null)
         {
-            if(dy > 0) rotation = Math.PI/2;
-            else rotation = -Math.PI/2;
-        }
-        else
-        {
-            rotation = Math.atan2(dy,dx);
+            Image directionalGunSheet = getDirectionalGunIdleSheet(delta);
+            if (directionalGunSheet != null && weaponRenderer.getImage() != directionalGunSheet)
+                weaponRenderer.setImage(directionalGunSheet, GUN_IDLE_FRAMES, 1).setFrame(0, 0).startAnimation();
         }
 
-        SpriteRenderer spriteRenderer = this.getFirstComponent(SpriteRenderer.class);
-        if(spriteRenderer!= null) {
-            if (rotation > Math.PI / 2 || rotation < -Math.PI / 2) {
-                spriteRenderer.flipVertical();
-            } else {
-                spriteRenderer.unFlipVertical();
-            }
-        }
         this.getTransform().setPosition(playerPos.add(orbitingDistance));
         this.getTransform().setRotationRadians(rotation);
 
@@ -249,5 +262,16 @@ public class Weapon extends GameObject
             return direction.getX() >= 0 ? fireRightSheet : fireLeftSheet;
 
         return direction.getY() >= 0 ? fireDownSheet : fireUpSheet;
+    }
+
+    private Image getDirectionalGunIdleSheet(Vector2D direction)
+    {
+        double absX = Math.abs(direction.getX());
+        double absY = Math.abs(direction.getY());
+
+        if (absX >= absY)
+            return direction.getX() >= 0 ? gunIdleRightSheet : gunIdleLeftSheet;
+
+        return direction.getY() >= 0 ? gunIdleDownSheet : gunIdleUpSheet;
     }
 }
