@@ -4,9 +4,11 @@ import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.game.PlayerSession;
 import edu.nust.game.Score;
 import edu.nust.game.assets.TilesetAsset;
 import edu.nust.game.gameobjects.*;
+import edu.nust.game.highscores.HighscoreStore;
 import edu.nust.game.tilemap.LevelBuilder;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
@@ -16,6 +18,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
+
+import java.time.LocalDateTime;
 
 public class LevelScene extends GameScene
 {
@@ -41,6 +45,7 @@ public class LevelScene extends GameScene
     private double screenX;
     private double screenY;
     private double collisionCooldown = 0;
+    private boolean scoreSaved = false;
 
     public LevelScene(GameWorld level) { this(level, LevelId.LEVEL_1); }
 
@@ -277,9 +282,19 @@ public class LevelScene extends GameScene
 
     private void gameOver()
     {
+        saveScoreIfNeeded();
         setPaused(true);
         pauseOverlay.setVisible(true);
         pauseOverlay.setManaged(true);
+    }
+
+    private void saveScoreIfNeeded()
+    {
+        if (scoreSaved)
+            return;
+
+        scoreSaved = true;
+        HighscoreStore.append(PlayerSession.getPlayerName(), getCurrentScore(), LocalDateTime.now());
     }
 
     @FXML
