@@ -162,6 +162,9 @@ public class LevelScene extends GameScene
             );
             this.level1CollisionMask = Level1CollisionMask.fromImage(level1Image);
 
+            // Create a minimal LevelBuilder for Level1 to use its utility methods
+            levelBuilder = new LevelBuilder(1, 1, (int) worldWidth);
+
             GameObject background = GameObject.create();
             background.addComponent(new SpriteRenderer(worldWidth, worldHeight, level1Image));
             background.getTransform().setPosition(worldWidth / 2.0, worldHeight / 2.0);
