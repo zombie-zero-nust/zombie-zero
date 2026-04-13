@@ -15,27 +15,39 @@ public class CollisionManager {
        this.scene = scene;
    }
 
-   private void getObjs(GameScene scene) {
+   private void getObjs() {
+       concreteObjs.clear();
+       damagingObjs.clear();
+       damageableObjs.clear();
+
        for (GameObject obj : this.scene.getAllGameObjects()) {
            if(obj instanceof Concrete){
                concreteObjs.add((Concrete) obj);
-               if(obj instanceof Damaging){
-                   damagingObjs.add((Damaging) obj);
-               }
-               if (obj instanceof Damageable) {
-                   damageableObjs.add((Damageable) obj);
-               }
+           }
+
+           if(obj instanceof Damaging){
+               damagingObjs.add((Damaging) obj);
+           }
+
+           if (obj instanceof Damageable) {
+               damageableObjs.add((Damageable) obj);
            }
        }
    }
 
-   public void manageCollisions(GameScene scene){
-        getObjs(scene);
+   public void manageCollisions(){
+        getObjs();
         for(Concrete obj : concreteObjs){
             if(obj != null){
                 for(Concrete otherObj : concreteObjs){
                     if(otherObj!=null) {
-                        if (obj != otherObj && obj.getHitbox().isTouching(otherObj.getHitbox())) {
+                        if (obj == otherObj || obj.getHitbox() == null || otherObj.getHitbox() == null)
+                            continue;
+
+                        obj.getHitbox().setTouchingFalse();
+                        obj.getHitbox().setMin(otherObj.getHitbox());
+
+                        if (obj.getHitbox().isTouching(otherObj.getHitbox())) {
                             obj.triggerCollisionEffect();
                         }
                     }
