@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.ArrayList;
 
-public class Player extends Character implements DamageableObj
+public class Player extends Character implements Damageable
 {
     private enum Facing { UP, DOWN, LEFT, RIGHT }
 

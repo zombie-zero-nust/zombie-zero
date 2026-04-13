@@ -1,8 +1,6 @@
 package edu.nust.game.gameobjects;
 
-import edu.nust.engine.core.GameObject;
-
-public interface DamageableObj {
+public interface Damageable {
     void takeDamage(int damage);
     void setHealth(Health health);
     Health getHealth();
