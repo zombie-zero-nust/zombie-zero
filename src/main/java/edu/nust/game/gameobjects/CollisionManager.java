@@ -3,45 +3,41 @@ package edu.nust.game.gameobjects;
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import edu.nust.engine.math.TimeSpan;
 import edu.nust.game.gameobjects.HitBox;
 
 public class CollisionManager {
    private GameScene scene;
-   private final ArrayList<HitBox> hitboxes = new ArrayList<>();
+   private final Set<ConcreteObj> concreteObjs = new HashSet<>();
+   private final Set<DamagingObj> damagingObjs = new HashSet<>();
+   private final Set<DamageableObj> damageableObjs = new HashSet<>();
    public CollisionManager(GameScene scene){
        this.scene = scene;
-       this.setHitboxes(scene);
    }
 
-   private void setHitboxes(GameScene scene) {
+   private void setObjs(GameScene scene) {
        for (GameObject obj : this.scene.getAllGameObjects()) {
-            HitBox hitbox = obj.getFirstComponent(HitBox.class);
-            if(hitbox != null) hitboxes.add(hitbox);
+           if(obj instanceof ConcreteObj){
+               concreteObjs.add((ConcreteObj) obj);
+               if(obj instanceof DamagingObj){
+                   damagingObjs.add((DamagingObj) obj);
+               }
+               if (obj instanceof  DamageableObj) {
+                   damageableObjs.add((DamageableObj) obj);
+               }
+           }
        }
    }
 
    public void manageCollisions(){
-       HitBox h1;
-       HitBox h2;
-        for(int i =0; i< hitboxes.size();i++){
-            for(int j =0;j<hitboxes.size();j++){
-                h1 = hitboxes.get(i);
-                h2 = hitboxes.get(j);
-                if(h1 == h2){
-                    if(h1.isTouching(h2)){
-                        this.triggerCollisionEffect(h1,h2);
-                    }
-                }
-            }
-        }
+
    }
 
    public void triggerCollisionEffect(HitBox a, HitBox b){
-       if(a.getGameObject().getClass() == Player.class){
-           if(b.getGameObject().getClass() == Bullet.class){
-               //trigger damage logic
-           }
-       }
+
    }
 
 
