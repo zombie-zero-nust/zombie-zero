@@ -3,6 +3,7 @@ package edu.nust.game.scenes;
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
+import edu.nust.engine.core.audio.MusicTrackReference;
 import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
@@ -67,7 +68,7 @@ public class MainGameScene extends GameScene
         {
         }
 
-        Audios.testLongAudioRef().play();
+        Audios.backgroundMusicRef().ifPresent(MusicTrackReference::play);
     }
 
     @Override
@@ -119,11 +120,11 @@ public class MainGameScene extends GameScene
         pauseOverlay.setVisible(newState);
         pauseOverlay.setManaged(newState);
         this.setActive(!newState);
-        Audios.forEachSoundEffect((audio) -> {
-            SoundEffectReference ref = this.getWorld().getAudioManager().getSoundEffectByName(audio);
-            if (ref != null) ref.stopAll();
-        });
-        Audios.testLongAudioRef().togglePause();
+        Audios.forEachSoundEffect((audio) -> this.getWorld()
+                .getAudioManager()
+                .getSoundEffectByName(audio)
+                .ifPresent(SoundEffectReference::stopAll));
+        Audios.backgroundMusicRef().ifPresent(MusicTrackReference::togglePause);
     }
 
     private void toggleHelpText()
@@ -131,7 +132,7 @@ public class MainGameScene extends GameScene
         boolean isVisible = helpTextContainer.isVisible();
         helpTextContainer.setVisible(!isVisible);
         helpTextContainer.setManaged(!isVisible);
-        Audios.testAudioClipRef().play();
+        Audios.testSoundRef().ifPresent(SoundEffectReference::play);
     }
 
     /* FXML Button Callbacks */

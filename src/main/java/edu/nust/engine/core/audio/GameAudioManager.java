@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -56,8 +57,7 @@ public final class GameAudioManager
      *
      * @return The loaded {@link SoundEffectReference}, or {@code null} if the file could not be found or loaded
      */
-    @Nullable
-    public SoundEffectReference loadSoundEffect(String... relativePath)
+    public Optional<SoundEffectReference> loadSoundEffect(String... relativePath)
     {
         return tryLoadAudioReference(
                 SoundEffectReference.class,
@@ -74,8 +74,7 @@ public final class GameAudioManager
      *
      * @return The {@link SoundEffectReference}, or {@code null} if not found
      */
-    @Nullable
-    public SoundEffectReference getSoundEffectByName(String name)
+    public Optional<SoundEffectReference> getSoundEffectByName(String name)
     {
         return getReferenceByName(SoundEffectReference.class, name, loadedSoundEffects);
     }
@@ -91,10 +90,10 @@ public final class GameAudioManager
      * @param relativePath Path relative to {@code edu/nust/game/assets/audio/} split, e.g.
      *                     {@code ("sfx", "bg_music.wav")} for {@code edu/nust/game/assets/audio/sfx/click.wav}
      *
-     * @return The loaded {@link MusicTrackReference}, or {@code null} if the file could not be found or loaded
+     * @return The optional loaded {@link MusicTrackReference}, or {@link Optional#empty()} if the file could not be
+     * found or loaded
      */
-    @Nullable
-    public MusicTrackReference loadMusicTrack(String... relativePath)
+    public Optional<MusicTrackReference> loadMusicTrack(String... relativePath)
     {
         return tryLoadAudioReference(
                 MusicTrackReference.class,
@@ -109,10 +108,10 @@ public final class GameAudioManager
      *
      * @param name The filename with extension, e.g. {@code "bg_music.wav"}
      *
-     * @return The {@link MusicTrackReference}, or {@code null} if not found
+     * @return The optional loaded {@link MusicTrackReference}, or {@link Optional#empty()} if the file could not be
+     * found or loaded
      */
-    @Nullable
-    public MusicTrackReference getMusicTrackByName(String name)
+    public Optional<MusicTrackReference> getMusicTrackByName(String name)
     {
         return getReferenceByName(MusicTrackReference.class, name, loadedMusicTracks);
     }
@@ -375,7 +374,7 @@ public final class GameAudioManager
      * @return The reference of type {@code T}, or {@code null} on failure
      */
     @Nullable
-    private <T extends AudioReference> T tryLoadAudioReference(Class<T> caller, Function<URL, T> onSuccess, HashMap<String, T> cachedList, String... relativePath)
+    private <T extends AudioReference> Optional<T> tryLoadAudioReference(Class<T> caller, Function<URL, T> onSuccess, HashMap<String, T> cachedList, String... relativePath)
     {
         String path = Resources.resolvePath(getAudioPath(relativePath));
 
@@ -390,13 +389,13 @@ public final class GameAudioManager
                     path
             );
             LOGGER.logException(e);
-            return null;
+            return Optional.empty();
         }
 
         String name = URLUtils.getFileNameFromURL(url);
 
         // if already loaded, return that
-        if (cachedList.containsKey(name)) return cachedList.get(name);
+        if (cachedList.containsKey(name)) return Optional.of(cachedList.get(name));
 
         try
         {
@@ -406,13 +405,13 @@ public final class GameAudioManager
             cachedList.put(name, ref);
 
             LOGGER.info("Loaded [{}] \"{}\"", caller.getSimpleName(), name);
-            return ref;
+            return Optional.of(ref);
         }
         catch (Exception e)
         {
             LOGGER.error(false, "Failed to load [{}] at \"{}\"", caller.getSimpleName(), path);
             LOGGER.logException(e);
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -423,16 +422,16 @@ public final class GameAudioManager
      * @param name       The filename with extension
      * @param cachedList The cache map
      *
-     * @return The reference of type {@link T}, or {@code null} if not found
+     * @return The optional reference of type {@link T}, or {@link Optional#empty()} if the file could not be found or
+     * loaded
      */
-    @Nullable
-    private <T extends AudioReference> T getReferenceByName(Class<T> caller, String name, HashMap<String, T> cachedList)
+    private <T extends AudioReference> Optional<T> getReferenceByName(Class<T> caller, String name, HashMap<String, T> cachedList)
     {
         for (T ref : cachedList.values())
-            if (ref.getFileName().equals(name)) return ref;
+            if (ref.getFileName().equals(name)) return Optional.of(ref);
 
         LOGGER.error(false, "Cannot find [{}] with name \"{}\"", caller.getSimpleName(), name);
-        return null;
+        return Optional.empty();
     }
 
     /// <b>{@code INTERNAL}</b> Propagates the effective global volume to all loaded references. When muted, applies

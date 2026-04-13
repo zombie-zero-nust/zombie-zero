@@ -16,8 +16,8 @@ import javafx.scene.SubScene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -205,10 +205,13 @@ public abstract class GameWorld
      *
      * @param name The filename with extension, e.g. {@code "click.wav"}
      *
-     * @return The {@link SoundEffectReference}, or {@code null} if not found
+     * @return The optional loaded {@link SoundEffectReference}, or {@link Optional#empty()} if the file could not be
+     * found or loaded
      */
-    @Nullable
-    public SoundEffectReference getSoundEffectByName(String name) { return audioManager.getSoundEffectByName(name); }
+    public Optional<SoundEffectReference> getSoundEffectByName(String name)
+    {
+        return audioManager.getSoundEffectByName(name);
+    }
 
     /**
      * Loads a {@link SoundEffectReference} from the given path relative to {@code edu/nust/game/assets/audio/}. If the
@@ -221,10 +224,13 @@ public abstract class GameWorld
      * @param relPath Path relative to {@code edu/nust/game/assets/audio/} split, e.g. {@code ("sfx", "click.wav")} for
      *                {@code edu/nust/game/assets/audio/sfx/click.wav}
      *
-     * @return The loaded {@link SoundEffectReference}, or {@code null} if the file could not be found or loaded
+     * @return The optional loaded {@link SoundEffectReference}, or {@link Optional#empty()} if the file could not be
+     * found or loaded
      */
-    @Nullable
-    public SoundEffectReference loadSoundEffect(String... relPath) { return audioManager.loadSoundEffect(relPath); }
+    public Optional<SoundEffectReference> loadSoundEffect(String... relPath)
+    {
+        return audioManager.loadSoundEffect(relPath);
+    }
 
     /**
      * Retrieves a loaded {@link MusicTrackReference} by filename (with extension).
@@ -233,10 +239,10 @@ public abstract class GameWorld
      *
      * @param name The filename with extension, e.g. {@code "bg_music.wav"}
      *
-     * @return The {@link MusicTrackReference}, or {@code null} if not found
+     * @return The optional loaded {@link MusicTrackReference}, or {@link Optional#empty()} if the file could not be
+     * found or loaded
      */
-    @Nullable
-    public MusicTrackReference getMusicTrackByName(String name) { return audioManager.getMusicTrackByName(name); }
+    public Optional<MusicTrackReference> getMusicTrackByName(String name) { return audioManager.getMusicTrackByName(name); }
 
     /**
      * Loads a {@link MusicTrackReference} from the given path relative to {@code edu/nust/game/assets/audio/}. If the
@@ -249,10 +255,10 @@ public abstract class GameWorld
      * @param relPath Path relative to {@code edu/nust/game/assets/audio/} split, e.g. {@code ("sfx", "bg_music.wav")}
      *                for {@code edu/nust/game/assets/audio/sfx/click.wav}
      *
-     * @return The loaded {@link MusicTrackReference}, or {@code null} if the file could not be found or loaded
+     * @return The loaded {@link MusicTrackReference}, or {@link Optional#empty()} if the file could not be found or
+     * loaded
      */
-    @Nullable
-    public MusicTrackReference loadMusicTrack(String... relPath) { return audioManager.loadMusicTrack(relPath); }
+    public Optional<MusicTrackReference> loadMusicTrack(String... relPath) { return audioManager.loadMusicTrack(relPath); }
 
     /* FONT */
 
@@ -267,10 +273,7 @@ public abstract class GameWorld
     {
         try
         {
-            Font font = Font.loadFont(
-                    Resources.getResourceOrThrow("assets", "fonts", fileName).openStream(),
-                    12
-            );
+            Font font = Font.loadFont(Resources.getResourceOrThrow("assets", "fonts", fileName).openStream(), 12);
 
             if (font == null) throw new RuntimeException("Font returned null");
 
