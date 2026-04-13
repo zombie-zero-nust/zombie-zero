@@ -2,12 +2,9 @@ package edu.nust.game.gameobjects;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
-import java.util.ArrayList;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import edu.nust.engine.math.TimeSpan;
-import edu.nust.game.gameobjects.HitBox;
 
 public class CollisionManager {
    private GameScene scene;
@@ -18,7 +15,7 @@ public class CollisionManager {
        this.scene = scene;
    }
 
-   private void setObjs(GameScene scene) {
+   private void getObjs(GameScene scene) {
        for (GameObject obj : this.scene.getAllGameObjects()) {
            if(obj instanceof ConcreteObj){
                concreteObjs.add((ConcreteObj) obj);
@@ -32,13 +29,18 @@ public class CollisionManager {
        }
    }
 
-   public void manageCollisions(){
-
+   public void manageCollisions(GameScene scene){
+        getObjs(scene);
+        for(ConcreteObj obj : concreteObjs){
+            if(obj != null){
+                for(ConcreteObj otherObj : concreteObjs){
+                    if(otherObj!=null) {
+                        if (obj != otherObj && obj.getHitbox().isTouching(otherObj.getHitbox())) {
+                            obj.restrictMovement();
+                        }
+                    }
+                }
+            }
+        }
    }
-
-   public void triggerCollisionEffect(HitBox a, HitBox b){
-
-   }
-
-
 }

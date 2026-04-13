@@ -30,8 +30,6 @@ public class HitBox extends Component
         box = new BoxRenderer(width,height,Color.RED);
     }
 
-
-
     public void getDamage(GameObject damageableObj,GameObject damagingObj){
 
     }
