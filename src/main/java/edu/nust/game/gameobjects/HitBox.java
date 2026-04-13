@@ -37,7 +37,7 @@ public class HitBox extends Component
     public boolean isTouching(HitBox touchedHB){
 
         double xDistance = this.pos.getX()-touchedHB.pos.getX();
-        double yDistance = this.pos.getX()-touchedHB.pos.getY();
+        double yDistance = this.pos.getY()-touchedHB.pos.getY();
 
 
         double overlapX = minX - Math.abs(xDistance);
