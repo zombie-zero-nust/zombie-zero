@@ -1,6 +1,5 @@
 package edu.nust.game.gameobjects;
 
-import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
@@ -13,16 +12,15 @@ import javafx.scene.input.KeyCode;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.ArrayList;
+import java.util.function.BiFunction;
 
-public class Player extends Character implements Damageable
+public class Player extends Character implements Damageable, Concrete
 {
     private enum Facing { UP, DOWN, LEFT, RIGHT }
 
     private final Set<KeyCode> activeKeys = new HashSet<>();
     private HitBox hitbox;
     private double size = 50;
-    private ArrayList<Image> images = new ArrayList<>();
     private Health health;
     private SpriteRenderer spriteRenderer;
     private SpriteRenderer handsRenderer;
@@ -44,6 +42,8 @@ public class Player extends Character implements Damageable
     private Image handsRunLeft;
     private Image handsRunRight;
     private Facing facing = Facing.DOWN;
+    private BiFunction<Vector2D, Double, Boolean> walkabilityChecker;
+    private static final double COLLISION_RADIUS = 25.0;
 
     public Player(Vector2D pos, int initialHealth, int mSpeed, boolean moveable)
     {
@@ -57,25 +57,25 @@ public class Player extends Character implements Damageable
             String idlePath = characterAsset.getPath() + "/Idle";
             String runPath = characterAsset.getPath() + "/Run";
 
-            idleDown = Resources.loadImageOrThrow("assets", idlePath, "Character_down_idle_no-hands-Sheet6.png");
-            idleUp = Resources.loadImageOrThrow("assets", idlePath, "Character_up_idle_no-hands-Sheet6.png");
-            idleLeft = Resources.loadImageOrThrow("assets", idlePath, "Character_side-left_idle_no-hands-Sheet6.png");
-            idleRight = Resources.loadImageOrThrow("assets", idlePath, "Character_side_idle_no-hands-Sheet6.png");
+            idleDown = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.IDLE_DOWN.getFilename());
+            idleUp = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.IDLE_UP.getFilename());
+            idleLeft = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.IDLE_LEFT.getFilename());
+            idleRight = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.IDLE_RIGHT.getFilename());
 
-            runDown = Resources.loadImageOrThrow("assets", runPath, "Character_down_run_no-hands-Sheet6.png");
-            runUp = Resources.loadImageOrThrow("assets", runPath, "Character_up_run_no-hands-Sheet6.png");
-            runLeft = Resources.loadImageOrThrow("assets", runPath, "Character_side-left_run_no-hands-Sheet6.png");
-            runRight = Resources.loadImageOrThrow("assets", runPath, "Character_side_run_no-hands-Sheet6.png");
+            runDown = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.RUN_DOWN.getFilename());
+            runUp = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.RUN_UP.getFilename());
+            runLeft = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.RUN_LEFT.getFilename());
+            runRight = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.RUN_RIGHT.getFilename());
 
-            handsIdleDown = Resources.loadImageOrThrow("assets", idlePath, "Hands_down_idle-Sheet6.png");
-            handsIdleUp = Resources.loadImageOrThrow("assets", idlePath, "Hands_Up_idle-Sheet6.png");
-            handsIdleLeft = Resources.loadImageOrThrow("assets", idlePath, "Hands_Side-left_idle-Sheet6.png");
-            handsIdleRight = Resources.loadImageOrThrow("assets", idlePath, "Hands_Side_idle-Sheet6.png");
+            handsIdleDown = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.HANDS_IDLE_DOWN.getFilename());
+            handsIdleUp = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.HANDS_IDLE_UP.getFilename());
+            handsIdleLeft = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.HANDS_IDLE_LEFT.getFilename());
+            handsIdleRight = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.HANDS_IDLE_RIGHT.getFilename());
 
-            handsRunDown = Resources.loadImageOrThrow("assets", runPath, "Hands_down_run-Sheet6.png");
-            handsRunUp = Resources.loadImageOrThrow("assets", runPath, "Hands_Up_run-Sheet6.png");
-            handsRunLeft = Resources.loadImageOrThrow("assets", runPath, "Hands_side-left_run-Sheet6.png");
-            handsRunRight = Resources.loadImageOrThrow("assets", runPath, "Hands_Side_run-Sheet6.png");
+            handsRunDown = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.HANDS_RUN_DOWN.getFilename());
+            handsRunUp = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.HANDS_RUN_UP.getFilename());
+            handsRunLeft = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.HANDS_RUN_LEFT.getFilename());
+            handsRunRight = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.HANDS_RUN_RIGHT.getFilename());
 
             spriteRenderer = new SpriteRenderer(size, size, idleDown, 6, 1);
             spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).setFrame(0, 0);
@@ -84,16 +84,14 @@ public class Player extends Character implements Damageable
             handsRenderer = new SpriteRenderer(size, size, handsIdleDown, 6, 1);
             handsRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).setFrame(0, 0);
             this.addComponent(handsRenderer);
-
-            images.add(idleDown);
         }
         catch (FileNotFoundException e)
         {
             // Fallback to test.png if character sprite not found
             try
             {
-                images.add(Resources.loadImageOrThrow("assets", "images", "test.png"));
-                spriteRenderer = new SpriteRenderer(size, size, images.getFirst());
+                Image fallbackImage = Resources.loadImageOrThrow("assets", "images", "test.png");
+                spriteRenderer = new SpriteRenderer(size, size, fallbackImage);
                 this.addComponent(spriteRenderer);
             }
             catch (FileNotFoundException ignored)
@@ -118,15 +116,19 @@ public class Player extends Character implements Damageable
     public void onInit()
     {
         // Initialize hitbox here when GameObject is properly set up
-        hitbox = new HitBox(getSpawnPos(), size + 2, size + 2);
+        hitbox = new HitBox(getSpawnPos(), size / 2.0, size / 2.0);
         this.addComponent(hitbox);
     }
 
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
+        setPrePos(new Vector2D(getX(), getY()));
         movement(deltaTime);
         this.getTransform().setPosition(getMovePos());
+
+        if (hitbox != null)
+            hitbox.setPos(getMovePos());
     }
 
     public void movement(TimeSpan deltaTime)
@@ -157,8 +159,24 @@ public class Player extends Character implements Damageable
                 handsRenderer.startAnimation();
         }
 
-        setY(getY() + dy);
-        setX(getX() + dx);
+        // Check walkability before moving
+        Vector2D newPos = new Vector2D(getX() + dx, getY() + dy);
+        if (isWalkable(newPos))
+        {
+            setY(getY() + dy);
+            setX(getX() + dx);
+        }
+        else
+        {
+            // Try sliding along axes if both diagonal movement is blocked
+            Vector2D slideX = new Vector2D(getX() + dx, getY());
+            Vector2D slideY = new Vector2D(getX(), getY() + dy);
+
+            if (isWalkable(slideX))
+                setX(getX() + dx);
+            else if (isWalkable(slideY))
+                setY(getY() + dy);
+        }
     }
 
     private void updateFacingSprite(double dx, double dy)
@@ -224,9 +242,10 @@ public class Player extends Character implements Damageable
     {
     }
 
-    @Override
-    public void takeDamage(GameObject damagingObj){
-
+    public void takeDamage(int damage)
+    {
+        if (health != null)
+            health.takeDamage(damage);
     }
     @Override
     public Health getHealth(){
@@ -249,5 +268,44 @@ public class Player extends Character implements Damageable
     public Health getHealthSystem()
     {
         return health;
+    }
+
+    @Override
+    public void setHitbox()
+    {
+        if (hitbox == null)
+            hitbox = new HitBox(getSpawnPos(), size / 2.0, size / 2.0);
+    }
+
+    @Override
+    public HitBox getHitbox()
+    {
+        return hitbox;
+    }
+
+    @Override
+    public void triggerCollisionEffect()
+    {
+        Vector2D previousPos = getPrePos();
+        if (previousPos == null)
+            return;
+
+        Vector2D rollback = new Vector2D(previousPos.getX(), previousPos.getY());
+        setMovePos(rollback);
+        this.getTransform().setPosition(rollback);
+        if (hitbox != null)
+            hitbox.setPos(rollback);
+    }
+
+    public void setWalkabilityChecker(BiFunction<Vector2D, Double, Boolean> checker)
+    {
+        this.walkabilityChecker = checker;
+    }
+
+    private boolean isWalkable(Vector2D position)
+    {
+        if (walkabilityChecker == null)
+            return true;
+        return walkabilityChecker.apply(position, COLLISION_RADIUS);
     }
 }

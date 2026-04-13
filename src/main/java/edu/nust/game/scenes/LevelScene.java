@@ -42,12 +42,13 @@ public class LevelScene extends GameScene
     private Player player;
     private Weapon weapon;
     private EnemyManager enemyManager;
+    private CollisionManager collisionManager;
     private Score score;
     private AmmoBar ammoBar;
     private HealthBar healthBar;
     private LevelBuilder levelBuilder;
     private LevelBuilder.PlayAreaBounds playAreaBounds;
-    private Level1WalkablePathClamper level1PathClamper;
+    private Level1CollisionMask level1CollisionMask;
     private double worldWidth;
     private double worldHeight;
     private Vector2D mousePosition = Vector2D.zero();
@@ -86,10 +87,29 @@ public class LevelScene extends GameScene
         else
             initTileLevel();
 
+        collisionManager = new CollisionManager(this);
+        if (selectedLevel == LevelId.LEVEL_1)
+        {
+            if (level1CollisionMask != null)
+                levelBuilder.buildConcreteBoundaryWallsForLevel1(this, playAreaBounds, worldWidth, worldHeight);
+        }
+        else
+        {
+            levelBuilder.buildConcreteBoundaryWalls(this, worldWidth, worldHeight);
+        }
+        if (selectedLevel == LevelId.LEVEL_1 && level1CollisionMask != null)
+            levelBuilder.buildLevel1InternalConcreteWalls(this, level1CollisionMask, worldWidth, worldHeight);
+
         score = new Score();
-        player = new Player(new Vector2D(0,0), 100, 500, true);
+        player = new Player(new Vector2D(80, 80), 100, 500, true);
         this.addGameObject(player.addTag(PlayerTag.class));
         player.setMovePos(clampPlayerToPlayArea(player.getTransform().getPosition()));
+
+        // Set up collision checking for the player
+        if (selectedLevel == LevelId.LEVEL_1 && level1CollisionMask != null)
+        {
+            player.setWalkabilityChecker((pos, radius) -> level1CollisionMask.isWalkable(pos));
+        }
 
         weapon = new Weapon();
         this.addGameObject(weapon);
@@ -134,8 +154,13 @@ public class LevelScene extends GameScene
 
             this.worldWidth = level1Image.getWidth();
             this.worldHeight = level1Image.getHeight();
-            this.playAreaBounds = new LevelBuilder.PlayAreaBounds(0, worldWidth, 0, worldHeight);
-            this.level1PathClamper = Level1WalkablePathClamper.fromImage(level1Image);
+            this.playAreaBounds = new LevelBuilder.PlayAreaBounds(
+                    25.0,
+                    worldWidth - 25.0,
+                    25.0,
+                    worldHeight - 25.0
+            );
+            this.level1CollisionMask = Level1CollisionMask.fromImage(level1Image);
 
             GameObject background = GameObject.create();
             background.addComponent(new SpriteRenderer(worldWidth, worldHeight, level1Image));
@@ -168,6 +193,11 @@ public class LevelScene extends GameScene
 
         if(player == null) return;
         Vector2D playerPos = clampPlayerToPlayArea(player.getTransform().getPosition());
+        if (collisionManager != null)
+        {
+            collisionManager.manageCollisions();
+            playerPos = player.getTransform().getPosition();
+        }
         updateWeaponTracking(playerPos);
         updateEnemyAndCollision(playerPos, deltaTime);
         updateCameraPosition(playerPos, canvasW, canvasH, zoom);
@@ -209,8 +239,6 @@ public class LevelScene extends GameScene
         if (playAreaBounds != null)
             clampedPos = playAreaBounds.clampPosition(playerPos);
 
-        if (selectedLevel == LevelId.LEVEL_1 && level1PathClamper != null)
-            clampedPos = level1PathClamper.clamp(clampedPos);
 
         player.getTransform().setPosition(clampedPos);
         player.setMovePos(clampedPos);
