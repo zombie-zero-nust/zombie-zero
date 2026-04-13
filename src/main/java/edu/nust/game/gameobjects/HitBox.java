@@ -125,4 +125,19 @@ public class HitBox extends Component
         rightTouching = false;
     }
 
+    public boolean isTopTouching() {
+        return topTouching;
+    }
+
+    public void setTopTouching(boolean topTouching) {
+        this.topTouching = topTouching;
+    }
+
+    public boolean isBottomTouching() {
+        return bottomTouching;
+    }
+
+    public void setBottomTouching(boolean bottomTouching) {
+        this.bottomTouching = bottomTouching;
+    }
 }
