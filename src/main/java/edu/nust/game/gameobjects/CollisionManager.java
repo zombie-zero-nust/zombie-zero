@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CollisionManager {
-   private GameScene scene;
+   private final GameScene scene;
    private final Set<ConcreteObj> concreteObjs = new HashSet<>();
    private final Set<DamagingObj> damagingObjs = new HashSet<>();
    private final Set<DamageableObj> damageableObjs = new HashSet<>();
@@ -36,8 +36,18 @@ public class CollisionManager {
                 for(ConcreteObj otherObj : concreteObjs){
                     if(otherObj!=null) {
                         if (obj != otherObj && obj.getHitbox().isTouching(otherObj.getHitbox())) {
-                            obj.restrictMovement();
+                            obj.triggerCollisionEffect();
                         }
+                    }
+                }
+            }
+        }
+        for(DamageableObj obj : damageableObjs){
+            if(obj != null && !obj.isDead()) {
+                for (DamagingObj otherObj : damagingObjs) {
+                    if(otherObj != null){
+                        obj.takeDamage(otherObj.getDamage());
+                        otherObj.destroy(otherObj.isDestroyable());
                     }
                 }
             }
