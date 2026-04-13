@@ -14,7 +14,6 @@ import edu.nust.game.highscores.HighscoreStore;
 import edu.nust.game.tilemap.LevelBuilder;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -48,8 +47,7 @@ public class LevelScene extends GameScene
     private HealthBar healthBar;
     private LevelBuilder levelBuilder;
     private LevelBuilder.PlayAreaBounds playAreaBounds;
-    private LevelPathMask level1PathMask;
-    private Vector2D lastValidPlayerPosition;
+    private Level1WalkablePathClamper level1PathClamper;
     private double worldWidth;
     private double worldHeight;
     private Vector2D mousePosition = Vector2D.zero();
@@ -137,7 +135,7 @@ public class LevelScene extends GameScene
             this.worldWidth = level1Image.getWidth();
             this.worldHeight = level1Image.getHeight();
             this.playAreaBounds = new LevelBuilder.PlayAreaBounds(0, worldWidth, 0, worldHeight);
-            this.level1PathMask = LevelPathMask.fromImage(level1Image);
+            this.level1PathClamper = Level1WalkablePathClamper.fromImage(level1Image);
 
             GameObject background = GameObject.create();
             background.addComponent(new SpriteRenderer(worldWidth, worldHeight, level1Image));
@@ -211,44 +209,12 @@ public class LevelScene extends GameScene
         if (playAreaBounds != null)
             clampedPos = playAreaBounds.clampPosition(playerPos);
 
-        if (selectedLevel == LevelId.LEVEL_1 && level1PathMask != null)
-            clampedPos = clampToLevel1WalkablePath(clampedPos);
+        if (selectedLevel == LevelId.LEVEL_1 && level1PathClamper != null)
+            clampedPos = level1PathClamper.clamp(clampedPos);
 
         player.getTransform().setPosition(clampedPos);
         player.setMovePos(clampedPos);
         return clampedPos;
-    }
-
-    private Vector2D clampToLevel1WalkablePath(Vector2D candidate)
-    {
-        if (level1PathMask.isWalkable(candidate))
-        {
-            lastValidPlayerPosition = candidate;
-            return candidate;
-        }
-
-        if (lastValidPlayerPosition == null)
-        {
-            Vector2D nearest = level1PathMask.findNearestWalkable(candidate, 160);
-            lastValidPlayerPosition = nearest;
-            return nearest;
-        }
-
-        Vector2D slideX = new Vector2D(candidate.getX(), lastValidPlayerPosition.getY());
-        if (level1PathMask.isWalkable(slideX))
-        {
-            lastValidPlayerPosition = slideX;
-            return slideX;
-        }
-
-        Vector2D slideY = new Vector2D(lastValidPlayerPosition.getX(), candidate.getY());
-        if (level1PathMask.isWalkable(slideY))
-        {
-            lastValidPlayerPosition = slideY;
-            return slideY;
-        }
-
-        return lastValidPlayerPosition;
     }
 
     private void updateWeaponTracking(Vector2D playerPos)
@@ -399,100 +365,5 @@ public class LevelScene extends GameScene
         return score != null ? score.getScore() : 0;
     }
 
-    private static final class LevelPathMask
-    {
-        private final boolean[][] walkable;
-        private final int width;
-        private final int height;
-
-        private LevelPathMask(boolean[][] walkable, int width, int height)
-        {
-            this.walkable = walkable;
-            this.width = width;
-            this.height = height;
-        }
-
-        static LevelPathMask fromImage(Image image)
-        {
-            int width = (int) image.getWidth();
-            int height = (int) image.getHeight();
-            boolean[][] walkable = new boolean[height][width];
-
-            PixelReader reader = image.getPixelReader();
-            if (reader == null)
-                return new LevelPathMask(walkable, width, height);
-
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    int argb = reader.getArgb(x, y);
-                    walkable[y][x] = isPathPixel(argb);
-                }
-            }
-
-            return new LevelPathMask(walkable, width, height);
-        }
-
-        boolean isWalkable(Vector2D worldPos)
-        {
-            int px = clamp((int) Math.round(worldPos.getX()), 0, width - 1);
-            int py = clamp((int) Math.round(worldPos.getY()), 0, height - 1);
-            return walkable[py][px];
-        }
-
-        Vector2D findNearestWalkable(Vector2D worldPos, int maxRadius)
-        {
-            int startX = clamp((int) Math.round(worldPos.getX()), 0, width - 1);
-            int startY = clamp((int) Math.round(worldPos.getY()), 0, height - 1);
-
-            if (walkable[startY][startX])
-                return new Vector2D(startX, startY);
-
-            for (int radius = 1; radius <= maxRadius; radius++)
-            {
-                for (int dx = -radius; dx <= radius; dx++)
-                {
-                    int x1 = clamp(startX + dx, 0, width - 1);
-                    int yTop = clamp(startY - radius, 0, height - 1);
-                    int yBottom = clamp(startY + radius, 0, height - 1);
-                    if (walkable[yTop][x1]) return new Vector2D(x1, yTop);
-                    if (walkable[yBottom][x1]) return new Vector2D(x1, yBottom);
-                }
-
-                for (int dy = -radius + 1; dy <= radius - 1; dy++)
-                {
-                    int y = clamp(startY + dy, 0, height - 1);
-                    int xLeft = clamp(startX - radius, 0, width - 1);
-                    int xRight = clamp(startX + radius, 0, width - 1);
-                    if (walkable[y][xLeft]) return new Vector2D(xLeft, y);
-                    if (walkable[y][xRight]) return new Vector2D(xRight, y);
-                }
-            }
-
-            return new Vector2D(startX, startY);
-        }
-
-        private static boolean isPathPixel(int argb)
-        {
-            int r = (argb >> 16) & 0xFF;
-            int g = (argb >> 8) & 0xFF;
-            int b = argb & 0xFF;
-
-            int max = Math.max(r, Math.max(g, b));
-            int min = Math.min(r, Math.min(g, b));
-
-            double brightness = max / 255.0;
-            double saturation = max == 0 ? 0.0 : (max - min) / (double) max;
-
-            // Path pixels in level1Background are brighter and less saturated than wall bricks.
-            return brightness >= 0.58 && saturation <= 0.50;
-        }
-
-        private static int clamp(int value, int min, int max)
-        {
-            return Math.max(min, Math.min(value, max));
-        }
-    }
 
 }
