@@ -130,6 +130,7 @@ public class LevelScene extends GameScene
             healthBar = new HealthBar();
             healthBarContainer.getChildren().add(healthBar);
         }
+
     }
 
     private void initTileLevel()
@@ -188,7 +189,7 @@ public class LevelScene extends GameScene
         double canvasW = this.getWorldLayer().getWidth();
         double canvasH = this.getWorldLayer().getHeight();
         Vector2D cameraPos = this.getWorldCamera().getPosition();
-        double zoom = this.getWorldCamera().getZoom();
+        double zoom = this.getWorldCamera().setZoom(2).getZoom();
 
         updateMouseWorldPosition(canvasW, canvasH, cameraPos, zoom);
         handleWeaponFiring(deltaTime);

@@ -20,7 +20,8 @@ public class Player extends Character implements Damageable, Concrete
 
     private final Set<KeyCode> activeKeys = new HashSet<>();
     private HitBox hitbox;
-    private double size = 50;
+    private final double height=30;
+    private final double width = 20;
     private Health health;
     private SpriteRenderer spriteRenderer;
     private SpriteRenderer handsRenderer;
@@ -77,11 +78,11 @@ public class Player extends Character implements Damageable, Concrete
             handsRunLeft = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.HANDS_RUN_LEFT.getFilename());
             handsRunRight = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.HANDS_RUN_RIGHT.getFilename());
 
-            spriteRenderer = new SpriteRenderer(size, size, idleDown, 6, 1);
-            spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).setFrame(0, 0);
+            spriteRenderer = new SpriteRenderer(width, height, idleDown, 6, 1);
+            spriteRenderer.setFrame(6, 1).setAnimationTime(TimeSpan.fromMilliseconds(200)).startAnimation();
             this.addComponent(spriteRenderer);
 
-            handsRenderer = new SpriteRenderer(size, size, handsIdleDown, 6, 1);
+            handsRenderer = new SpriteRenderer(width, height, handsIdleDown, 6, 1);
             handsRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).setFrame(0, 0);
             this.addComponent(handsRenderer);
         }
@@ -91,7 +92,7 @@ public class Player extends Character implements Damageable, Concrete
             try
             {
                 Image fallbackImage = Resources.loadImageOrThrow("assets", "images", "test.png");
-                spriteRenderer = new SpriteRenderer(size, size, fallbackImage);
+                spriteRenderer = new SpriteRenderer(width, height, fallbackImage);
                 this.addComponent(spriteRenderer);
             }
             catch (FileNotFoundException ignored)
@@ -116,7 +117,7 @@ public class Player extends Character implements Damageable, Concrete
     public void onInit()
     {
         // Initialize hitbox here when GameObject is properly set up
-        hitbox = new HitBox(getSpawnPos(), size / 2.0, size / 2.0);
+        hitbox = new HitBox(getSpawnPos(), height / 2.0, width / 2.0);
         this.addComponent(hitbox);
     }
 
@@ -141,23 +142,11 @@ public class Player extends Character implements Damageable, Concrete
         if (activeKeys.contains(KeyCode.A)) dx -= getMovementSpeed() * deltaTime.asSeconds();
         if (activeKeys.contains(KeyCode.D)) dx += getMovementSpeed() * deltaTime.asSeconds();
 
+        if(dx!=0 && dy!=0) {
+            dx = 0.707*dx;
+            dy = 0.707*dy;
+        }
         updateFacingSprite(dx, dy);
-
-        if (spriteRenderer != null)
-        {
-            if (dx == 0 && dy == 0)
-                spriteRenderer.stopAnimation().setFrame(0, 0);
-            else
-                spriteRenderer.startAnimation();
-        }
-
-        if (handsRenderer != null)
-        {
-            if (dx == 0 && dy == 0)
-                handsRenderer.stopAnimation().setFrame(0, 0);
-            else
-                handsRenderer.startAnimation();
-        }
 
         // Check walkability before moving
         Vector2D newPos = new Vector2D(getX() + dx, getY() + dy);
@@ -231,10 +220,10 @@ public class Player extends Character implements Damageable, Concrete
         }
 
         if (target != null && spriteRenderer.getImage() != target)
-            spriteRenderer.setImage(target, 6, 1).setFrame(0, 0);
+            spriteRenderer.setImage(target, 6, 1).startAnimation();
 
         if (handsRenderer != null && handsTarget != null && handsRenderer.getImage() != handsTarget)
-            handsRenderer.setImage(handsTarget, 6, 1).setFrame(0, 0);
+            handsRenderer.setImage(handsTarget, 6, 1).startAnimation();
     }
 
     @Override
@@ -260,10 +249,6 @@ public class Player extends Character implements Damageable, Concrete
     public boolean isDead(){
         return false;
     }
-    public void setSize(double size)
-    {
-        this.size = size;
-    }
 
     public Health getHealthSystem()
     {
@@ -274,11 +259,11 @@ public class Player extends Character implements Damageable, Concrete
     public void setHitbox()
     {
         if (hitbox == null)
-            hitbox = new HitBox(getSpawnPos(), size / 2.0, size / 2.0);
+            hitbox = new HitBox(getSpawnPos(), height/ 2.0, width/ 2.0);
     }
 
     @Override
-    public HitBox getHitbox()
+    public HitBox getHitBox()
     {
         return hitbox;
     }

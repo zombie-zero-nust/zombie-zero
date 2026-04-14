@@ -12,12 +12,12 @@ import java.io.FileNotFoundException;
 
 public class Weapon extends GameObject
 {
-    private static final double WEAPON_OFFSET = 30;
+    private static final double WEAPON_OFFSET = 15;
     private final double fireRate = 10;
     private static final double MUZZLE_FRAME_DURATION = 0.04;
     private static final int MUZZLE_FRAMES = 3;
-    private double width = 54;
-    private double height= 18;
+    private double width = 20;
+    private double height= 10;
 
     private static final int GUN_IDLE_FRAMES = 6;
     private SpriteRenderer muzzleFlashRenderer;
@@ -224,7 +224,7 @@ public class Weapon extends GameObject
                     "assets", "raw", "PostApocalypse", "Character", "Guns", "Fire", "Fire_side-left-Sheet3.png"
             );
 
-            muzzleFlashRenderer = new SpriteRenderer(44, 44, fireRightSheet, MUZZLE_FRAMES, 1);
+            muzzleFlashRenderer = new SpriteRenderer(10, 10, fireRightSheet, MUZZLE_FRAMES, 1);
             muzzleFlashRenderer.setVisible(false);
         }
         catch (FileNotFoundException e)
@@ -265,12 +265,11 @@ public class Weapon extends GameObject
 
     private Image getDirectionalGunIdleSheet(Vector2D direction)
     {
-        double absX = Math.abs(direction.getX());
-        double absY = Math.abs(direction.getY());
 
-        if (absX >= absY)
-            return direction.getX() >= 0 ? gunIdleRightSheet : gunIdleLeftSheet;
 
-        return direction.getY() >= 0 ? gunIdleDownSheet : gunIdleUpSheet;
+        if (direction.getX() >= 0)
+            return  gunIdleRightSheet ;
+
+        return gunIdleLeftSheet ;
     }
 }

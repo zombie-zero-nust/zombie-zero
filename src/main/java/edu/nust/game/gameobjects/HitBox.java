@@ -73,7 +73,9 @@ public class HitBox extends Component
     @Override
     public void onInit(){
         // Add BoxRenderer component when GameObject is ready
+
         this.gameObject.addComponent(box).setVisible(visible);
+
     }
     @Override
     public void onUpdate(TimeSpan deltaTime){

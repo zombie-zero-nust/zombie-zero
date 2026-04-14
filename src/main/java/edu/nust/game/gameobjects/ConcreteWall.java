@@ -35,7 +35,7 @@ public class ConcreteWall extends GameObject implements Concrete
     }
 
     @Override
-    public HitBox getHitbox()
+    public HitBox getHitBox()
     {
         return hitbox;
     }

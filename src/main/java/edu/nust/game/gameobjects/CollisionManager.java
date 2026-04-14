@@ -41,13 +41,13 @@ public class CollisionManager {
             if(obj != null){
                 for(Concrete otherObj : concreteObjs){
                     if(otherObj!=null) {
-                        if (obj == otherObj || obj.getHitbox() == null || otherObj.getHitbox() == null)
+                        if (obj == otherObj || obj.getHitBox() == null || otherObj.getHitBox() == null)
                             continue;
 
-                        obj.getHitbox().setTouchingFalse();
-                        obj.getHitbox().setMin(otherObj.getHitbox());
+                        obj.getHitBox().setTouchingFalse();
+                        obj.getHitBox().setMin(otherObj.getHitBox());
 
-                        if (obj.getHitbox().isTouching(otherObj.getHitbox())) {
+                        if (obj.getHitBox().isTouching(otherObj.getHitBox())) {
                             obj.triggerCollisionEffect();
                         }
                     }
