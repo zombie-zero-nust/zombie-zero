@@ -35,7 +35,7 @@ public class ConcreteWall extends GameObject implements Concrete
     }
 
     @Override
-    public HitBox getHitBox()
+    public HitBox getHitbox()
     {
         return hitbox;
     }
@@ -44,6 +44,11 @@ public class ConcreteWall extends GameObject implements Concrete
     public void triggerCollisionEffect()
     {
         // Static wall: no movement response needed.
+    }
+
+    @Override
+    public String[] notInteractWith(){
+        return null;
     }
 }
 

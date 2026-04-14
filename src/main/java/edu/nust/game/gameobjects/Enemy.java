@@ -10,14 +10,19 @@ import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class Enemy extends GameObject
+public class Enemy extends GameObject implements Concrete,Damageable,Damaging
 {
     private Vector2D targetPosition = Vector2D.zero();
     private double movementSpeed;
-    private double size;
-    private int hitCount = 0;
+    private double height;
+    private double width;
+    private int hits = 0;
     private EnemyAsset enemyType;
     private SpriteRenderer spriteRenderer;
+    private HitBox hitbox;
+    private int damage;
+    private Health health;
+
 
     public Enemy(Vector2D startPosition, double speed)
     {
@@ -26,8 +31,10 @@ public class Enemy extends GameObject
 
     public Enemy(Vector2D startPosition, double speed, EnemyAsset enemyType)
     {
+        this.health = new HealthImpl();
         this.movementSpeed = speed;
-        this.size = EnemyConfig.DEFAULT_SIZE.getValue();
+        this.width = EnemyConfig.DEFAULT_SIZE.getValue();
+        this.height = EnemyConfig.DEFAULT_SIZE.getValue();
         this.enemyType = enemyType;
         this.getTransform().setPosition(startPosition);
 
@@ -41,7 +48,7 @@ public class Enemy extends GameObject
             );
 
             // Create sprite renderer with 6 frames
-            spriteRenderer = new SpriteRenderer(size, size, idleSprite, 6, 1);
+            spriteRenderer = new SpriteRenderer(width, height, idleSprite, 6, 1);
             spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150))
                          .startAnimation();
 
@@ -98,19 +105,15 @@ public class Enemy extends GameObject
         this.movementSpeed = speed;
     }
 
-    public int getHitCount()
-    {
-        return hitCount;
-    }
 
     public void addHit()
     {
-        this.hitCount++;
+        this.hits++;
     }
 
     public void resetHitCount()
     {
-        this.hitCount = 0;
+        this.hits = 0;
     }
 
     public boolean checkPlayerCollision(Vector2D playerPos)
@@ -127,6 +130,60 @@ public class Enemy extends GameObject
 
     public boolean isDefeated()
     {
-        return hitCount >= EnemyConfig.HITS_TO_DEFEAT.getIntValue();
+        return hits >= EnemyConfig.HITS_TO_DEFEAT.getIntValue();
     }
+
+    @Override
+    public void setHitbox()
+    {
+        if (hitbox == null)
+            hitbox = new HitBox(this.getTransform().getPosition(), height / 2.0, width / 2.0);
+    }
+
+    @Override
+    public HitBox getHitbox(){
+        return hitbox;
+    }
+
+    @Override
+    public void triggerCollisionEffect(){}
+
+    @Override
+    public int getDamage(){
+        return this.damage;
+    }
+    @Override
+    public boolean isDestroyable(){
+        return false;
+    }
+
+    @Override
+    public void destroy(boolean isDestroyable){ if(isDestroyable) this.destroy();}
+
+    @Override
+    public String[] notInteractWith(){
+        return new String[]{"Enemy"};
+    }
+
+    @Override
+    public void takeDamage(int damage){
+        health.takeDamage(damage);
+    }
+
+    @Override
+    public void setHealth(Health health){
+        this.health = health;
+    }
+
+    @Override
+    public Health getHealth(){
+        return health;
+    }
+
+    @Override
+    public boolean isDead(){
+        if(health.isAlive()) return false;
+        return true;
+    }
+
 }

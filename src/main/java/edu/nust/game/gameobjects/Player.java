@@ -263,7 +263,7 @@ public class Player extends Character implements Damageable, Concrete
     }
 
     @Override
-    public HitBox getHitBox()
+    public HitBox getHitbox()
     {
         return hitbox;
     }
@@ -292,5 +292,10 @@ public class Player extends Character implements Damageable, Concrete
         if (walkabilityChecker == null)
             return true;
         return walkabilityChecker.apply(position, COLLISION_RADIUS);
+    }
+
+    @Override
+    public String[] notInteractWith(){
+        return null;
     }
 }

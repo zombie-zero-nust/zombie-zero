@@ -278,7 +278,7 @@ public class Weapon extends GameObject
         if (direction.getX() > 0)
             return  gunIdleRightSheet ;
 
-        return gunIdleRightSheet;
+        return gunIdleLeftSheet;
     }
 
 }
