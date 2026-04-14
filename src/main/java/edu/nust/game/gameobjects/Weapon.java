@@ -16,8 +16,8 @@ public class Weapon extends GameObject
     private final double fireRate = 10;
     private static final double MUZZLE_FRAME_DURATION = 0.04;
     private static final int MUZZLE_FRAMES = 3;
-    private double width = 20;
-    private double height= 10;
+    private double width = 30;
+    private double height= 15;
 
     private static final int GUN_IDLE_FRAMES = 6;
     private SpriteRenderer muzzleFlashRenderer;
@@ -29,8 +29,8 @@ public class Weapon extends GameObject
     private boolean muzzlePlaying;
     private Ammo ammo;
 
-    private Image gunIdleUpSheet;
-    private Image gunIdleDownSheet;
+
+    //removing idleup and idledown sheet because it does match the rotation mechanism
     private Image gunIdleRightSheet;
     private Image gunIdleLeftSheet;
     private Image fireUpSheet;
@@ -54,30 +54,30 @@ public class Weapon extends GameObject
 
     private void loadWeaponAimAssets()
     {
-        try
-        {
-            gunIdleUpSheet = Resources.loadImageOrThrow(
-                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Gun", "Gun_up_idle-and-run-Sheet6.png"
-            );
-            gunIdleDownSheet = Resources.loadImageOrThrow(
-                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Gun", "Gun_down_idle-and-run-Sheet6.png"
-            );
+        try {
             gunIdleRightSheet = Resources.loadImageOrThrow(
                     "assets", "raw", "PostApocalypse", "Character", "Guns", "Gun", "Gun_side_idle-and-run-Sheet6.png"
             );
-            gunIdleLeftSheet = Resources.loadImageOrThrow(
-                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Gun", "Gun_side-left_idle-and-run-Sheet6.png"
-            );
-
-            weaponRenderer = new SpriteRenderer(width, height, gunIdleRightSheet, GUN_IDLE_FRAMES, 1);
-            weaponRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).startAnimation();
-            this.addComponent(weaponRenderer);
         }
         catch (FileNotFoundException e)
         {
             weaponRenderer = null;
-            this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(36, 18, javafx.scene.paint.Color.CYAN));
+            this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(36, 36, javafx.scene.paint.Color.CYAN));
         }
+        try {
+            gunIdleLeftSheet = Resources.loadImageOrThrow(
+                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Gun", "Gun_side-left_idle-and-run-Sheet6.png"
+            );
+        }
+        catch (FileNotFoundException e)
+        {
+            weaponRenderer = null;
+            this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(36, 36, javafx.scene.paint.Color.CYAN));
+
+        }
+        weaponRenderer = new SpriteRenderer(width, height, gunIdleLeftSheet, GUN_IDLE_FRAMES, 1);
+        weaponRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).startAnimation();
+        this.addComponent(weaponRenderer);
     }
 
     @Override
@@ -140,13 +140,21 @@ public class Weapon extends GameObject
         double dx = delta.getX();
         double dy = delta.getY();
         double rotation = Math.atan2(dy, dx);
+        if(rotation > Math.PI/2) {
+            rotation = Math.PI - rotation;
+        }
+        else if(rotation < -Math.PI/2) {
+            rotation = -Math.PI + rotation;
+        }
         Vector2D orbitingDistance = delta.normalize().multiply(WEAPON_OFFSET);
+
 
         if (weaponRenderer != null)
         {
             Image directionalGunSheet = getDirectionalGunIdleSheet(delta);
-            if (directionalGunSheet != null && weaponRenderer.getImage() != directionalGunSheet)
+            if (directionalGunSheet != null && weaponRenderer.getImage() != directionalGunSheet) {
                 weaponRenderer.setImage(directionalGunSheet, GUN_IDLE_FRAMES, 1).setFrame(0, 0).startAnimation();
+            }
         }
 
         this.getTransform().setPosition(playerPos.add(orbitingDistance));
@@ -267,9 +275,10 @@ public class Weapon extends GameObject
     {
 
 
-        if (direction.getX() >= 0)
+        if (direction.getX() > 0)
             return  gunIdleRightSheet ;
 
-        return gunIdleLeftSheet ;
+        return gunIdleRightSheet;
     }
+
 }
