@@ -31,10 +31,11 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
 
     public Enemy(Vector2D startPosition, double speed)
     {
-        this(startPosition, speed, EnemyAsset.ZOMBIE_SMALL);
+        this(startPosition, speed, EnemyAsset.ZOMBIE_SMALL,100);
     }
 
-    public Enemy(Vector2D startPosition, double speed, EnemyAsset enemyType)
+
+    public Enemy(Vector2D startPosition, double speed, EnemyAsset enemyType,int health)
     {
         this.health = new HealthImpl();
         this.movementSpeed = speed;
@@ -42,6 +43,7 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
         this.height = EnemyConfig.DEFAULT_SIZE.getValue();
         this.enemyType = enemyType;
         this.getTransform().setPosition(startPosition);
+        this.health = new HealthImpl(health);
 
         try
         {
@@ -69,11 +71,13 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     @Override
     public void onInit()
     {
+        setHitbox();
     }
 
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
+        setHitbox();
         moveTowardsTarget(deltaTime);
     }
 
@@ -86,17 +90,32 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     {
         Vector2D currentPosition = this.getTransform().getPosition();
         Vector2D directionToTarget = Vector2D.subtract(targetPosition, currentPosition);
+        double movementDistance = movementSpeed * deltaTime.asSeconds();
+        double dx=0,dy=0;
+
         double distanceToTarget = directionToTarget.magnitude();
+        if(directionToTarget.getX()<0 && !this.hitbox.isLeftTouching()){
+            dx -= movementDistance;
+        }
+        else if(directionToTarget.getX()>0 && !this.hitbox.isRightTouching()){
+            dx += movementDistance;
+        }
+        if(directionToTarget.getY()>0 && !this.hitbox.isBottomTouching()){
+            dy += movementDistance;
+        }
+        else if(directionToTarget.getY()<0 && !this.hitbox.isTopTouching()){
+            dy -= movementDistance;
+        }
 
         if (distanceToTarget > 0)
         {
-            directionToTarget = directionToTarget.normalize();
-            double movementDistance = movementSpeed * deltaTime.asSeconds();
-            Vector2D movement = Vector2D.multiply(directionToTarget, movementDistance);
+            Vector2D movement = new Vector2D(dx,dy);
+
+            if(dx != 0 && dy!= 0) movement.multiply(0.707);
+
             Vector2D newPosition = currentPosition.add(movement);
 
             this.getTransform().setPosition(newPosition);
-
         }
     }
 
@@ -141,17 +160,38 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     @Override
     public void setHitbox()
     {
-        if (hitbox == null)
-            hitbox = new HitBox(this.getTransform().getPosition(), height / 2.0, width / 2.0);
+        if (hitbox == null) {
+            hitbox = new HitBox(this.getTransform().getPosition(), height, width);
+            this.addComponent(hitbox);
+        }
     }
 
     @Override
     public HitBox getHitbox(){
+        if(hitbox == null){
+
+            setHitbox();
+        }
         return hitbox;
     }
 
     @Override
-    public void triggerCollisionEffect(){}
+    public void triggerCollisionEffect(){
+        double dx=0,dy=0;
+        if(hitbox.isLeftTouching()){
+            dx += 1.0;
+        }
+        if(hitbox.isRightTouching()){
+            dx -= 1.0;
+        }
+        if(hitbox.isTopTouching()){
+            dy += 1.0;
+        }
+        if(hitbox.isBottomTouching()){
+            dy -= 1.0;
+        }
+        this.getTransform().setPosition(this.getTransform().getPosition().add(dx,dy));
+    }
 
     @Override
     public int getDamage(){

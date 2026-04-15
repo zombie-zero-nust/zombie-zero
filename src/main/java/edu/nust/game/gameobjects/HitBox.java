@@ -30,9 +30,6 @@ public class HitBox extends Component
         box = new BoxRenderer(width,height,Color.RED);
     }
 
-    public void getDamage(GameObject damageableObj,GameObject damagingObj){
-
-    }
 
     public boolean isTouching(HitBox touchedHB){
 
@@ -79,6 +76,7 @@ public class HitBox extends Component
     }
     @Override
     public void onUpdate(TimeSpan deltaTime){
+        this.pos = this.getGameObject().getTransform().getPosition();
         this.setVisible(visible);
     }
 

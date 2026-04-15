@@ -53,7 +53,7 @@ public class Player extends Character implements Damageable, Concrete
     public Player(Vector2D pos, int initialHealth, int mSpeed, boolean moveable)
     {
         super(pos, initialHealth, mSpeed, moveable);
-        health = new HealthImpl();
+        health = new HealthImpl(initialHealth);
         this.addTag(PlayerTag.class);
 
         try
@@ -262,13 +262,18 @@ public class Player extends Character implements Damageable, Concrete
     @Override
     public void setHitbox()
     {
-        if (hitbox == null)
-            hitbox = new HitBox(getSpawnPos(), height/ 2.0, width/ 2.0);
+        if (hitbox == null) {
+            hitbox = new HitBox(getSpawnPos(), height, width);
+            this.addComponent(hitbox);
+        }
     }
 
     @Override
     public HitBox getHitbox()
     {
+        if(hitbox == null){
+            setHitbox();
+        }
         return hitbox;
     }
 

@@ -8,14 +8,19 @@ public class HealthImpl implements Health
 {
     private final GameLogger logger = GameLogger.getLogger(this.getClass());
 
-    private static final int MAX_HEALTH = 100;
+    private static final int DEFAULT_HEALTH = 100;
 
     private int currentHealth;
 
     public HealthImpl()
     {
-        this.currentHealth = MAX_HEALTH;
-        logger.debug("Health initialized: {} HP", MAX_HEALTH);
+        this.currentHealth = DEFAULT_HEALTH;
+        logger.debug("Health initialized: {} HP", DEFAULT_HEALTH);
+    }
+    public HealthImpl(int health)
+    {
+        this.currentHealth = health;
+        logger.debug("Health initialized: {} HP", health);
     }
 
     @Override
@@ -28,7 +33,7 @@ public class HealthImpl implements Health
     @Override
     public void heal(int amount)
     {
-        currentHealth = Math.min(currentHealth + amount, MAX_HEALTH);
+        currentHealth = Math.min(currentHealth + amount, DEFAULT_HEALTH);
         logger.debug("Healed: {} HP. Health: {}", amount, currentHealth);
     }
 
@@ -47,7 +52,7 @@ public class HealthImpl implements Health
     @Override
     public int getMaxHealth()
     {
-        return MAX_HEALTH;
+        return DEFAULT_HEALTH;
     }
 
     @Override

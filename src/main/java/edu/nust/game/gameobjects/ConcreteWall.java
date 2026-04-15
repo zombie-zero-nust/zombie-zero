@@ -18,6 +18,7 @@ public class ConcreteWall extends GameObject implements Concrete
         this.width = width;
         this.height = height;
         this.getTransform().setPosition(center);
+
     }
 
     @Override
@@ -32,7 +33,7 @@ public class ConcreteWall extends GameObject implements Concrete
     public void setHitbox()
     {
         if (hitbox == null)
-            hitbox = new HitBox(center, height / 2.0, width / 2.0);
+            hitbox = new HitBox(center, height/2.0, width/2.0);
     }
 
     @Override

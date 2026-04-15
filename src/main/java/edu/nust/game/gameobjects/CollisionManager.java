@@ -42,12 +42,13 @@ public class CollisionManager {
         getObjs();
         for(Concrete obj : concreteObjs){
             if(obj != null){
+
                 for(Concrete otherObj : concreteObjs){
                     if(otherObj!=null) {
+
                         if (obj == otherObj || obj.getHitbox() == null || otherObj.getHitbox() == null)
                             continue;
 
-                        obj.getHitbox().setTouchingFalse();
                         obj.getHitbox().setMin(otherObj.getHitbox());
 
                         if (obj.getHitbox().isTouching(otherObj.getHitbox())) {
@@ -60,9 +61,12 @@ public class CollisionManager {
         for(Damageable obj : damageableObjs){
             if(obj != null && !obj.isDead()) {
                 for (Damaging otherObj : damagingObjs) {
-                    if(otherObj != null){
-                        obj.takeDamage(otherObj.getDamage());
-                        otherObj.destroy(otherObj.isDestroyable());
+                    if(otherObj != null && otherObj.getHitbox()!= null){
+                        if(obj.getHitbox().isTouching(otherObj.getHitbox())) {
+                            obj.getHitbox().setTouchingFalse();
+                            obj.takeDamage(otherObj.getDamage());
+                            otherObj.destroy(otherObj.isDestroyable());
+                        }
                     }
                 }
             }

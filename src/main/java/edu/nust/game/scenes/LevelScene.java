@@ -80,6 +80,7 @@ public class LevelScene extends GameScene
     @Override
     public void onInit()
     {
+
         selectedLevel = consumePendingLevel();
 
         if (selectedLevel == LevelId.LEVEL_1)
@@ -109,6 +110,7 @@ public class LevelScene extends GameScene
         if (selectedLevel == LevelId.LEVEL_1 && level1CollisionMask != null)
         {
             player.setWalkabilityChecker((pos, radius) -> level1CollisionMask.isWalkable(pos));
+
         }
 
         weapon = new Weapon();
