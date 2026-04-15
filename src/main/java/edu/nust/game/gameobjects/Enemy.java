@@ -6,11 +6,16 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.assets.EnemyAsset;
+import edu.nust.game.gameobjects.enums.EnemyConfig;
+import edu.nust.game.gameobjects.interfaces.Concrete;
+import edu.nust.game.gameobjects.interfaces.Damageable;
+import edu.nust.game.gameobjects.interfaces.Damaging;
+import edu.nust.game.gameobjects.interfaces.Health;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class Enemy extends GameObject implements Concrete,Damageable,Damaging
+public class Enemy extends GameObject implements Concrete, Damageable, Damaging
 {
     private Vector2D targetPosition = Vector2D.zero();
     private double movementSpeed;

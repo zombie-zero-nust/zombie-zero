@@ -1,4 +1,6 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.interfaces;
+
+import edu.nust.game.gameobjects.HitBox;
 
 public interface Concrete {
     String[] notInteractWith();

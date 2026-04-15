@@ -5,6 +5,10 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.assets.CharacterAsset;
+import edu.nust.game.gameobjects.enums.CharacterAnimationAssets;
+import edu.nust.game.gameobjects.interfaces.Concrete;
+import edu.nust.game.gameobjects.interfaces.Damageable;
+import edu.nust.game.gameobjects.interfaces.Health;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -293,6 +297,7 @@ public class Player extends Character implements Damageable, Concrete
             return true;
         return walkabilityChecker.apply(position, COLLISION_RADIUS);
     }
+
 
     @Override
     public String[] notInteractWith(){

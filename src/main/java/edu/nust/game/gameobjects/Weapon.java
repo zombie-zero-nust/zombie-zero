@@ -5,6 +5,7 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.gameobjects.interfaces.Ammo;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 

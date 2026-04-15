@@ -2,6 +2,7 @@ package edu.nust.game.gameobjects;
 
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.logger.GameLogger;
+import edu.nust.game.gameobjects.interfaces.Ammo;
 
 public class AmmoImpl implements Ammo
 {

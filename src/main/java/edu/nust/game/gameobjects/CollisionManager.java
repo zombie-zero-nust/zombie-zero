@@ -2,6 +2,9 @@ package edu.nust.game.gameobjects;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
+import edu.nust.game.gameobjects.interfaces.Concrete;
+import edu.nust.game.gameobjects.interfaces.Damageable;
+import edu.nust.game.gameobjects.interfaces.Damaging;
 
 import java.util.HashSet;
 import java.util.Set;

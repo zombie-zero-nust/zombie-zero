@@ -1,4 +1,4 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.interfaces;
 
 import edu.nust.engine.math.TimeSpan;
 

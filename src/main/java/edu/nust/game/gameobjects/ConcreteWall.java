@@ -2,6 +2,7 @@ package edu.nust.game.gameobjects;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.game.gameobjects.interfaces.Concrete;
 
 /** Invisible static wall used by CollisionManager for concrete boundary blocking. */
 public class ConcreteWall extends GameObject implements Concrete

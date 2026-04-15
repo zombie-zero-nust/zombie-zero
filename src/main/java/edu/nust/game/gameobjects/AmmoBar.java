@@ -1,5 +1,6 @@
 package edu.nust.game.gameobjects;
 
+import edu.nust.game.gameobjects.interfaces.Ammo;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
 

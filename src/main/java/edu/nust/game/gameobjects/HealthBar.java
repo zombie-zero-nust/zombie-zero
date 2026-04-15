@@ -1,6 +1,7 @@
 package edu.nust.game.gameobjects;
 
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.gameobjects.interfaces.Health;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;

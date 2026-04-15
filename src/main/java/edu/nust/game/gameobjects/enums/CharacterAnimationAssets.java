@@ -1,4 +1,4 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.enums;
 
 /**
  * Enum containing all character animation asset filenames.
