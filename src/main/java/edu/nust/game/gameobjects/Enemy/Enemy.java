@@ -32,9 +32,9 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     private Health health;
 
 
-    public Enemy(Vector2D startPosition, double speed)
+    public Enemy(Vector2D startPosition, double speed,int health)
     {
-        this(startPosition, speed, EnemyAsset.ZOMBIE_SMALL,100);
+        this(startPosition, speed, EnemyAsset.ZOMBIE_SMALL,health);
     }
 
 
