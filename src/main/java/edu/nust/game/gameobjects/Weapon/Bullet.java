@@ -5,25 +5,32 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.gameobjects.CollisionSystem.HitBox;
+import edu.nust.game.gameobjects.Player.Player;
+import edu.nust.game.gameobjects.interfaces.Concrete;
+import edu.nust.game.gameobjects.interfaces.Damageable;
+import edu.nust.game.gameobjects.interfaces.Damaging;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 
-
-public class Bullet extends GameObject {
+public class Bullet extends GameObject implements Damaging, Concrete {
     private int speed;
     private Vector2D pos;
     private Vector2D direction;
     private Image image;
+    private int damage;
 
     private double totalDistance;
     private double range;
     private int height;
     private int width;
     private boolean destroyed = false;
+    private HitBox hitbox;
 
-    public Bullet(int speed, Vector2D pos, double range, int height, int width, Vector2D mousePos) {
+    public Bullet(int speed, Vector2D pos, double range, int height, int width, Vector2D mousePos,int damage) {
         this.speed = speed;
         this.pos = pos;
         totalDistance = 0;
@@ -31,6 +38,7 @@ public class Bullet extends GameObject {
         this.height = height;
         this.width = width;
         direction = mousePos.subtract(pos).normalize();
+        this.damage = damage;
         try {
             image = Resources.loadImageOrThrow(
                     "assets",
@@ -61,6 +69,11 @@ public class Bullet extends GameObject {
     }
 
 
+    @Override
+    public void onInit(){
+        hitbox = new HitBox(this.pos,height,width);
+        this.addComponent(hitbox);
+    }
 
     @Override
     public void onUpdate(TimeSpan deltaTime) {
@@ -82,5 +95,48 @@ public class Bullet extends GameObject {
 
     public boolean isDestroyed() {
         return destroyed;
+    }
+
+    @Override
+    public int getDamage(){
+        return this.damage;
+    }
+
+    @Override
+    public boolean isDestroyable(){
+        return true;
+    }
+
+    @Override
+    public HitBox getHitbox(){
+        return hitbox;
+    }
+
+    @Override
+    public void destroyThis(){
+        if(isDestroyable()) this.destroy();
+    }
+
+    @Override
+    public List<Class<? extends Damageable>> notDamageObj(){
+        return List.of(Player.class);
+    }
+
+    @Override
+    public void setHitbox(){
+        if(this.hitbox == null){
+            hitbox = new HitBox(pos,height,width);
+            this.addComponent(hitbox);
+        }
+    }
+
+    @Override
+    public void triggerCollisionEffect(Concrete collidedObj){
+        destroyThis();
+    }
+
+    @Override
+    public List<Class<? extends Concrete>> notInteractWith(){
+        return List.of(Player.class);
     }
 }

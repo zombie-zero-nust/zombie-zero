@@ -39,37 +39,39 @@ public class CollisionManager {
    }
 
    public void manageCollisions(){
-        getObjs();
-        for(Concrete obj : concreteObjs){
-            if(obj != null){
-
-                for(Concrete otherObj : concreteObjs){
-                    if(otherObj!=null) {
-
-                        if (obj == otherObj || obj.getHitbox() == null || otherObj.getHitbox() == null)
-                            continue;
-
-                        obj.getHitbox().setMin(otherObj.getHitbox());
-
-                        if (obj.getHitbox().isTouching(otherObj.getHitbox())) {
-                            obj.triggerCollisionEffect();
-                        }
-                    }
-                }
-            }
-        }
-        for(Damageable obj : damageableObjs){
-            if(obj != null && !obj.isDead()) {
-                for (Damaging otherObj : damagingObjs) {
-                    if(otherObj != null && otherObj.getHitbox()!= null){
-                        if(obj.getHitbox().isTouching(otherObj.getHitbox())) {
-                            obj.getHitbox().setTouchingFalse();
-                            obj.takeDamage(otherObj.getDamage());
-                            otherObj.destroy(otherObj.isDestroyable());
-                        }
-                    }
-                }
-            }
-        }
+       getObjs();
+       //first checks damageable objs
+       for(Damageable obj : damageableObjs){
+           if(obj != null && !obj.isDead()) {
+               for (Damaging otherObj : damagingObjs) {
+                   if (otherObj != null && otherObj.getHitbox() != null) {
+                       if(!otherObj.notDamageObj().contains(obj.getClass())) {
+                           if (obj.getHitbox().isTouching(otherObj.getHitbox())) {
+                               obj.getHitbox().setTouchingFalse();
+                               obj.takeDamage(otherObj.getDamage());
+                               otherObj.destroyThis();
+                           }
+                       }
+                   }
+               }
+           }
+       }
+       //then check concrete objects collisions
+       for(Concrete obj : concreteObjs) {
+           if (obj != null) {
+               for (Concrete otherObj : concreteObjs) {
+                   if (otherObj != null) {
+                       if (!obj.notInteractWith().contains(otherObj.getClass())) {
+                           if (obj == otherObj || obj.getHitbox() == null || otherObj.getHitbox() == null)
+                               continue;
+                           obj.getHitbox().setMin(otherObj.getHitbox());
+                           if (obj.getHitbox().isTouching(otherObj.getHitbox())) {
+                               obj.triggerCollisionEffect(otherObj);
+                           }
+                       }
+                   }
+               }
+           }
+       }
    }
 }

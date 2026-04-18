@@ -20,6 +20,7 @@ public class Weapon extends GameObject
     private static final int MUZZLE_FRAMES = 3;
     private double width = 30;
     private double height= 15;
+    private int damage;
 
     private static final int GUN_IDLE_FRAMES = 6;
     private SpriteRenderer muzzleFlashRenderer;
@@ -120,7 +121,7 @@ public class Weapon extends GameObject
         double sy = muzzleFlashRenderer.getFrameY() * muzzleFlashRenderer.getFrameHeight();
 
         context.save();
-        context.translate(barrelTip.getX(), barrelTip.getY());
+        context.translate(barrelTip.getX()+2, barrelTip.getY()-1);
         context.rotate(this.getTransform().getRotation().getDegrees());
         context.drawImage(
                 muzzleFlashRenderer.getImage(),
@@ -142,18 +143,19 @@ public class Weapon extends GameObject
         double dx = delta.getX();
         double dy = delta.getY();
         double rotation = Math.atan2(dy, dx);
-        if(rotation > Math.PI/2) {
-            rotation = Math.PI - rotation;
-        }
-        else if(rotation < -Math.PI/2) {
-            rotation = -Math.PI + rotation;
-        }
         Vector2D orbitingDistance = delta.normalize().multiply(WEAPON_OFFSET);
 
+        if(weaponRenderer != null) {
+            if (Math.abs(rotation) > Math.PI / 2) {
+                this.weaponRenderer.flipVertical();
+            } else {
+                this.weaponRenderer.unFlipVertical();
+            }
+        }
 
         if (weaponRenderer != null)
         {
-            Image directionalGunSheet = getDirectionalGunIdleSheet(delta);
+            Image directionalGunSheet = getDirectionalGunIdleSheet();
             if (directionalGunSheet != null && weaponRenderer.getImage() != directionalGunSheet) {
                 weaponRenderer.setImage(directionalGunSheet, GUN_IDLE_FRAMES, 1).setFrame(0, 0).startAnimation();
             }
@@ -182,7 +184,7 @@ public class Weapon extends GameObject
             setFiring(false);
             ammo.decreaseAmmo();
             triggerMuzzleFlash(bulletPos, targetPos);
-            return new Bullet(2000, bulletPos, 1000, 10, 30, targetPos);
+            return new Bullet(2000, bulletPos, 1000, 10, 30, targetPos,damage);
         }
 
         fireCooldown -= deltaTime.asSeconds();
@@ -191,7 +193,7 @@ public class Weapon extends GameObject
             fireCooldown = 1.0 / fireRate;
             ammo.decreaseAmmo();
             triggerMuzzleFlash(weaponPos, targetPos);
-            return new Bullet(2000, bulletPos, 1000, 30, 30, targetPos);
+            return new Bullet(2000, bulletPos, 1000, 30, 30, targetPos,damage);
         }
 
         return null;
@@ -250,7 +252,7 @@ public class Weapon extends GameObject
             return;
 
         Vector2D direction = targetPos.subtract(weaponPos);
-        Image directionalSheet = getDirectionalFireSheet(direction);
+        Image directionalSheet = getDirectionalFireSheet();
         if (directionalSheet == null)
             return;
 
@@ -262,25 +264,21 @@ public class Weapon extends GameObject
         muzzlePlaying = true;
     }
 
-    private Image getDirectionalFireSheet(Vector2D direction)
+    private Image getDirectionalFireSheet()
     {
-        double absX = Math.abs(direction.getX());
-        double absY = Math.abs(direction.getY());
-
-        if (absX >= absY)
-            return direction.getX() >= 0 ? fireRightSheet : fireLeftSheet;
-
-        return direction.getY() >= 0 ? fireDownSheet : fireUpSheet;
+        return fireRightSheet;
     }
 
-    private Image getDirectionalGunIdleSheet(Vector2D direction)
+    private Image getDirectionalGunIdleSheet()
     {
-
-
-        if (direction.getX() > 0)
-            return  gunIdleRightSheet ;
-
-        return gunIdleLeftSheet;
+        return  gunIdleRightSheet ;
     }
 
+    public int getDamage() {
+        return damage;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
 }

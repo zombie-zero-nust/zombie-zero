@@ -7,6 +7,7 @@ import edu.nust.engine.resources.Resources;
 import edu.nust.game.assets.CharacterAsset;
 import edu.nust.game.gameobjects.General.HealthImpl;
 import edu.nust.game.gameobjects.CollisionSystem.HitBox;
+import edu.nust.game.gameobjects.Weapon.Bullet;
 import edu.nust.game.gameobjects.enums.CharacterAnimationAssets;
 import edu.nust.game.gameobjects.interfaces.Concrete;
 import edu.nust.game.gameobjects.interfaces.Damageable;
@@ -16,7 +17,9 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -280,7 +283,7 @@ public class Player extends Character implements Damageable, Concrete
     }
 
     @Override
-    public void triggerCollisionEffect()
+    public void triggerCollisionEffect(Concrete collidedObj)
     {
         Vector2D previousPos = getPrePos();
         if (previousPos == null)
@@ -293,6 +296,10 @@ public class Player extends Character implements Damageable, Concrete
             hitbox.setPos(rollback);
     }
 
+    @Override
+    public List<Class<? extends Concrete>> notInteractWith() {
+        return null;
+    }
     public void setWalkabilityChecker(BiFunction<Vector2D, Double, Boolean> checker)
     {
         this.walkabilityChecker = checker;
@@ -306,8 +313,4 @@ public class Player extends Character implements Damageable, Concrete
     }
 
 
-    @Override
-    public String[] notInteractWith(){
-        return null;
-    }
 }

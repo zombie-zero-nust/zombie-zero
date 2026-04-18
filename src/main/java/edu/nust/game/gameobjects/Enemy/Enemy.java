@@ -16,6 +16,7 @@ import edu.nust.game.gameobjects.interfaces.Health;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 public class Enemy extends GameObject implements Concrete, Damageable, Damaging
 {
@@ -178,7 +179,7 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     }
 
     @Override
-    public void triggerCollisionEffect(){
+    public void triggerCollisionEffect(Concrete collidedObj){
         double dx=0,dy=0;
         if(hitbox.isLeftTouching()){
             dx += 1.0;
@@ -205,11 +206,16 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     }
 
     @Override
-    public void destroy(boolean isDestroyable){ if(isDestroyable) this.destroy();}
+    public void destroyThis(){ if(isDestroyable()) this.destroy();}
 
     @Override
-    public String[] notInteractWith(){
-        return new String[]{"Enemy"};
+    public List<Class<? extends Concrete>> notInteractWith(){
+        return List.of(Enemy.class);
+    }
+
+    @Override
+    public List<Class<?extends Damageable>> notDamageObj(){
+        return List.of(Enemy.class);
     }
 
     @Override

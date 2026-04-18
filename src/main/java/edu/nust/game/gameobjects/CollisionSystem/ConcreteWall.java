@@ -2,7 +2,10 @@ package edu.nust.game.gameobjects.CollisionSystem;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.game.gameobjects.Weapon.Bullet;
 import edu.nust.game.gameobjects.interfaces.Concrete;
+
+import java.util.List;
 
 /** Invisible static wall used by CollisionManager for concrete boundary blocking. */
 public class ConcreteWall extends GameObject implements Concrete
@@ -19,6 +22,11 @@ public class ConcreteWall extends GameObject implements Concrete
         this.height = height;
         this.getTransform().setPosition(center);
 
+    }
+
+    @Override
+    public List<Class<? extends Concrete>> notInteractWith(){
+        return null;
     }
 
     @Override
@@ -43,15 +51,11 @@ public class ConcreteWall extends GameObject implements Concrete
     }
 
     @Override
-    public void triggerCollisionEffect()
+    public void triggerCollisionEffect(Concrete collidedObj)
     {
         // Static wall: no movement response needed.
     }
 
-    @Override
-    public String[] notInteractWith(){
-        return null;
-    }
 }
 
 
