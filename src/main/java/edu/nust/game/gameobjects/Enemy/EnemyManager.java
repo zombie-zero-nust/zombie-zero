@@ -79,7 +79,7 @@ public class EnemyManager
     private void respawnEnemy()
     {
         scene.removeGameObject(enemy);
-        enemy = new Enemy(getRandomEdgePosition(), 100);
+        enemy = new Enemy(getRandomEdgePosition(), 30,100);
         scene.addGameObject(enemy.addTag(EnemyTag.class));
     }
 
