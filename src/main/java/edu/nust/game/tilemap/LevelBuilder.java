@@ -4,7 +4,7 @@ import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.assets.TilesetAsset;
-import edu.nust.game.gameobjects.ConcreteWall;
+import edu.nust.game.gameobjects.CollisionSystem.ConcreteWall;
 import edu.nust.game.scenes.Level1CollisionMask;
 
 /** Builder for constructing tile-based levels and play-area bounds. */

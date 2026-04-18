@@ -1,10 +1,12 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.Player;
 
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.assets.CharacterAsset;
+import edu.nust.game.gameobjects.General.HealthImpl;
+import edu.nust.game.gameobjects.CollisionSystem.HitBox;
 import edu.nust.game.gameobjects.enums.CharacterAnimationAssets;
 import edu.nust.game.gameobjects.interfaces.Concrete;
 import edu.nust.game.gameobjects.interfaces.Damageable;

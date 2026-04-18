@@ -1,4 +1,4 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.General;
 
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.logger.GameLogger;

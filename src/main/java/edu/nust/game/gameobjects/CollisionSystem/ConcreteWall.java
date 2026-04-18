@@ -1,4 +1,4 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.CollisionSystem;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.math.Vector2D;

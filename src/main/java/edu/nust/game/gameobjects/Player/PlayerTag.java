@@ -1,4 +1,4 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.Player;
 
 
 import edu.nust.engine.core.gameobjects.Tag;

@@ -1,4 +1,4 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.General;
 
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.gameobjects.interfaces.Health;

@@ -1,7 +1,5 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.CollisionSystem;
 
-import com.sun.javafx.scene.text.TextLayout;
-import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.Component;
 import edu.nust.engine.core.components.renderers.BoxRenderer;
 import edu.nust.engine.math.TimeSpan;

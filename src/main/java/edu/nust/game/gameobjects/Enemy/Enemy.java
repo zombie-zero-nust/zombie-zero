@@ -1,4 +1,4 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.Enemy;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
@@ -6,6 +6,8 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.assets.EnemyAsset;
+import edu.nust.game.gameobjects.General.HealthImpl;
+import edu.nust.game.gameobjects.CollisionSystem.HitBox;
 import edu.nust.game.gameobjects.enums.EnemyConfig;
 import edu.nust.game.gameobjects.interfaces.Concrete;
 import edu.nust.game.gameobjects.interfaces.Damageable;

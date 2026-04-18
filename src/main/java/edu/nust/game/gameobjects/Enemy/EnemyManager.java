@@ -1,9 +1,10 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.Enemy;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.Score;
+import edu.nust.game.gameobjects.Weapon.Bullet;
 
 import java.util.ArrayList;
 import java.util.List;

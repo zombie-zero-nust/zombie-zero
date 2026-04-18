@@ -1,4 +1,4 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.Weapon;
 
 import edu.nust.engine.core.Component;
 import edu.nust.engine.math.TimeSpan;

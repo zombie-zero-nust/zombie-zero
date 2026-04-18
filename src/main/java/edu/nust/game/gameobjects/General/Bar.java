@@ -1,4 +1,4 @@
-package edu.nust.game.gameobjects;
+package edu.nust.game.gameobjects.General;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
