@@ -36,6 +36,37 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     {
         this(startPosition, speed, EnemyAsset.ZOMBIE_SMALL,health);
     }
+    public Enemy(Vector2D startPosition, double speed,int health,double height,double width,double damage,EnemyAsset enemyType)
+    {
+        this.health = new HealthImpl();
+        this.movementSpeed = speed;
+        this.width = width;
+        this.height = height;
+        this.enemyType = enemyType;
+        this.getTransform().setPosition(startPosition);
+        this.health = new HealthImpl(health);
+        try
+        {
+            // Load enemy sprite from PostApocalypse assets
+            Image idleSprite = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath()
+            );
+
+            // Create sprite renderer with 6 frames
+            spriteRenderer = new SpriteRenderer(width, height, idleSprite, 6, 1);
+            spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150))
+                    .startAnimation();
+
+            this.addComponent(spriteRenderer);
+        }
+        catch (FileNotFoundException e)
+        {
+            // If sprite loading fails, still continue
+            System.err.println("Failed to load enemy sprite: " + e.getMessage());
+        }
+
+    }
 
 
     public Enemy(Vector2D startPosition, double speed, EnemyAsset enemyType,int health)

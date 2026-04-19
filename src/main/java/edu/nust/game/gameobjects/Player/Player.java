@@ -231,8 +231,10 @@ public class Player extends Character implements Damageable, Concrete
         if (target != null && spriteRenderer.getImage() != target)
             spriteRenderer.setImage(target, 6, 1).startAnimation();
 
-        if (handsRenderer != null && handsTarget != null && handsRenderer.getImage() != handsTarget)
+        if (handsRenderer != null && handsTarget != null && handsRenderer.getImage() != handsTarget) {
             handsRenderer.setImage(handsTarget, 6, 1).startAnimation();
+            handsRenderer.setVisible(false);
+        }
     }
 
     @Override

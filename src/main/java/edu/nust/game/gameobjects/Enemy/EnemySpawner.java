@@ -10,11 +10,11 @@ import java.sql.Time;
 import java.util.ArrayList;
 
 public class EnemySpawner extends GameObject {
-    private ArrayList<Enemy> enemies = new ArrayList<>();
-    private Vector2D pos;
-    private int enemyNo;
-    private int totalEnemies;
-    private double spawnTime;
+    private final ArrayList<Enemy> enemies = new ArrayList<>();
+    private final Vector2D pos;
+
+    private final int totalEnemies;
+    private final double spawnTime;
     private boolean spawnActive = false;
     private TimeSpan elapsed = TimeSpan.zero();
 
@@ -26,14 +26,13 @@ public class EnemySpawner extends GameObject {
 
     @Override
     public void onInit(){
-        enemyNo = 0;
         setEnemies(totalEnemies);
     }
     @Override
     public void onUpdate(TimeSpan deltaTime){
         updateStatus(this.getScene());
         if(isSpawnActive()){
-            if(enemyNo<totalEnemies) {
+            if(!enemies.isEmpty()) {
                 spawn(this.getScene(), deltaTime);
             }
             else{
@@ -58,18 +57,21 @@ public class EnemySpawner extends GameObject {
     }
 
     public void spawn(GameScene scene, TimeSpan deltaTime){
-        elapsed.add(deltaTime);
-        if(elapsed.asSeconds() % spawnTime == 0){
-            scene.addGameObject(enemies.get(enemyNo));
-            enemyNo++;
+        elapsed = elapsed.add(deltaTime);
+        if(elapsed.asSeconds() >= spawnTime){
+            scene.addGameObject(enemies.getFirst());
+            enemies.removeFirst();
+            elapsed = elapsed.subtract(TimeSpan.fromSeconds(spawnTime));
         }
     }
 
     public void updateStatus(GameScene scene){
-        Player player = (Player) scene.getGameObjectsOfType(Player.class);
-        Vector2D playerPos = player.getTransform().getPosition();
-        if(playerPos.subtract(this.pos).magnitude() < 150){
-            setSpawnActive(true);
+        Player player = (Player) scene.getFirstOfType(Player.class);
+        if(player != null) {
+            Vector2D playerPos = player.getTransform().getPosition();
+            if (playerPos.subtract(this.pos).magnitude() < 150) {
+                setSpawnActive(true);
+            }
         }
     }
 }

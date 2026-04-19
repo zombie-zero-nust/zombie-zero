@@ -128,7 +128,7 @@ public class LevelScene extends GameScene
         Enemy enemy = new Enemy(new Vector2D(300, 0), 30,100);
         this.addGameObject(enemy.addTag(EnemyTag.class));
 
-        enemyManager = new EnemyManager(this, score, enemy);
+        enemyManager = new EnemyManager(this, score);
 
         if (ammoBarContainer != null)
         {

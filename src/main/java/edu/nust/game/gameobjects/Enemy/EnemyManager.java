@@ -7,19 +7,21 @@ import edu.nust.game.Score;
 import edu.nust.game.gameobjects.Weapon.Bullet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class EnemyManager
 {
     private Enemy enemy;
+    private ArrayList<EnemySpawner> enemySpawners;
+    private ArrayList<Vector2D> spawnersPos;
     private final GameScene scene;
     private final Score score;
 
-    public EnemyManager(GameScene scene, Score score, Enemy initialEnemy)
+    public EnemyManager(GameScene scene, Score score)
     {
         this.scene = scene;
         this.score = score;
-        this.enemy = initialEnemy;
     }
 
     public void updateEnemyLogic(Vector2D playerPos)
@@ -135,5 +137,14 @@ public class EnemyManager
     {
         return enemy;
     }
+
+    public void setSpawners(EnemySpawner... spawners){
+        this.enemySpawners = new ArrayList<>(Arrays.asList(spawners));
+    }
+
+    public void setMap(GameScene scene){
+
+    }
+
 }
 
