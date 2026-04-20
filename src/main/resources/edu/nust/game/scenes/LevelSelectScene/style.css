@@ -4,7 +4,7 @@
 }
 
 .ui-root {
-    -fx-background-image: url('../../assets/images/background_start.jpeg');
+    -fx-background-image: url('../../assets/images/selectScene.PNG');
     -fx-background-size: 100% 100%;
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
@@ -12,26 +12,18 @@
     -fx-padding: 0;
 }
 
-.title-label {
-    -fx-font-size: 56px;
-    -fx-text-fill: #ffffff;
-    -fx-font-weight: bold;
-    -fx-padding: 18px 28px;
-    -fx-background-color: rgba(0, 0, 0, 0.62);
-    -fx-background-radius: 10px;
-}
-
 .name-input {
     -fx-font-size: 20px;
     -fx-min-width: 420px;
     -fx-max-width: 420px;
     -fx-padding: 12px;
-    -fx-background-radius: 6px;
-    -fx-border-radius: 6px;
-    -fx-border-color: rgba(255, 255, 255, 0.6);
-    -fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: rgba(255, 90, 90, 0.75);
+    -fx-border-width: 2px;
+    -fx-background-color: rgba(70, 0, 0, 0.42);
     -fx-text-fill: #ffffff;
-    -fx-prompt-text-fill: rgba(255, 255, 255, 0.6);
+    -fx-prompt-text-fill: rgba(255, 220, 220, 0.8);
 }
 
 .name-error-label {
@@ -40,50 +32,37 @@
     -fx-font-weight: bold;
 }
 
-.level-button {
-    -fx-font-size: 34px;
-    -fx-font-weight: bold;
-    -fx-min-width: 420px;
-    -fx-min-height: 92px;
-    -fx-max-width: 420px;
-    -fx-background-color: rgba(213, 43, 26, 0.85);
-    -fx-text-fill: #ffffff;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
+.level-tile {
+    -fx-min-width: 320px;
+    -fx-pref-width: 320px;
+    -fx-max-width: 320px;
+    -fx-min-height: 170px;
+    -fx-pref-height: 170px;
+    -fx-max-height: 170px;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 100% 100%;
     -fx-cursor: hand;
 }
 
-.level-button:hover {
-    -fx-background-color: rgba(163, 29, 13, 0.85);
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
+.level1-tile {
+    -fx-background-image: url('../../assets/images/level1.png');
 }
 
-.level-button:pressed {
-    -fx-background-color: rgba(139, 17, 7, 0.9);
+.level1-tile:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
 }
 
-/* Locked levels are intentionally disabled for now. */
-.level-button:disabled,
-.locked-level-button {
-    -fx-background-color: rgba(170, 170, 170, 0.65);
-    -fx-text-fill: rgba(255, 255, 255, 0.75);
-    -fx-opacity: 1;
+.level2-tile {
+    -fx-background-image: url('../../assets/images/level2.PNG');
+}
+
+.level3-tile {
+    -fx-background-image: url('../../assets/images/level3.PNG');
+}
+
+.locked-level-tile {
+    -fx-opacity: 0.88;
     -fx-cursor: default;
 }
-
-.secondary-button {
-    -fx-font-size: 22px;
-    -fx-min-width: 220px;
-    -fx-min-height: 58px;
-    -fx-background-color: rgba(213, 43, 26, 0.8);
-    -fx-text-fill: #ffffff;
-    -fx-background-radius: 6px;
-    -fx-border-radius: 6px;
-    -fx-cursor: hand;
-}
-
-.secondary-button:hover {
-    -fx-background-color: rgba(163, 29, 13, 0.8);
-}
-
