@@ -22,8 +22,6 @@ public class MapNodeSetter extends GameObject {
     private final Vector2D mapTopLeftPos;
     private int xPos;
     private int yPos;
-    private Node start;
-    private Node goal;
     private ArrayList<Node> checkedNodes;
     private ArrayList<Node> openNodes;
 
@@ -79,18 +77,13 @@ public class MapNodeSetter extends GameObject {
     }
 
 
-    public void setStartNode(int row,int col){
-        nodes[row][col].setAsStart(true);
-        start = nodes[row][col];
-    }
 
-    public void setGoalNode(int row, int col){
-        nodes[row][col].setAsGoal(true);
-        goal = nodes[row][col];
-    }
-
-    public Node[][] getMap(){
+    public Node[][] getNodes(){
         return nodes;
+    }
+
+    public Vector2D getMapTopLeftPos(){
+        return mapTopLeftPos;
     }
 
 
