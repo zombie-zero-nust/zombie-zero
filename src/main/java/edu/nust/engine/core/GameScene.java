@@ -436,6 +436,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     {
         Canvas canvas = new Canvas();
         canvas.setFocusTraversable(true);
+        canvas.getGraphicsContext2D().setImageSmoothing(false);
         return canvas;
     }
 
