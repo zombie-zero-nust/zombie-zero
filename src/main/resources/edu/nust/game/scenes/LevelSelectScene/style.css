@@ -4,7 +4,7 @@
 }
 
 .ui-root {
-    -fx-background-image: url('../../assets/images/selectScene.PNG');
+    -fx-background-image: url('../../assets/images/SelectLevelScene/LevelSelectBackground.png');
     -fx-background-size: 100% 100%;
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
@@ -13,6 +13,7 @@
 }
 
 .name-input {
+
     -fx-font-size: 20px;
     -fx-min-width: 420px;
     -fx-max-width: 420px;
@@ -24,21 +25,35 @@
     -fx-background-color: rgba(70, 0, 0, 0.42);
     -fx-text-fill: #ffffff;
     -fx-prompt-text-fill: rgba(255, 220, 220, 0.8);
+    -fx-translate-y: -65px;
 }
 
 .name-error-label {
     -fx-text-fill: #ffd4d4;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
+    -fx-translate-y: -60px;
+}
+
+.level-row {
+    -fx-translate-y: -40px;
+}
+
+.level-row-top {
+    -fx-translate-y: -45px;
+}
+
+.level-row-bottom {
+    -fx-translate-y: -30px;
 }
 
 .level-tile {
-    -fx-min-width: 320px;
-    -fx-pref-width: 320px;
-    -fx-max-width: 320px;
-    -fx-min-height: 170px;
-    -fx-pref-height: 170px;
-    -fx-max-height: 170px;
+    -fx-min-width: 290px;
+    -fx-pref-width: 290px;
+    -fx-max-width: 290px;
+    -fx-min-height: 88px;
+    -fx-pref-height: 88px;
+    -fx-max-height: 88px;
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-size: 100% 100%;
@@ -46,7 +61,7 @@
 }
 
 .level1-tile {
-    -fx-background-image: url('../../assets/images/level1.png');
+    -fx-background-image: url('../../assets/images/SelectLevelScene/Level1.png');
 }
 
 .level1-tile:hover {
@@ -55,11 +70,15 @@
 }
 
 .level2-tile {
-    -fx-background-image: url('../../assets/images/level2.PNG');
+    -fx-background-image: url('../../assets/images/SelectLevelScene/Level2.png');
 }
 
 .level3-tile {
-    -fx-background-image: url('../../assets/images/level3.PNG');
+    -fx-background-image: url('../../assets/images/SelectLevelScene/Level3.png');
+}
+
+.level4-tile {
+    -fx-background-image: url('../../assets/images/SelectLevelScene/Level4.png');
 }
 
 .locked-level-tile {

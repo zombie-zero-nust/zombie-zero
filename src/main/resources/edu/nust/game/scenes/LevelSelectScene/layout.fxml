@@ -18,15 +18,14 @@
           maxWidth="Infinity"
           maxHeight="Infinity">
 
+        <Label fx:id="nameErrorLabel"
+               styleClass="name-error-label" />
+
         <TextField fx:id="playerNameField"
                    promptText="Enter player name"
                    styleClass="name-input" />
 
-        <Label fx:id="nameErrorLabel"
-               styleClass="name-error-label"
-               text="" />
-
-        <HBox alignment="CENTER" spacing="26">
+        <HBox alignment="CENTER" spacing="40" styleClass="level-row, level-row-top">
             <StackPane styleClass="level-tile, level1-tile"
                        onMouseClicked="#startLevel1TileClicked" />
 
@@ -34,10 +33,14 @@
                        disable="true" />
         </HBox>
 
-        <StackPane alignment="CENTER">
+        <HBox alignment="CENTER" spacing="40" styleClass="level-row, level-row-bottom">
             <StackPane styleClass="level-tile, level3-tile, locked-level-tile"
                        disable="true" />
-        </StackPane>
+
+            <StackPane styleClass="level-tile, level4-tile, locked-level-tile"
+                       disable="true" />
+        </HBox>
+
 
     </VBox>
 </StackPane>

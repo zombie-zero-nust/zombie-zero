@@ -2,17 +2,9 @@ package edu.nust.game.scenes;
 
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
-import edu.nust.engine.core.GameObject;
-import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
-import edu.nust.engine.math.Vector2D;
-import edu.nust.engine.resources.Resources;
-import edu.nust.game.gameobjects.MovingObject;
 import javafx.fxml.FXML;
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-
-import java.io.FileNotFoundException;
+import javafx.scene.input.MouseEvent;
 
 public class StartScene extends GameScene
 {
@@ -21,41 +13,16 @@ public class StartScene extends GameScene
         super(world);
     }
 
-    /* LIFETIME */
-
     @Override
     public void onInit()
     {
-        try
-        {
-            // Load and display start scene background
-            Image backgroundImage = Resources.loadImageOrThrow(
-                    "assets",
-                    "images",
-                    "background_start.jpeg"
-            );
-
-            // Create background GameObject that spans the screen
-            GameObject background = GameObject.create();
-            SpriteRenderer bgRenderer = new SpriteRenderer(1280, 768, backgroundImage);
-            background.addComponent(bgRenderer);
-            background.getTransform().setPosition(640, 384);
-
-            this.addGameObject(background);
-        }
-        catch (FileNotFoundException e)
-        {
-            System.err.println("Failed to load start scene background: " + e.getMessage());
-        }
+        // Background is now driven by StartScene CSS.
     }
 
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
-
     }
-
-    /* FXML Buttons Callbacks */
 
     @FXML
     private void switchToGameScene()
@@ -79,5 +46,29 @@ public class StartScene extends GameScene
     private void exitApplication()
     {
         this.getWorld().stop();
+    }
+
+    @FXML
+    private void switchToGameSceneTileClicked(MouseEvent ignored)
+    {
+        switchToGameScene();
+    }
+
+    @FXML
+    private void switchToLevelSceneTileClicked(MouseEvent ignored)
+    {
+        switchToLevelScene();
+    }
+
+    @FXML
+    private void switchToHighscoresSceneTileClicked(MouseEvent ignored)
+    {
+        switchToHighscoresScene();
+    }
+
+    @FXML
+    private void exitApplicationTileClicked(MouseEvent ignored)
+    {
+        exitApplication();
     }
 }
