@@ -44,7 +44,7 @@ public class PathFinder {
     }
 
     public void updateStatus(Enemy enemy){
-        Player player = (Player) scene.getGameObjectsOfType(Player.class);
+        Player player = (Player) scene.getFirstOfType(Player.class);
         if(player != null){
             Vector2D playerPos = player.getTransform().getPosition().subtract(mapTopLeftPos);
             setStartNode((int)playerPos.getY(),(int)playerPos.getX());
@@ -57,23 +57,24 @@ public class PathFinder {
     }
 
     public ArrayList<Node> getPath(Enemy enemy){
-        if(!goalReached) return null;
+
+        goalReached = false;
+        openList.clear();
+        checkedList.clear();
         updateStatus(enemy);
+        current = start;
         search();
         ArrayList<Node> pathNodes = new ArrayList<>();
-        ArrayList<Node> directedPath = new ArrayList<>();
-        Node current = goal;
-        while(current != start){
-            pathNodes.add(current);
-            current = current.getParent();
+        if(goalReached) {
+            Node temp = goal;
+            while(temp != start && temp != null){
+                pathNodes.add(temp);
+                temp = temp.getParent();
+            }
         }
-        //reversing the arraylist pathNodes
-        for(int i = pathNodes.size()-1;i>=0;i++){
-            directedPath.add(pathNodes.get(i));
-        }
-        return directedPath;
-
+        return pathNodes;
     }
+
 
 
 

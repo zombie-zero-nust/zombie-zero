@@ -13,15 +13,19 @@ import edu.nust.game.gameobjects.interfaces.Concrete;
 import edu.nust.game.gameobjects.interfaces.Damageable;
 import edu.nust.game.gameobjects.interfaces.Damaging;
 import edu.nust.game.gameobjects.interfaces.Health;
+import edu.nust.game.gameobjects.pathFinder.Node;
+import edu.nust.game.gameobjects.pathFinder.PathFinder;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Enemy extends GameObject implements Concrete, Damageable, Damaging
 {
+    private PathFinder pathFinder;
     private Vector2D targetPosition = Vector2D.zero();
-    private double movementSpeed;
+    private double movementSpeed;//nodes per second
     private double height;
     private double width;
     private int hits = 0;
@@ -30,6 +34,8 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     private HitBox hitbox;
     private int damage;
     private Health health;
+    private ArrayList<Node> movement;
+
 
 
     public Enemy(Vector2D startPosition, double speed,int health)
@@ -105,12 +111,16 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     @Override
     public void onInit()
     {
+        pathFinder = new PathFinder(this.getScene());
         setHitbox();
     }
 
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
+        if(pathFinder == null){
+            pathFinder = new PathFinder(this.getScene());
+        }
         setHitbox();
         moveTowardsTarget(deltaTime);
     }
@@ -120,38 +130,33 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
         this.targetPosition.set(target);
     }
 
-    private void moveTowardsTarget(TimeSpan deltaTime)
-    {
-        Vector2D currentPosition = this.getTransform().getPosition();
-        Vector2D directionToTarget = Vector2D.subtract(targetPosition, currentPosition);
-        double movementDistance = movementSpeed * deltaTime.asSeconds();
-        double dx=0,dy=0;
+    private int currentPathIndex = 0;
 
-        double distanceToTarget = directionToTarget.magnitude();
-        if(directionToTarget.getX()<0 && !this.hitbox.isLeftTouching()){
-            dx -= movementDistance;
+    private void moveTowardsTarget(TimeSpan deltaTime) {
+
+        movement = pathFinder.getPath(this);
+        if (movement == null || currentPathIndex >= movement.size()) return;
+
+        Vector2D currentPos = this.getTransform().getPosition();
+        Node targetNode = movement.get(currentPathIndex);
+        Vector2D targetPos = new Vector2D(targetNode.getCol(), targetNode.getRow());
+
+
+        Vector2D direction = targetPos.subtract(currentPos);
+        double distance = direction.magnitude();
+
+
+        double moveDist = movementSpeed * deltaTime.asSeconds();
+        if (distance <= moveDist) {
+            this.getTransform().setPosition(targetPos);
+            currentPathIndex++;
         }
-        else if(directionToTarget.getX()>0 && !this.hitbox.isRightTouching()){
-            dx += movementDistance;
-        }
-        if(directionToTarget.getY()>0 && !this.hitbox.isBottomTouching()){
-            dy += movementDistance;
-        }
-        else if(directionToTarget.getY()<0 && !this.hitbox.isTopTouching()){
-            dy -= movementDistance;
-        }
-
-        if (distanceToTarget > 0)
-        {
-            Vector2D movement = new Vector2D(dx,dy);
-
-            if(dx != 0 && dy!= 0) movement.multiply(0.707);
-
-            Vector2D newPosition = currentPosition.add(movement);
-
-            this.getTransform().setPosition(newPosition);
+        else {
+            Vector2D velocity = direction.normalize().multiply(moveDist);
+            this.getTransform().setPosition(currentPos.add(velocity));
         }
     }
+
 
     public double getMovementSpeed()
     {
