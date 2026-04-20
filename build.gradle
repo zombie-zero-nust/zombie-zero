@@ -15,11 +15,11 @@ application {
     def useTestLogger = project.hasProperty("testLogger")
     def disableLogs = project.hasProperty("noLogs")
 
-    mainClass = useTestLogger ? 'edu.nust.tests.TestLogger' : 'edu.nust.Main'
+    mainClass = useTestLogger ? 'edu.nust.tests.TestLogger' : 'edu.nust.Launcher'
 
     def logConfig = disableLogs ? "${projectDir}/src/main/resources/edu/nust/engine/logger/logback-off.xml" : "${projectDir}/src/main/resources/edu/nust/engine/logger/logback.xml"
 
-    applicationDefaultJvmArgs = ['--enable-native-access=javafx.graphics',
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED',
                                  "-Dlogback.configurationFile=${logConfig}"]
 }
 
@@ -45,24 +45,25 @@ test {
     useJUnitPlatform()
 }
 
-// tasks for noLogs and testLogger
+// LOGGER
+
 static def getJavaFXArgs(Object classpath) {
-    return [
-            '--module-path', classpath.asPath,
+    return ['--module-path', classpath.asPath,
             '--add-modules', 'javafx.controls,javafx.fxml,javafx.media',
-            '--enable-native-access=javafx.graphics'
-    ]
+            '--enable-native-access=ALL-UNNAMED']
 }
 
+// runNoLogs: run without logging
 tasks.register('runNoLogs', JavaExec) {
     group = 'application'
-    mainClass = 'edu.nust.Main'
+    mainClass = 'edu.nust.Launcher'
     classpath = sourceSets.main.runtimeClasspath
 
     // Combine JavaFX args with your custom Logback override
     jvmArgs = getJavaFXArgs(sourceSets.main.runtimeClasspath) + ["-Dlogback.configurationFile=${projectDir}/src/main/resources/edu/nust/engine/logger/logback-off.xml"]
 }
 
+// runTestLogger: test the logger
 tasks.register('runTestLogger', JavaExec) {
     group = 'application'
     mainClass = 'edu.nust.tests.TestLogger'
@@ -70,3 +71,89 @@ tasks.register('runTestLogger', JavaExec) {
 
     jvmArgs = getJavaFXArgs(sourceSets.main.runtimeClasspath) + ["-Dlogback.configurationFile=${projectDir}/src/main/resources/edu/nust/engine/logger/logback.xml"]
 }
+
+
+/* DISTRIBUTION */
+
+// FUNCTIONS
+
+def packageBaseName = 'cs-212-sp'
+def installLibDirProvider = layout.buildDirectory.dir("install/${project.name}/lib")
+def currentOs = org.gradle.internal.os.OperatingSystem.current()
+
+def requireOs = { String target ->
+    if (target == 'windows' && !currentOs.isWindows()) {
+        throw new GradleException('Windows packaging must run on Windows.')
+    }
+    if (target == 'linux' && !currentOs.isLinux()) {
+        throw new GradleException('Linux packaging must run on Linux.')
+    }
+    if (target == 'mac' && !currentOs.isMacOsX()) {
+        throw new GradleException('macOS packaging must run on macOS.')
+    }
+}
+
+/// Registers a jpackage task for the specified OS and installer type
+/// Must run on the target OS to work correctly
+def registerPackageTask = { String name, String targetOs, String installerType ->
+    tasks.register(name, Exec) {
+        group = 'distribution'
+        dependsOn 'installDist'
+
+        doFirst {
+            requireOs(targetOs)
+
+            def installerDir = layout.buildDirectory.dir("package/${targetOs}/installer").get().asFile
+            installerDir.mkdirs()
+
+            def normalizedAppVersion = project.version.toString().replaceAll(/[^0-9.]/, '') ?: '1.0'
+
+            def jpackageExecutable = new File(System.getProperty('java.home'), 'bin/jpackage').absolutePath
+            def mainJarName = tasks.named('jar', Jar).get().archiveFileName.get()
+            def inputDir = installLibDirProvider.get().asFile
+
+            commandLine(jpackageExecutable,
+                    '--type', installerType,
+                    '--name', packageBaseName,
+                    '--dest', installerDir.absolutePath,
+                    '--input', inputDir.absolutePath,
+                    '--main-jar', mainJarName,
+                    '--main-class', application.mainClass.get(),
+                    '--app-version', normalizedAppVersion,
+                    '--vendor', 'edu.nust',
+                    '--java-options', '--enable-native-access=ALL-UNNAMED')
+        }
+    }
+}
+
+// REGISTRATION
+
+// fatJar: builds an executable fat JAR at build/libs/*-all.jar
+tasks.register('fatJar', Jar) {
+    group = 'distribution'
+    description = 'Builds an executable fat JAR at build/libs/*-all.jar.'
+    archiveClassifier.set('all')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes 'Main-Class': application.mainClass.get()
+    }
+    from sourceSets.main.output
+    dependsOn tasks.named('classes')
+    from({
+        sourceSets.main.runtimeClasspath.filter { it.exists() }.collect { it.isDirectory() ? it : zipTree(it) }
+    })
+}
+
+// buildExecutableJar: depends on fatJar to build the executable fat JAR
+tasks.register('buildExecutableJar') {
+    group = 'distribution'
+    description = 'Builds an executable fat JAR at build/libs/*-all.jar.'
+    dependsOn 'fatJar'
+}
+
+// packageWindows, buildWindows: creates a Windows installer using jpackage (must run on Windows)
+registerPackageTask('packageWindows', 'windows', 'exe')
+// packageLinux, buildLinux: creates a Linux installer using jpackage (must run on Linux)
+registerPackageTask('packageLinux', 'linux', 'deb')
+// packageMac, buildMac: creates a macOS installer using jpackage (must run on macOS)
+registerPackageTask('packageMac', 'mac', 'dmg')
