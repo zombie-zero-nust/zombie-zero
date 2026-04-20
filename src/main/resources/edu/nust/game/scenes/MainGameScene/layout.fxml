@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane styleClass="ui-root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
+<StackPane styleClass="ui-root" style="-fx-padding: 0;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
 
     <!-- Show help text at top left -->
     <VBox fx:id="helpTextContainer" styleClass="helpTextContainer">
@@ -15,14 +15,13 @@
         <Text styleClass="helpText" text="Press 'H' to hide help" />
     </VBox>
 
-    <StackPane fx:id="pauseOverlay" managed="false" styleClass="pauseOverlay" visible="false">
+    <StackPane fx:id="pauseOverlay" managed="false" styleClass="pauseOverlay" visible="false"
+               StackPane.alignment="CENTER" maxWidth="Infinity" maxHeight="Infinity" minWidth="0" minHeight="0">
 
-        <VBox alignment="CENTER" spacing="20">
-
-            <Button onAction="#resumeGame" text="Resume" />
-
-            <Button onAction="#exitToMainMenu" text="Exit to Main Menu" />
-
+        <VBox alignment="CENTER" spacing="20" styleClass="overlay-content-box">
+            <Label fx:id="overlayTitleLabel" styleClass="overlay-title" text="Paused" />
+            <Button onAction="#resumeGame" styleClass="primary-button" text="Resume" />
+            <Button onAction="#exitToMainMenu" styleClass="primary-button" text="Exit to Main Menu" />
         </VBox>
 
     </StackPane>

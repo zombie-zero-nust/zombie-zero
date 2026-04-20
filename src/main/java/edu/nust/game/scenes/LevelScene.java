@@ -30,6 +30,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
@@ -41,12 +42,14 @@ public class LevelScene extends GameScene
     private LevelId selectedLevel;
 
     @FXML private StackPane pauseOverlay;
+    @FXML private Label overlayTitleLabel;
     @FXML private Label scoreLabel;
     @FXML private Label ammoLabel;
     @FXML private Label reloadLabel;
     @FXML private Label healthLabel;
     @FXML private VBox ammoBarContainer;
     @FXML private VBox healthBarContainer;
+    @FXML private Button resumeButton;
     private boolean isPaused = false;
     private Player player;
     private Weapon weapon;
@@ -65,6 +68,7 @@ public class LevelScene extends GameScene
     private double screenY;
     private double collisionCooldown = 0;
     private boolean scoreSaved = false;
+    private boolean gameOverState = false;
 
     public LevelScene(GameWorld level) { this(level, LevelId.LEVEL_1); }
 
@@ -362,6 +366,14 @@ public class LevelScene extends GameScene
     private void setPaused(boolean newState)
     {
         this.isPaused = newState;
+        if (overlayTitleLabel != null)
+            overlayTitleLabel.setText(gameOverState ? "Game Over" : "Paused");
+        if (resumeButton != null)
+        {
+            boolean allowResume = !gameOverState;
+            resumeButton.setVisible(allowResume);
+            resumeButton.setManaged(allowResume);
+        }
         pauseOverlay.setVisible(newState);
         pauseOverlay.setManaged(newState);
         this.setActive(!newState);
@@ -371,6 +383,8 @@ public class LevelScene extends GameScene
     @FXML
     private void resumeGame()
     {
+        if (gameOverState)
+            return;
         setPaused(false);
     }
 
@@ -382,10 +396,9 @@ public class LevelScene extends GameScene
 
     private void gameOver()
     {
+        gameOverState = true;
         saveScoreIfNeeded();
         setPaused(true);
-        pauseOverlay.setVisible(true);
-        pauseOverlay.setManaged(true);
     }
 
     private void saveScoreIfNeeded()
@@ -400,6 +413,7 @@ public class LevelScene extends GameScene
     @FXML
     private void retryLevel()
     {
+        gameOverState = false;
         this.getWorld().setScene(new LevelScene(this.getWorld(), selectedLevel));
     }
 

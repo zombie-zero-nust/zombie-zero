@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 
-<StackPane styleClass="ui-root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
+<StackPane styleClass="ui-root" style="-fx-padding: 0;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
 
     <HBox StackPane.alignment="TOP_LEFT" alignment="TOP_LEFT" fillHeight="false" style="-fx-padding: 20;">
         <VBox fx:id="healthBarContainer" />
@@ -36,16 +36,15 @@
 
     </HBox>
 
-    <!-- Pause Overlay -->
-    <StackPane fx:id="pauseOverlay" managed="false" styleClass="pauseOverlay" visible="false">
+    <!-- Pause Overlay - Full Screen with Centered Content -->
+    <StackPane fx:id="pauseOverlay" managed="false" styleClass="pauseOverlay" visible="false"
+               StackPane.alignment="CENTER" maxWidth="Infinity" maxHeight="Infinity" minWidth="0" minHeight="0">
 
-        <VBox alignment="CENTER" spacing="20">
-
-            <Button onAction="#resumeGame" text="Resume" />
-            <Button onAction="#retryLevel" text="Retry" />
-
-            <Button onAction="#exitToMainMenu" text="Exit to Main Menu" />
-
+        <VBox alignment="CENTER" spacing="20" styleClass="overlay-content-box">
+            <Label fx:id="overlayTitleLabel" styleClass="overlay-title" text="Paused" />
+            <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="primary-button" text="Resume" />
+            <Button onAction="#retryLevel" styleClass="primary-button" text="Retry" />
+            <Button onAction="#exitToMainMenu" styleClass="primary-button" text="Exit to Main Menu" />
         </VBox>
 
     </StackPane>
