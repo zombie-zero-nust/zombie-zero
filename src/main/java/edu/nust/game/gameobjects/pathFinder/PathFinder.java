@@ -57,7 +57,7 @@ public class PathFinder {
     }
 
     public ArrayList<Node> getPath(Enemy enemy){
-
+        resetNodes();
         goalReached = false;
         openList.clear();
         checkedList.clear();
@@ -90,6 +90,7 @@ public class PathFinder {
 
             current.setChecked(true);
             checkedList.add(current);
+            current.setOpen(false);
             openList.remove(current);
 
             //open the down node
@@ -124,6 +125,12 @@ public class PathFinder {
             current = openList.get(bestNodeIndex);
             t++;
             if(current == goal) goalReached = true;
+        }
+    }
+
+    public void resetNodes(){
+        for(Node checked: checkedList){
+            checked.setChecked(false);
         }
     }
 
