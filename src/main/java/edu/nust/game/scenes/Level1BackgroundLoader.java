@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 
 final class Level1BackgroundLoader
 {
-    private static final String[] LEVEL_1_IMAGE_PATH = {"assets", "images", "Level1BackGround.jpeg"};
+    private static final String[] LEVEL_1_IMAGE_PATH = {"assets", "images", "Level1BackGround.png"};
 
     private Level1BackgroundLoader() { }
 

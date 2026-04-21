@@ -34,16 +34,20 @@ public class PathFinder {
 
 
     public void setStartNode(int row,int col){
+        if (!isWithinBounds(row, col)) return;
         nodes[row][col].setAsStart(true);
         start = nodes[row][col];
     }
 
     public void setGoalNode(int row, int col){
+        if (!isWithinBounds(row, col)) return;
         nodes[row][col].setAsGoal(true);
         goal = nodes[row][col];
     }
 
     public void updateStatus(Enemy enemy){
+        if (nodes == null || mapTopLeftPos == null) return;
+
         Player player = (Player) scene.getFirstOfType(Player.class);
         if(player != null){
             Vector2D playerPos = player.getTransform().getPosition().subtract(mapTopLeftPos);
@@ -57,14 +61,19 @@ public class PathFinder {
     }
 
     public ArrayList<Node> getPath(Enemy enemy){
+        ArrayList<Node> pathNodes = new ArrayList<>();
+        if (nodes == null || mapTopLeftPos == null) return pathNodes;
+
+        clearRunState();
         resetNodes();
         goalReached = false;
         openList.clear();
         checkedList.clear();
         updateStatus(enemy);
+        if (start == null || goal == null) return pathNodes;
+
         current = start;
         search();
-        ArrayList<Node> pathNodes = new ArrayList<>();
         if(goalReached) {
             Node temp = goal;
             while(temp != start && temp != null){
@@ -80,11 +89,11 @@ public class PathFinder {
 
     public void search(){
         setCosts();
-        int bestNodeIndex = 0;
-        int bestNodefCost = 999999;
         int row,col;
         int t =0;
         while(current != goal && t < 1000){
+            int bestNodeIndex = 0;
+            int bestNodefCost = Integer.MAX_VALUE;
             row = current.getRow();
             col = current.getCol();
 
@@ -110,6 +119,8 @@ public class PathFinder {
                 openNode(row,col -1);
             }
 
+            if (openList.isEmpty()) break;
+
             for(int i =0;i<openList.size();i++){
                 if(openList.get(i).getfCost()<bestNodefCost){
                     bestNodeIndex = i;
@@ -132,6 +143,25 @@ public class PathFinder {
         for(Node checked: checkedList){
             checked.setChecked(false);
         }
+    }
+
+    private void clearRunState() {
+        start = null;
+        goal = null;
+        current = null;
+        for (Node[] rowNodes : nodes) {
+            for (Node node : rowNodes) {
+                node.setAsStart(false);
+                node.setAsGoal(false);
+                node.setOpen(false);
+                node.setChecked(false);
+                node.setParent(null);
+            }
+        }
+    }
+
+    private boolean isWithinBounds(int row, int col) {
+        return row >= 0 && col >= 0 && row < nodes.length && col < nodes[row].length;
     }
 
     public void openNode(int row,int col){
@@ -158,7 +188,7 @@ public class PathFinder {
                     int dist = Math.abs(node.getRow()- goal.getRow()) + Math.abs(node.getCol()-goal.getCol());
                     node.sethCost(dist);
                 }
-                node.setfCost(node.getgCost()+node.getfCost());
+                node.setfCost(node.getgCost()+node.gethCost());
             }
         }
     }
