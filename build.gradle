@@ -72,12 +72,9 @@ tasks.register('runTestLogger', JavaExec) {
     jvmArgs = getJavaFXArgs(sourceSets.main.runtimeClasspath) + ["-Dlogback.configurationFile=${projectDir}/src/main/resources/edu/nust/engine/logger/logback.xml"]
 }
 
+/* PRE REQUISITES */
 
-/* DISTRIBUTION */
-
-// FUNCTIONS
-
-def packageBaseName = 'cs-212-sp'
+def packageBaseName = 'zombie-zero'
 def installLibDirProvider = layout.buildDirectory.dir("install/${project.name}/lib")
 def currentOs = org.gradle.internal.os.OperatingSystem.current()
 
@@ -93,10 +90,65 @@ def requireOs = { String target ->
     }
 }
 
+
+/* ICONS */
+
+tasks.register('generateMacIcon') {
+    onlyIf { currentOs.isMacOsX() }
+
+    def iconPng = file("${projectDir}/src/main/resources/icon.png")
+    def iconSetDir = file("${buildDir}/icon.iconset")
+    def icnsFile = file("${buildDir}/icon.icns")
+
+    inputs.file(iconPng)
+    outputs.file(icnsFile)
+
+    doLast {
+        iconSetDir.mkdirs()
+
+        // Helper to run commands natively via Groovy to bypass Gradle's strict exec API
+        def runCmd = { List<String> args ->
+            def process = args.execute()
+            // This ensures we see any errors in the console and wait for the command to finish
+            process.waitForProcessOutput(System.out, System.err)
+            if (process.exitValue() != 0) {
+                throw new GradleException("Command failed with exit code ${process.exitValue()}: ${args.join(' ')}")
+            }
+        }
+
+        def sizes = [16, 32, 128, 256, 512, 1024]
+
+        sizes.each { size ->
+            runCmd(['sips', '-z', "${size}", "${size}", iconPng.absolutePath, '--out', "${iconSetDir}/icon_${size}x${size}.png"])
+
+            if (size > 16) {
+                def halfSize = (size / 2).toInteger()
+                runCmd(['sips', '-z', "${size}", "${size}", iconPng.absolutePath, '--out', "${iconSetDir}/icon_${halfSize}x${halfSize}@2x.png"])
+            }
+        }
+
+        runCmd(['iconutil', '-c', 'icns', iconSetDir.absolutePath, '-o', icnsFile.absolutePath])
+    }
+}
+
+def iconPath = {
+    if (currentOs.isMacOsX()) return "${buildDir}/icon.icns"
+    if (currentOs.isWindows()) return "${projectDir}/src/main/resources/icon.ico"
+    return "${projectDir}/src/main/resources/icon.png"
+}.call()
+
+/* DISTRIBUTION */
+
+// FUNCTIONS
+
 /// Registers a jpackage task for the specified OS and installer type
 /// Must run on the target OS to work correctly
 def registerPackageTask = { String name, String targetOs, String installerType ->
     tasks.register(name, Exec) {
+        if (targetOs == 'mac') {
+            dependsOn 'generateMacIcon'
+        }
+
         group = 'distribution'
         dependsOn 'installDist'
 
@@ -121,6 +173,7 @@ def registerPackageTask = { String name, String targetOs, String installerType -
                     '--main-class', application.mainClass.get(),
                     '--app-version', normalizedAppVersion,
                     '--vendor', 'edu.nust',
+                    '--icon', iconPath,
                     '--java-options', '--enable-native-access=ALL-UNNAMED')
         }
     }
