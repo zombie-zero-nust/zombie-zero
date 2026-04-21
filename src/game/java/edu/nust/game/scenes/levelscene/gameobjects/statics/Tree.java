@@ -3,6 +3,7 @@ package edu.nust.game.scenes.levelscene.gameobjects.statics;
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
+import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import javafx.scene.canvas.GraphicsContext;
@@ -43,6 +44,8 @@ public class Tree extends GameObject
     {
         return new Tree(player).getTransform().setPosition(x, y).getGameObject();
     }
+
+    public static GameObject at(Vector2D pos, Player player) { return at(pos.getX(), pos.getY(), player); }
 
     /* LIFETIME */
 
