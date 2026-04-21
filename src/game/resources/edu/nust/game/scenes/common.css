@@ -8,7 +8,7 @@
 }
 
 .root {
-    -fx-padding: 40;
+    -fx-padding: 0;
     -fx-background-color: #1e1e1e;
 }
 

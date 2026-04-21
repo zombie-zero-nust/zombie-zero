@@ -15,18 +15,23 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -64,6 +69,8 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     private final Region uiLayer;
     /// Contains a canvas that renders all GameObjects
     private final Region worldLayer;
+    /// Only contains the console
+    private final Region consoleLayer;
 
     private final GameCamera worldCamera;
     private final Canvas worldCanvas;
@@ -81,6 +88,26 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     protected Vector2D mousePosition = Vector2D.zero();
 
+    // Built-in developer console (available to every scene)
+    private final Map<String, DevCommand> devCommands = new LinkedHashMap<>();
+    private final List<String> consoleSuggestions = new ArrayList<>();
+    private final List<String> consoleHistory = new ArrayList<>();
+    private int historyIndex = -1;
+    private int suggestionIndex = -1;
+    private boolean devConsoleOpen = false;
+
+    private final VBox devConsoleContainer = new VBox(6);
+    private final Label devConsoleHint = new Label();
+    private final TextField devConsoleInput = new TextField();
+
+    @FunctionalInterface
+    protected interface DevCommandExecutor
+    {
+        String execute(List<String> args);
+    }
+
+    private record DevCommand(String name, String usage, String description, DevCommandExecutor executor) { }
+
     public GameScene(GameWorld gameWorld)
     {
         logger.trace("Constructing GameScene: {}", this.getClass().getSimpleName());
@@ -96,6 +123,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         this.uiLayer = initUILayer();
         logger.trace("World Layer initialization starting");
         this.worldLayer = initWorldLayer();
+        this.consoleLayer = initConsoleLayer();
 
         // add CSS
         String sceneName = this.getClass().getSimpleName();
@@ -124,6 +152,9 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         this.worldCanvas.widthProperty().bind(this.worldLayer.widthProperty());
         this.worldCanvas.heightProperty().bind(this.worldLayer.heightProperty());
 
+        registerBuiltInDevCommands();
+        setupDevConsole();
+
         // start the scene
         logger.trace("Calling onStart() for scene setup");
         onInit();
@@ -132,8 +163,8 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
         // add events
         logger.trace("Registering input event handlers");
-        this.gameWorld.getRawScene().setOnKeyPressed(this::onKeyPressed);
-        this.gameWorld.getRawScene().setOnKeyReleased(this::onKeyReleased);
+        this.gameWorld.getRawScene().setOnKeyPressed(this::handleKeyPressed);
+        this.gameWorld.getRawScene().setOnKeyReleased(this::handleKeyReleased);
         this.gameWorld.getRawScene().setOnMousePressed(this::onMousePressed);
         this.gameWorld.getRawScene().setOnMouseReleased(this::onMouseReleased);
         this.gameWorld.getRawScene().setOnMouseMoved(mEv -> {
@@ -396,7 +427,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     public void removeGameObjectsWithTag(Class<? extends Tag> tag)
     {
         logger.trace("removeGameObjectsWithTag({}) called", tag.getSimpleName());
-        gameObjectsToRemove.forEach(obj -> {
+        gameObjects.forEach(obj -> {
             if (obj.hasTag(tag)) gameObjectsToRemove.add(obj);
         });
         logger.debug("All GameObjects with tag {} removed from scene", tag.getSimpleName());
@@ -414,11 +445,295 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         logger.debug("All GameObjects removed from scene");
     }
 
+    /* DEV CONSOLE */
+
+    private void setupDevConsole()
+    {
+        devConsoleContainer.setVisible(false);
+        devConsoleContainer.setManaged(false);
+        devConsoleContainer.getStyleClass().add("dev-console");
+        devConsoleContainer.setMaxWidth(520);
+        devConsoleContainer.setPadding(new Insets(10));
+        devConsoleContainer.setStyle(
+                "-fx-background-color: rgba(20,20,20,0.92); -fx-border-color: rgba(255,255,255,0.22); -fx-border-width: 1;");
+
+        devConsoleHint.setText("Dev Console");
+        devConsoleHint.setStyle("-fx-text-fill: #b8e0ff;");
+
+        devConsoleInput.setPromptText("Type a command (e.g. /debugGrid true)");
+        devConsoleInput.setFocusTraversable(false);
+        devConsoleInput.setStyle("-fx-background-color: #0f0f0f; -fx-text-fill: #eeeeee; -fx-prompt-text-fill: #777777;");
+
+        devConsoleInput.textProperty().addListener((obs, oldValue, newValue) -> updateConsoleAutocomplete());
+        devConsoleInput.setOnKeyPressed(this::handleConsoleKeyPressed);
+
+        devConsoleContainer.getChildren().setAll(devConsoleHint, devConsoleInput);
+    }
+
+    private void toggleDevConsole()
+    {
+        devConsoleOpen = !devConsoleOpen;
+        devConsoleContainer.setVisible(devConsoleOpen);
+        devConsoleContainer.setManaged(devConsoleOpen);
+
+        if (devConsoleOpen)
+        {
+            devConsoleInput.requestFocus();
+            devConsoleInput.positionCaret(devConsoleInput.getText().length());
+            updateConsoleAutocomplete();
+        }
+        else
+        {
+            getWorld().getRawScene().getRoot().requestFocus();
+        }
+    }
+
+    private boolean isConsoleToggleShortcut(KeyEvent event)
+    {
+        if (!event.isShiftDown()) return false;
+        return event.getCode() == KeyCode.BACK_QUOTE;
+    }
+
+    private void handleKeyPressed(KeyEvent event)
+    {
+        if (isConsoleToggleShortcut(event))
+        {
+            toggleDevConsole();
+            event.consume();
+            return;
+        }
+
+        if (devConsoleOpen)
+        {
+            event.consume();
+            return;
+        }
+
+        onKeyPressed(event);
+    }
+
+    private void handleKeyReleased(KeyEvent event)
+    {
+        // Let releases flow to scenes so held movement keys can be cleared safely.
+        onKeyReleased(event);
+
+        if (devConsoleOpen) event.consume();
+    }
+
+    private void handleConsoleKeyPressed(KeyEvent event)
+    {
+        switch (event.getCode())
+        {
+            case ENTER ->
+            {
+                executeConsoleInput();
+                event.consume();
+            }
+            case TAB ->
+            {
+                applySuggestion(event.isShiftDown() ? -1 : 1);
+                event.consume();
+            }
+            case UP ->
+            {
+                navigateHistory(-1);
+                event.consume();
+            }
+            case DOWN ->
+            {
+                navigateHistory(1);
+                event.consume();
+            }
+            case ESCAPE ->
+            {
+                toggleDevConsole();
+                event.consume();
+            }
+            default ->
+            {
+            }
+        }
+    }
+
+    private void executeConsoleInput()
+    {
+        String input = devConsoleInput.getText().trim();
+        if (input.isBlank()) return;
+
+        consoleHistory.add(input);
+        historyIndex = consoleHistory.size();
+
+        String result = executeDevCommand(input);
+        devConsoleHint.setText(result);
+
+        devConsoleInput.clear();
+        updateConsoleAutocomplete();
+    }
+
+    private String executeDevCommand(String input)
+    {
+        if (!input.startsWith("/")) return "Commands must start with '/'";
+
+        String[] tokens = input.split("\\s+");
+        String commandName = normalizeCommandName(tokens[0]);
+        DevCommand command = devCommands.get(commandName);
+
+        if (command == null)
+        {
+            List<String> candidates = new ArrayList<>();
+            for (String registered : devCommands.keySet())
+            {
+                if (registered.startsWith(commandName)) candidates.add(registered);
+            }
+
+            if (!candidates.isEmpty())
+            {
+                return "Unknown command. Did you mean " + String.join(", ", candidates) + " ?";
+            }
+            return "Unknown command: " + tokens[0];
+        }
+
+        List<String> args = new ArrayList<>();
+        for (int i = 1; i < tokens.length; i++)
+        {
+            if (!tokens[i].isBlank()) args.add(tokens[i]);
+        }
+
+        try
+        {
+            return command.executor().execute(args);
+        }
+        catch (Exception e)
+        {
+            logger.error(false, "Dev command '{}' failed: {}", command.name(), e.getMessage());
+            return "Command failed: " + e.getMessage();
+        }
+    }
+
+    private void navigateHistory(int delta)
+    {
+        if (consoleHistory.isEmpty()) return;
+
+        historyIndex = Math.clamp(historyIndex + delta, 0, consoleHistory.size());
+
+        if (historyIndex == consoleHistory.size())
+        {
+            devConsoleInput.clear();
+            return;
+        }
+
+        devConsoleInput.setText(consoleHistory.get(historyIndex));
+        devConsoleInput.positionCaret(devConsoleInput.getText().length());
+    }
+
+    private void updateConsoleAutocomplete()
+    {
+        consoleSuggestions.clear();
+        suggestionIndex = -1;
+
+        String input = devConsoleInput.getText().trim();
+
+        if (!input.startsWith("/"))
+        {
+            devConsoleHint.setText("Dev Console");
+            return;
+        }
+
+        String commandToken = normalizeCommandName(input.split("\\s+")[0]);
+        for (DevCommand command : devCommands.values())
+        {
+            if (command.name().startsWith(commandToken)) consoleSuggestions.add(command.usage());
+        }
+
+        if (consoleSuggestions.isEmpty())
+        {
+            devConsoleHint.setText("No matching commands");
+        }
+        else
+        {
+            suggestionIndex = 0;
+            devConsoleHint.setText("Suggestions: " + String.join("  |  ", consoleSuggestions));
+        }
+    }
+
+    private void applySuggestion(int direction)
+    {
+        if (consoleSuggestions.isEmpty()) return;
+
+        int count = consoleSuggestions.size();
+        suggestionIndex = (suggestionIndex + direction + count) % count;
+
+        String usage = consoleSuggestions.get(suggestionIndex);
+        String command = usage.split("\\s+")[0];
+        devConsoleInput.setText(command + " ");
+        devConsoleInput.positionCaret(devConsoleInput.getText().length());
+        devConsoleHint.setText("Auto-complete: " + usage);
+    }
+
+    private void registerBuiltInDevCommands()
+    {
+        registerDevCommand(
+                "/debugGrid", "/debugGrid true|false", "Toggle the world debug grid.", args -> {
+                    Boolean value = parseBooleanArg(args);
+                    if (value == null) return "Usage: /debugGrid true|false";
+                    setDebugGrid(value);
+                    return "debugGrid set to " + value;
+                }
+        );
+
+        registerDevCommand(
+                "/debugMouseLocation",
+                "/debugMouseLocation true|false",
+                "Toggle world mouse crosshair + coordinates.",
+                args -> {
+                    Boolean value = parseBooleanArg(args);
+                    if (value == null) return "Usage: /debugMouseLocation true|false";
+                    setDebugMouseLocation(value);
+                    return "debugMouseLocation set to " + value;
+                }
+        );
+    }
+
+    protected final void registerDevCommand(String commandName, String usage, String description, DevCommandExecutor executor)
+    {
+        String normalized = normalizeCommandName(commandName);
+        devCommands.put(normalized, new DevCommand(normalized, usage, description, executor));
+    }
+
+    protected final void unregisterDevCommand(String commandName)
+    {
+        devCommands.remove(normalizeCommandName(commandName));
+    }
+
+    protected final List<String> getRegisteredDevCommands()
+    {
+        return new ArrayList<>(devCommands.keySet());
+    }
+
+    private String normalizeCommandName(String commandName)
+    {
+        if (commandName == null || commandName.isBlank()) return "/";
+        String normalized = commandName.trim().toLowerCase(Locale.ROOT);
+        return normalized.startsWith("/") ? normalized : "/" + normalized;
+    }
+
+    private static Boolean parseBooleanArg(List<String> args)
+    {
+        if (args == null || args.isEmpty()) return null;
+        String raw = args.getFirst().toLowerCase(Locale.ROOT);
+        return switch (raw)
+        {
+            case "true", "1", "on", "yes" -> true;
+            case "false", "0", "off", "no" -> false;
+            default -> null;
+        };
+    }
+
     /* UI LAYER */
 
     private Region initUILayer()
     {
-        Region root = new StackPane(); // just for intellisense
+        Region root = new StackPane(); // just for Intellisense
 
         String sceneName = this.getClass().getSimpleName();
 
@@ -437,6 +752,19 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         {
             logger.error(true, "Failed to load FXML: " + sceneName, e);
         }
+
+        // if (root instanceof Pane pane)
+        // {
+        //     StackPane.setAlignment(devConsoleContainer, Pos.TOP_LEFT);
+        //     pane.getChildren().add(devConsoleContainer);
+        // }
+        // else
+        // {
+        //     StackPane wrapper = new StackPane();
+        //     wrapper.getChildren().addAll(root, devConsoleContainer);
+        //     StackPane.setAlignment(devConsoleContainer, Pos.TOP_LEFT);
+        //     root = wrapper;
+        // }
 
         logger.debug("UI layer initialized successfully");
         return root;
@@ -458,6 +786,17 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         canvas.setFocusTraversable(true);
         canvas.getGraphicsContext2D().setImageSmoothing(false);
         return canvas;
+    }
+
+    private Region initConsoleLayer()
+    {
+        StackPane layer = new StackPane();
+        layer.setPickOnBounds(false); // allow clicks to pass through when hidden
+
+        StackPane.setAlignment(devConsoleContainer, Pos.TOP_LEFT);
+        layer.getChildren().add(devConsoleContainer);
+
+        return layer;
     }
 
     /**
@@ -650,6 +989,8 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     /* LAYERS AND CAMERA */
 
     Region getUILayer() { return uiLayer; }
+
+    Region getConsoleLayer() { return consoleLayer; }
 
     public Region getWorldLayer() { return worldLayer; }
 

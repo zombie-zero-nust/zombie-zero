@@ -12,7 +12,7 @@ import edu.nust.engine.resources.Resources;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.SubScene;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -161,16 +161,16 @@ public abstract class GameWorld
 
         this.currentGameScene = newScene;
 
-        logger.trace("Creating SubScene for world layer");
-        SubScene worldScene = new SubScene(newScene.getWorldLayer(), this.stage.getWidth(), this.stage.getHeight());
+        logger.trace("Creating world layer");
+        Region worldLayer = newScene.getWorldLayer();
         // bind world scene size to root size
-        logger.trace("Binding SubScene dimensions to root");
-        worldScene.widthProperty().bind(this.sceneRoot.widthProperty());
-        worldScene.heightProperty().bind(this.sceneRoot.heightProperty());
+        logger.trace("Binding world layer dimensions to root");
+        worldLayer.prefWidthProperty().bind(sceneRoot.widthProperty());
+        worldLayer.prefHeightProperty().bind(sceneRoot.heightProperty());
 
         // add to root so `this.scene` is updated
         logger.trace("Setting both layers to root");
-        this.sceneRoot.getChildren().setAll(worldScene, newScene.getUILayer());
+        this.sceneRoot.getChildren().setAll(worldLayer, newScene.getUILayer(), newScene.getConsoleLayer());
 
         sceneSwitchLogger.end("Switched to Scene {} successfully", newScene.getClass().getSimpleName());
 
