@@ -13,56 +13,45 @@ import java.util.ArrayList;
 
 public class MapNodeSetter extends GameObject
 {
-
     private Node[][] nodes;
     private final int mapWidth;
     private final int mapHeight;
+
     private Vector2D mapPos;
+    private final Vector2D mapTopLeftPos;
+
     private HitBox hitbox;
     private GameScene scene;
-    private final Vector2D mapTopLeftPos;
+
     private int xPos;
     private int yPos;
-    private ArrayList<Node> checkedNodes;
-    private ArrayList<Node> openNodes;
 
-    public MapNodeSetter(int mapWidth, int mapHeight)
+    public MapNodeSetter(int mapWidth, int mapHeight, Vector2D mapCenterPos)
     {
         this.mapHeight = mapHeight;
         this.mapWidth = mapWidth;
-        mapTopLeftPos = mapPos.subtract(new Vector2D(mapWidth / 2, mapHeight / 2));
+
+        // Initialize map center position
+        this.mapPos = mapCenterPos;
+
+        // Top-left position of the map
+        this.mapTopLeftPos = mapPos.subtract(new Vector2D(mapWidth / 2.0, mapHeight / 2.0));
+
+        // Initialize nodes array
+        nodes = new Node[mapHeight][mapWidth];
+
         hitbox = new HitBox(mapTopLeftPos, 1, 1);
         this.addComponent(hitbox);
+
         setNodes();
-        xPos = (int) mapTopLeftPos.subtract(mapTopLeftPos).getX();
-        yPos = (int) mapTopLeftPos.subtract(mapTopLeftPos).getY();
-    }
 
+        xPos = 0;
+        yPos = 0;
 
-    @Override
-    public void onInit()
-    {
+        scene = this.getScene();
         traceMap();
     }
 
-    @Override
-    public void onUpdate(TimeSpan deltaTime)
-    {
-        xPos = (int) this.getTransform().getPosition().subtract(mapTopLeftPos).getX();
-        yPos = (int) this.getTransform().getPosition().subtract(mapTopLeftPos).getY();
-    }
-
-    public void setMapNode()
-    {
-        ArrayList<GameObject> gameObjs = (ArrayList<GameObject>) this.scene.getAllGameObjects();
-        for (GameObject obj : gameObjs)
-        {
-            if (obj instanceof Concrete && !(obj instanceof Player) && !(obj instanceof BasicEnemy))
-            {
-                nodes[xPos][yPos].setSolid(hitbox.isTouching(((Concrete) obj).getHitbox()));
-            }
-        }
-    }
 
     private void setNodes()
     {
@@ -77,18 +66,46 @@ public class MapNodeSetter extends GameObject
 
     private void traceMap()
     {
-        Vector2D currPos = new Vector2D(0, 0);
+
+        if (scene == null) return;
+
+        ArrayList<GameObject> gameObjs = (ArrayList<GameObject>) scene.getAllGameObjects();
+
         for (int i = 0; i < mapHeight; i++)
         {
             for (int j = 0; j < mapWidth; j++)
             {
+                // Current world position for this node
+                Vector2D currPos = new Vector2D(
+                        mapTopLeftPos.getX() + j,
+                        mapTopLeftPos.getY() + i
+                );
+
+                // Move the object + hitbox to that node position
                 this.getTransform().setPosition(currPos);
-                setMapNode();
-                currPos.add(j, i);
+
+                xPos = j;
+                yPos = i;
+
+                // Check collision with all concrete objects
+                boolean isSolid = false;
+
+                for (GameObject obj : gameObjs)
+                {
+                    if (obj instanceof Concrete && !(obj instanceof Player) && !(obj instanceof BasicEnemy))
+                    {
+                        if (hitbox.isTouching(((Concrete) obj).getHitbox()))
+                        {
+                            isSolid = true;
+                            break;
+                        }
+                    }
+                }
+
+                nodes[yPos][xPos].setSolid(isSolid);
             }
         }
     }
-
 
     public Node[][] getNodes()
     {
@@ -99,6 +116,4 @@ public class MapNodeSetter extends GameObject
     {
         return mapTopLeftPos;
     }
-
-
 }

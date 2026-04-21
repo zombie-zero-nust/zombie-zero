@@ -97,7 +97,7 @@ public class LevelScene extends GameScene
         if (selectedLevel == LevelID.LEVEL_1) initLevel1WithBackground();
         else initTileLevel();
 
-        collisionManager = new CollisionManager(this);
+        collisionManager = new CollisionManager(this,1);
         if (selectedLevel == LevelID.LEVEL_1)
         {
             if (level1CollisionMask != null) levelBuilder.buildConcreteBoundaryWallsForLevel1(
@@ -384,4 +384,12 @@ public class LevelScene extends GameScene
     }
 
     public int getCurrentScore() { return score != null ? score.getScore() : 0; }
+
+    public double getWorldWidth(){
+        return worldWidth;
+    }
+    public double getWorldHeight(){
+        return worldHeight;
+    }
+
 }

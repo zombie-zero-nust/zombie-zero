@@ -5,6 +5,7 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.EnemyConfig;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Health;
 import edu.nust.game.systems.assets.EnemyAsset;
@@ -110,7 +111,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     @Override
     public void onInit()
     {
-        pathFinder = new PathFinder(this.getScene());
+        pathFinder = new PathFinder((LevelScene) this.getScene());
         setHitbox();
     }
 
@@ -119,7 +120,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     {
         if (pathFinder == null)
         {
-            pathFinder = new PathFinder(this.getScene());
+            pathFinder = new PathFinder((LevelScene) this.getScene());
         }
         setHitbox();
         moveTowardsTarget(deltaTime);
