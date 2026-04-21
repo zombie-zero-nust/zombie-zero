@@ -2,7 +2,6 @@ package edu.nust.game.scenes.levelselect;
 
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
-import edu.nust.game.scenes.levelscene.LevelID;
 import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.systems.PlayerSession;
 import javafx.fxml.FXML;
@@ -41,12 +40,9 @@ public class LevelSelectScene extends GameScene
         PlayerSession.setPlayerName(playerName);
         if (nameErrorLabel != null)
             nameErrorLabel.setText("");
-        this.getWorld().setScene(new LevelScene(this.getWorld(), LevelID.LEVEL_1));
+        this.getWorld().setScene(new LevelScene(this.getWorld()));
     }
 
     @FXML
-    private void startLevel1TileClicked(MouseEvent ignored)
-    {
-        startLevel1();
-    }
+    private void startLevel1TileClicked(MouseEvent ignored) { startLevel1(); }
 }

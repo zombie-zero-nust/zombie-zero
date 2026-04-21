@@ -1,48 +1,39 @@
 package edu.nust.game.scenes.levelscene;
 
-import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
-import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
-import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
+import edu.nust.game.scenes.levelscene.gameobjects._tags.EnemyTag;
+import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemyManager;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Weapon;
 import edu.nust.game.scenes.levelscene.hud.HealthBar;
-import edu.nust.game.scenes.levelscene.level_1.Level1BackgroundLoader;
+import edu.nust.game.scenes.levelscene.level_1.Level1Background;
 import edu.nust.game.scenes.levelscene.level_1.Level1CollisionMask;
-import edu.nust.game.scenes.levelscene.gameobjects._tags.EnemyTag;
-import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
 import edu.nust.game.systems.Score;
-import edu.nust.game.systems.assets.TilesetAsset;
 import edu.nust.game.systems.collision.CollisionManager;
-import edu.nust.game.systems.unused.tilemap.LevelBuilder;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 public class LevelScene extends GameScene
 {
-    private static final ThreadLocal<LevelID> PENDING_LEVEL = new ThreadLocal<>();
-
-    private LevelID selectedLevel;
-
     @FXML private StackPane pauseOverlay;
     @FXML private Label overlayTitleLabel;
     @FXML private Label scoreLabel;
@@ -52,7 +43,6 @@ public class LevelScene extends GameScene
     @FXML private VBox ammoBarContainer;
     @FXML private VBox healthBarContainer;
     @FXML private Button resumeButton;
-    private boolean isPaused = false;
     private Player player;
     private Weapon weapon;
     private EnemyManager enemyManager;
@@ -60,8 +50,6 @@ public class LevelScene extends GameScene
     private Score score;
     private AmmoBar ammoBar;
     private HealthBar healthBar;
-    private LevelBuilder levelBuilder;
-    private LevelBuilder.PlayAreaBounds playAreaBounds;
     private Level1CollisionMask level1CollisionMask;
     private double worldWidth;
     private double worldHeight;
@@ -72,59 +60,24 @@ public class LevelScene extends GameScene
     private boolean scoreSaved = false;
     private boolean gameOverState = false;
 
-    public LevelScene(GameWorld level) { this(level, LevelID.LEVEL_1); }
-
-    public LevelScene(GameWorld level, LevelID selectedLevel) { super(prepareWorld(level, selectedLevel)); }
-
-    private static GameWorld prepareWorld(GameWorld world, LevelID levelId)
-    {
-        PENDING_LEVEL.set(levelId != null ? levelId : LevelID.LEVEL_1);
-        return world;
-    }
-
-    private static LevelID consumePendingLevel()
-    {
-        LevelID level = PENDING_LEVEL.get();
-        PENDING_LEVEL.remove();
-        return level != null ? level : LevelID.LEVEL_1;
-    }
+    public LevelScene(GameWorld world) { super(world); }
 
     @Override
     public void onInit()
     {
-        selectedLevel = consumePendingLevel();
+        initLevel1WithBackground();
 
-        if (selectedLevel == LevelID.LEVEL_1) initLevel1WithBackground();
-        else initTileLevel();
+        level1CollisionMask = new Level1CollisionMask();
 
-        collisionManager = new CollisionManager(this,1);
-        if (selectedLevel == LevelID.LEVEL_1)
-        {
-            if (level1CollisionMask != null) levelBuilder.buildConcreteBoundaryWallsForLevel1(
-                    this,
-                    playAreaBounds,
-                    worldWidth,
-                    worldHeight
-            );
-        }
-        else
-        {
-            levelBuilder.buildConcreteBoundaryWalls(this, worldWidth, worldHeight);
-        }
-        if (selectedLevel == LevelID.LEVEL_1 && level1CollisionMask != null)
-            levelBuilder.buildLevel1InternalConcreteWalls(this, level1CollisionMask, worldWidth, worldHeight);
+        collisionManager = new CollisionManager(this, 1);
 
         score = new Score();
-        player = new Player(new Vector2D(80, 80), 100, 500, true);
+        player = new Player(new Vector2D(80, 80), 100, 50, true);
         this.addGameObject(player.addTag(PlayerTag.class));
         player.setMovePos(clampPlayerToPlayArea(player.getTransform().getPosition()));
 
         // Set up collision checking for the player
-        if (selectedLevel == LevelID.LEVEL_1 && level1CollisionMask != null)
-        {
-            player.setWalkabilityChecker((pos, radius) -> level1CollisionMask.isWalkable(pos));
-
-        }
+        player.setWalkabilityChecker((pos, radius) -> level1CollisionMask.isWalkable(pos));
 
         weapon = new Weapon();
         this.addGameObject(weapon);
@@ -147,40 +100,9 @@ public class LevelScene extends GameScene
         }
     }
 
-    private void initTileLevel()
-    {
-        // Keep tilemap logic for non-level1 scenes.
-        levelBuilder = new LevelBuilder(30, 20, 64);
-        levelBuilder.fillBackground(TilesetAsset.BUILDINGS_BEIGE)
-                .addBoundaries(TilesetAsset.BRICK_WALL)
-                .preloadAssets();
-
-        this.addGameObject(levelBuilder.build());
-        this.playAreaBounds = levelBuilder.getPlayAreaBounds();
-        this.worldWidth = levelBuilder.getTilemap().getPixelWidth();
-        this.worldHeight = levelBuilder.getTilemap().getPixelHeight();
-    }
-
     private void initLevel1WithBackground()
     {
-        try
-        {
-            Image level1Image = Level1BackgroundLoader.loadOrThrow();
-
-            this.worldWidth = level1Image.getWidth();
-            this.worldHeight = level1Image.getHeight();
-            this.playAreaBounds = new LevelBuilder.PlayAreaBounds(25.0, worldWidth - 25.0, 25.0, worldHeight - 25.0);
-            this.level1CollisionMask = Level1CollisionMask.fromImage(level1Image);
-
-            // Create a minimal LevelBuilder for Level1 to use its utility methods
-            levelBuilder = new LevelBuilder(1, 1, (int) worldWidth);
-
-            GameObject background = GameObject.create();
-            background.addComponent(new SpriteRenderer(worldWidth, worldHeight, level1Image));
-            background.getTransform().setPosition(worldWidth / 2.0, worldHeight / 2.0);
-            this.addGameObject(background);
-        }
-        catch (FileNotFoundException ex) { initTileLevel(); }
+        Arrays.stream(Level1Background.getObjects(logger)).forEach(this::addGameObject);
     }
 
     @Override
@@ -232,12 +154,8 @@ public class LevelScene extends GameScene
         if (healthBar != null && player != null) healthBar.updateUI(player.getHealthSystem(), healthLabel);
     }
 
-    private Vector2D clampPlayerToPlayArea(Vector2D playerPos)
+    private Vector2D clampPlayerToPlayArea(Vector2D clampedPos)
     {
-        Vector2D clampedPos = playerPos;
-        if (playAreaBounds != null) clampedPos = playAreaBounds.clampPosition(playerPos);
-
-
         player.getTransform().setPosition(clampedPos);
         player.setMovePos(clampedPos);
         return clampedPos;
@@ -337,7 +255,6 @@ public class LevelScene extends GameScene
 
     private void setPaused(boolean newState)
     {
-        this.isPaused = newState;
         if (overlayTitleLabel != null) overlayTitleLabel.setText(gameOverState ? "Game Over" : "Paused");
         if (resumeButton != null)
         {
@@ -380,16 +297,12 @@ public class LevelScene extends GameScene
     private void retryLevel()
     {
         gameOverState = false;
-        this.getWorld().setScene(new LevelScene(this.getWorld(), selectedLevel));
+        this.getWorld().setScene(new LevelScene(this.getWorld()));
     }
 
     public int getCurrentScore() { return score != null ? score.getScore() : 0; }
 
-    public double getWorldWidth(){
-        return worldWidth;
-    }
-    public double getWorldHeight(){
-        return worldHeight;
-    }
+    public double getWorldWidth() { return worldWidth; }
 
+    public double getWorldHeight() { return worldHeight; }
 }

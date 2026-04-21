@@ -30,8 +30,8 @@ public class Player extends Character implements Damageable, Concrete
 
     private final Set<KeyCode> activeKeys = new HashSet<>();
     private HitBox hitbox;
-    private final double height = 30;
-    private final double width = 20;
+    private final double height = 15;
+    private final double width = 10;
     private Health health;
     private SpriteRenderer spriteRenderer;
     private SpriteRenderer handsRenderer;
@@ -68,83 +68,38 @@ public class Player extends Character implements Damageable, Concrete
             String idlePath = characterAsset.getPath() + "/Idle";
             String runPath = characterAsset.getPath() + "/Run";
 
-            idleDown = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.IDLE_DOWN.getFilename());
-            idleUp = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.IDLE_UP.getFilename());
-            idleLeft = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimationAssets.IDLE_LEFT.getFilename());
-            idleRight = Resources.loadImageOrThrow(
-                    "assets",
-                    idlePath,
-                    CharacterAnimationAssets.IDLE_RIGHT.getFilename()
-            );
+            idleDown = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimAssets.IDLE_DOWN.get());
+            idleUp = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimAssets.IDLE_UP.get());
+            idleLeft = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimAssets.IDLE_LEFT.get());
+            idleRight = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimAssets.IDLE_RIGHT.get());
 
-            runDown = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.RUN_DOWN.getFilename());
-            runUp = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.RUN_UP.getFilename());
-            runLeft = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.RUN_LEFT.getFilename());
-            runRight = Resources.loadImageOrThrow("assets", runPath, CharacterAnimationAssets.RUN_RIGHT.getFilename());
+            runDown = Resources.loadImageOrThrow("assets", runPath, CharacterAnimAssets.RUN_DOWN.get());
+            runUp = Resources.loadImageOrThrow("assets", runPath, CharacterAnimAssets.RUN_UP.get());
+            runLeft = Resources.loadImageOrThrow("assets", runPath, CharacterAnimAssets.RUN_LEFT.get());
+            runRight = Resources.loadImageOrThrow("assets", runPath, CharacterAnimAssets.RUN_RIGHT.get());
 
-            handsIdleDown = Resources.loadImageOrThrow(
-                    "assets",
-                    idlePath,
-                    CharacterAnimationAssets.HANDS_IDLE_DOWN.getFilename()
-            );
-            handsIdleUp = Resources.loadImageOrThrow(
-                    "assets",
-                    idlePath,
-                    CharacterAnimationAssets.HANDS_IDLE_UP.getFilename()
-            );
-            handsIdleLeft = Resources.loadImageOrThrow(
-                    "assets",
-                    idlePath,
-                    CharacterAnimationAssets.HANDS_IDLE_LEFT.getFilename()
-            );
-            handsIdleRight = Resources.loadImageOrThrow(
-                    "assets",
-                    idlePath,
-                    CharacterAnimationAssets.HANDS_IDLE_RIGHT.getFilename()
-            );
+            handsIdleDown = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimAssets.HANDS_IDLE_DOWN.get());
+            handsIdleUp = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimAssets.HANDS_IDLE_UP.get());
+            handsIdleLeft = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimAssets.HANDS_IDLE_LEFT.get());
+            handsIdleRight = Resources.loadImageOrThrow("assets", idlePath, CharacterAnimAssets.HANDS_IDLE_RIGHT.get());
 
-            handsRunDown = Resources.loadImageOrThrow(
-                    "assets",
-                    runPath,
-                    CharacterAnimationAssets.HANDS_RUN_DOWN.getFilename()
-            );
-            handsRunUp = Resources.loadImageOrThrow(
-                    "assets",
-                    runPath,
-                    CharacterAnimationAssets.HANDS_RUN_UP.getFilename()
-            );
-            handsRunLeft = Resources.loadImageOrThrow(
-                    "assets",
-                    runPath,
-                    CharacterAnimationAssets.HANDS_RUN_LEFT.getFilename()
-            );
-            handsRunRight = Resources.loadImageOrThrow(
-                    "assets",
-                    runPath,
-                    CharacterAnimationAssets.HANDS_RUN_RIGHT.getFilename()
-            );
-
-            spriteRenderer = new SpriteRenderer(width, height, idleDown, 6, 1);
-            spriteRenderer.setFrame(6, 1).setAnimationTime(TimeSpan.fromMilliseconds(200)).startAnimation();
-            this.addComponent(spriteRenderer);
-
-            handsRenderer = new SpriteRenderer(width, height, handsIdleDown, 6, 1);
-            handsRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).setFrame(0, 0);
-            this.addComponent(handsRenderer);
+            handsRunDown = Resources.loadImageOrThrow("assets", runPath, CharacterAnimAssets.HANDS_RUN_DOWN.get());
+            handsRunUp = Resources.loadImageOrThrow("assets", runPath, CharacterAnimAssets.HANDS_RUN_UP.get());
+            handsRunLeft = Resources.loadImageOrThrow("assets", runPath, CharacterAnimAssets.HANDS_RUN_LEFT.get());
+            handsRunRight = Resources.loadImageOrThrow("assets", runPath, CharacterAnimAssets.HANDS_RUN_RIGHT.get());
         }
         catch (FileNotFoundException e)
         {
-            // Fallback to test.png if character sprite not found
-            try
-            {
-                Image fallbackImage = Resources.loadImageOrThrow("assets", "images", "test.png");
-                spriteRenderer = new SpriteRenderer(width, height, fallbackImage);
-                this.addComponent(spriteRenderer);
-            }
-            catch (FileNotFoundException ignored)
-            {
-            }
+            logger.error(true, "Failed to load player sprites: " + e.getMessage());
         }
+
+        spriteRenderer = new SpriteRenderer(width, height, idleDown, 6, 1);
+        spriteRenderer.setFrame(6, 1).setAnimationTime(TimeSpan.fromMilliseconds(200)).startAnimation();
+        this.addComponent(spriteRenderer);
+
+        handsRenderer = new SpriteRenderer(width, height, handsIdleDown, 6, 1);
+        handsRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).setFrame(0, 0);
+        this.addComponent(handsRenderer);
 
         this.getTransform().setPosition(getSpawnPos());
     }

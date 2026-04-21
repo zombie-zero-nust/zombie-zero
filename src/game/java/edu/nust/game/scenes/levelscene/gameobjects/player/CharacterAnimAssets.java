@@ -3,7 +3,7 @@ package edu.nust.game.scenes.levelscene.gameobjects.player;
 /**
  * Enum containing all character animation asset filenames. Organized by animation type and direction.
  */
-public enum CharacterAnimationAssets
+public enum CharacterAnimAssets
 {
     // Idle animations (no hands)
     IDLE_DOWN("Character_down_idle_no-hands-Sheet6.png"),
@@ -31,12 +31,12 @@ public enum CharacterAnimationAssets
 
     private final String filename;
 
-    CharacterAnimationAssets(String filename)
+    CharacterAnimAssets(String filename)
     {
         this.filename = filename;
     }
 
-    public String getFilename()
+    public String get()
     {
         return filename;
     }

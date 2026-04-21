@@ -43,6 +43,11 @@ public class SpriteRenderer extends Component
         this(width, height, image, 1, 1);
     }
 
+    public SpriteRenderer(Image image)
+    {
+        this(image.getWidth(), image.getHeight(), image, 1, 1);
+    }
+
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
