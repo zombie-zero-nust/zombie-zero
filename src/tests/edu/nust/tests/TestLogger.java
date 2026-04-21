@@ -3,12 +3,19 @@ package edu.nust.tests;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.logger.enums.LogFormats;
+import org.junit.jupiter.api.Test;
 
 public final class TestLogger
 {
     public static final GameLogger LOGGER = GameLogger.getLogger(TestLogger.class);
 
     public static void main(String[] args)
+    {
+        new TestLogger().runLoggerSmokeTest();
+    }
+
+    @Test
+    void runLoggerSmokeTest()
     {
         testAllTextFormats();
         testAllForegroundColors();

@@ -11,13 +11,32 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/engine/java', 'src/game/java']
+        }
+        resources {
+            srcDirs = ['src/engine/resources', 'src/game/resources']
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['src/tests']
+        }
+        resources {
+            srcDirs = ['src/tests/resources']
+        }
+    }
+}
+
 application {
-    def useTestLogger = project.hasProperty("testLogger")
     def disableLogs = project.hasProperty("noLogs")
 
-    mainClass = useTestLogger ? 'edu.nust.tests.TestLogger' : 'edu.nust.Launcher'
+    mainClass = 'edu.nust.Launcher'
 
-    def logConfig = disableLogs ? "${projectDir}/src/main/resources/edu/nust/engine/logger/logback-off.xml" : "${projectDir}/src/main/resources/edu/nust/engine/logger/logback.xml"
+    def logConfig = disableLogs ? "${projectDir}/src/engine/resources/edu/nust/engine/logger/logback-off.xml" : "${projectDir}/src/engine/resources/edu/nust/engine/logger/logback.xml"
 
     applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED',
                                  "-Dlogback.configurationFile=${logConfig}"]
@@ -43,6 +62,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    failOnNoDiscoveredTests = false
 }
 
 // LOGGER
@@ -60,16 +80,16 @@ tasks.register('runNoLogs', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 
     // Combine JavaFX args with your custom Logback override
-    jvmArgs = getJavaFXArgs(sourceSets.main.runtimeClasspath) + ["-Dlogback.configurationFile=${projectDir}/src/main/resources/edu/nust/engine/logger/logback-off.xml"]
+    jvmArgs = getJavaFXArgs(sourceSets.main.runtimeClasspath) + ["-Dlogback.configurationFile=${projectDir}/src/engine/resources/edu/nust/engine/logger/logback-off.xml"]
 }
 
 // runTestLogger: test the logger
 tasks.register('runTestLogger', JavaExec) {
     group = 'application'
     mainClass = 'edu.nust.tests.TestLogger'
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = sourceSets.test.runtimeClasspath
 
-    jvmArgs = getJavaFXArgs(sourceSets.main.runtimeClasspath) + ["-Dlogback.configurationFile=${projectDir}/src/main/resources/edu/nust/engine/logger/logback.xml"]
+    jvmArgs = getJavaFXArgs(sourceSets.test.runtimeClasspath) + ["-Dlogback.configurationFile=${projectDir}/src/engine/resources/edu/nust/engine/logger/logback.xml"]
 }
 
 /* PRE REQUISITES */
@@ -119,9 +139,9 @@ Verification:
 tasks.register('generateMacIcon') {
     onlyIf { currentOs.isMacOsX() }
 
-    def iconPng = file("${projectDir}/src/main/resources/edu/nust/game/icon.png")
-    def iconSetDir = file("${buildDir}/icon.iconset")
-    def icnsFile = file("${buildDir}/icon.icns")
+    def iconPng = file("${projectDir}/src/game/resources/edu/nust/game/icon.png")
+    def iconSetDir = layout.buildDirectory.dir('icon.iconset').get().asFile
+    def icnsFile = layout.buildDirectory.file('icon.icns').get().asFile
 
     inputs.file(iconPng)
     outputs.file(icnsFile)
@@ -163,8 +183,8 @@ tasks.register('generateMacIcon') {
 tasks.register('generateWindowsIcon') {
     onlyIf { currentOs.isWindows() }
 
-    def iconPng = file("${projectDir}/src/main/resources/edu/nust/game/icon.png")
-    def icoFile = file("${buildDir}/icon.ico")
+    def iconPng = file("${projectDir}/src/game/resources/edu/nust/game/icon.png")
+    def icoFile = layout.buildDirectory.file('icon.ico').get().asFile
 
     inputs.file(iconPng)
     outputs.file(icoFile)
@@ -194,8 +214,8 @@ tasks.register('generateWindowsIcon') {
 tasks.register('generateLinuxIcons') {
     onlyIf { currentOs.isLinux() }
 
-    def iconPng = file("${projectDir}/src/main/resources/edu/nust/game/icon.png")
-    def outputDir = file("${buildDir}/linux-icons")
+    def iconPng = file("${projectDir}/src/game/resources/edu/nust/game/icon.png")
+    def outputDir = layout.buildDirectory.dir('linux-icons').get().asFile
 
     inputs.file(iconPng)
     outputs.dir(outputDir)
@@ -227,9 +247,9 @@ tasks.register('generateLinuxIcons') {
 }
 
 def iconPath = {
-    if (currentOs.isMacOsX()) return "${buildDir}/icon.icns"
-    if (currentOs.isWindows()) return "${buildDir}/icon.ico"
-    if (currentOs.isLinux()) return "${buildDir}/linux-icons/icon_256x256.png"
+    if (currentOs.isMacOsX()) return layout.buildDirectory.file('icon.icns').get().asFile.absolutePath
+    if (currentOs.isWindows()) return layout.buildDirectory.file('icon.ico').get().asFile.absolutePath
+    if (currentOs.isLinux()) return layout.buildDirectory.file('linux-icons/icon_256x256.png').get().asFile.absolutePath
 }.call()
 
 /* DISTRIBUTION */
