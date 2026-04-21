@@ -5,6 +5,7 @@ import edu.nust.engine.core.GameWorld;
 import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -46,6 +47,12 @@ public class LevelSelectScene extends GameScene
 
     @FXML
     private void startLevel1TileClicked(MouseEvent ignored) { startLevel1(); }
+
+    @FXML
+    private void goBack(ActionEvent ignored)
+    {
+        this.getWorld().setScene(new StartScene(this.getWorld()));
+    }
 
     @FXML
     private void goBack(MouseEvent ignored) { this.getWorld().setScene(new StartScene(this.getWorld())); }

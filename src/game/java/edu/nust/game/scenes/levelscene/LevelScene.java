@@ -57,6 +57,7 @@ public class LevelScene extends GameScene
     private double screenX;
     private double screenY;
     private double collisionCooldown = 0;
+    private boolean cameraZoomInitialized = false;
     private boolean scoreSaved = false;
     private boolean gameOverState = false;
 
@@ -99,7 +100,6 @@ public class LevelScene extends GameScene
             healthBarContainer.getChildren().add(healthBar);
         }
 
-        this.getWorldCamera().setZoom(4);
     }
 
     private void initLevel1WithBackground()
@@ -110,6 +110,14 @@ public class LevelScene extends GameScene
     @Override
     public void lateUpdate(TimeSpan deltaTime)
     {
+        if (this.getWorldCamera() == null) return;
+
+        if (!cameraZoomInitialized)
+        {
+            this.getWorldCamera().setZoom(4);
+            cameraZoomInitialized = true;
+        }
+
         double canvasW = this.getWorldLayer().getWidth();
         double canvasH = this.getWorldLayer().getHeight();
         Vector2D cameraPos = this.getWorldCamera().getPosition();
