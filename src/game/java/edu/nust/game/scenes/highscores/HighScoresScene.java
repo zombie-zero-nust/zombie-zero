@@ -63,7 +63,7 @@ public class HighScoresScene extends GameScene
         {
             HighScoreEntry entry = topScores.get(i);
             HBox row = new HBox();
-            row.setSpacing(8);
+            row.setSpacing(0);
             row.getStyleClass().add("score-row");
 
             Label rank = createCell("#" + (i + 1), "col-rank");
@@ -97,6 +97,3 @@ public class HighScoresScene extends GameScene
         this.getWorld().setScene(new StartScene(this.getWorld()));
     }
 }
-
-
-
