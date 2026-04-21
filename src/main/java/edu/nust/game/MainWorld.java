@@ -1,7 +1,7 @@
 package edu.nust.game;
 
 import edu.nust.engine.core.GameWorld;
-import edu.nust.game.audio.Audios;
+import edu.nust.game.systems.audio.Audios;
 import javafx.stage.Stage;
 
 public class MainWorld extends GameWorld

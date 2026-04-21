@@ -1,0 +1,228 @@
+package edu.nust.game.systems.pathfinder;
+
+import edu.nust.engine.core.GameScene;
+import edu.nust.engine.math.Vector2D;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.Enemy;
+import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
+
+import java.util.ArrayList;
+
+public class PathFinder
+{
+    private Node[][] nodes;
+    private Node start;
+    private Node current;
+    private Node goal;
+    private final GameScene scene;
+    private int maxRow;
+    private int maxCol;
+    private Vector2D mapTopLeftPos;
+    private final ArrayList<Node> openList = new ArrayList<>();
+    private final ArrayList<Node> checkedList = new ArrayList<>();
+    private boolean goalReached = false;
+
+    public PathFinder(GameScene scene)
+    {
+        this.scene = scene;
+    }
+
+    public void getMap(GameScene scene, int mapWidth, int mapHeight)
+    {
+        MapNodeSetter nodeSetter = new MapNodeSetter(mapWidth, mapHeight);
+        this.maxCol = mapWidth - 1;
+        this.maxRow = mapHeight - 1;
+        nodes = nodeSetter.getNodes();
+        mapTopLeftPos = nodeSetter.getMapTopLeftPos();
+    }
+
+
+    public void setStartNode(int row, int col)
+    {
+        if (isNotWithinBounds(row, col)) return;
+        nodes[row][col].setAsStart(true);
+        start = nodes[row][col];
+    }
+
+    public void setGoalNode(int row, int col)
+    {
+        if (isNotWithinBounds(row, col)) return;
+        nodes[row][col].setAsGoal(true);
+        goal = nodes[row][col];
+    }
+
+    public void updateStatus(Enemy enemy)
+    {
+        if (nodes == null || mapTopLeftPos == null) return;
+
+        Player player = (Player) scene.getFirstOfType(Player.class);
+        if (player != null)
+        {
+            Vector2D playerPos = player.getTransform().getPosition().subtract(mapTopLeftPos);
+            setStartNode((int) playerPos.getY(), (int) playerPos.getX());
+
+        }
+        if (enemy != null)
+        {
+            Vector2D enemyPos = enemy.getTransform().getPosition().subtract(mapTopLeftPos);
+            setGoalNode((int) enemyPos.getY(), (int) enemyPos.getX());
+        }
+    }
+
+    public ArrayList<Node> getPath(Enemy enemy)
+    {
+        ArrayList<Node> pathNodes = new ArrayList<>();
+        if (nodes == null || mapTopLeftPos == null) return pathNodes;
+
+        clearRunState();
+        resetNodes();
+        goalReached = false;
+        openList.clear();
+        checkedList.clear();
+        updateStatus(enemy);
+        if (start == null || goal == null) return pathNodes;
+
+        current = start;
+        search();
+        if (goalReached)
+        {
+            Node temp = goal;
+            while (temp != start && temp != null)
+            {
+                pathNodes.add(temp);
+                temp = temp.getParent();
+            }
+        }
+        return pathNodes;
+    }
+
+
+    public void search()
+    {
+        setCosts();
+        int row, col;
+        int t = 0;
+        while (current != goal && t < 1000)
+        {
+            int bestNodeIndex = 0;
+            int bestNodefCost = Integer.MAX_VALUE;
+            row = current.getRow();
+            col = current.getCol();
+
+            current.setChecked(true);
+            checkedList.add(current);
+            current.setOpen(false);
+            openList.remove(current);
+
+            // open the down node
+            if (row < maxRow)
+            {
+                openNode(row + 1, col);
+            }
+            // open the up node
+            if (row > 0)
+            {
+                openNode(row - 1, col);
+            }
+            // open the right node
+            if (col < maxCol)
+            {
+                openNode(row, col + 1);
+            }
+            // open the left node
+            if (col > 0)
+            {
+                openNode(row, col - 1);
+            }
+
+            if (openList.isEmpty()) break;
+
+            for (int i = 0; i < openList.size(); i++)
+            {
+                if (openList.get(i).getfCost() < bestNodefCost)
+                {
+                    bestNodeIndex = i;
+                    bestNodefCost = openList.get(i).getfCost();
+                }
+                else if (openList.get(i).getfCost() == bestNodefCost)
+                {
+                    if (openList.get(i).getgCost() < openList.get(bestNodeIndex).getgCost())
+                    {
+                        bestNodeIndex = i;
+                        bestNodefCost = openList.get(i).getfCost();
+                    }
+                }
+            }
+            current = openList.get(bestNodeIndex);
+            t++;
+            if (current == goal) goalReached = true;
+        }
+    }
+
+    public void resetNodes()
+    {
+        for (Node checked : checkedList)
+        {
+            checked.setChecked(false);
+        }
+    }
+
+    private void clearRunState()
+    {
+        start = null;
+        goal = null;
+        current = null;
+        for (Node[] rowNodes : nodes)
+        {
+            for (Node node : rowNodes)
+            {
+                node.setAsStart(false);
+                node.setAsGoal(false);
+                node.setOpen(false);
+                node.setChecked(false);
+                node.setParent(null);
+            }
+        }
+    }
+
+    private boolean isNotWithinBounds(int row, int col)
+    {
+        return row < 0 || col < 0 || row >= nodes.length || col >= nodes[row].length;
+    }
+
+    public void openNode(int row, int col)
+    {
+        Node node = nodes[row][col];
+        if (!node.isOpen() && !node.isChecked() && !node.isSolid())
+        {
+            node.setOpen(true);
+            node.setParent(current);
+            openList.add(node);
+        }
+    }
+
+
+    public void setCosts()
+    {
+        for (Node[] xNodes : nodes)
+        {
+            for (Node node : xNodes)
+            {
+                if (node.isStartingNode() || node.isGoalNode())
+                {
+                    continue;
+                }
+                if (start != null)
+                {
+                    int dist = Math.abs(node.getRow() - start.getRow()) + Math.abs(node.getCol() - start.getCol());
+                    node.setgCost(dist);
+                }
+                if (goal != null)
+                {
+                    int dist = Math.abs(node.getRow() - goal.getRow()) + Math.abs(node.getCol() - goal.getCol());
+                    node.sethCost(dist);
+                }
+                node.setfCost(node.getgCost() + node.gethCost());
+            }
+        }
+    }
+}

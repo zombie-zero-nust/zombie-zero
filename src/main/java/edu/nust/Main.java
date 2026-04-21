@@ -3,8 +3,8 @@ package edu.nust;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.enums.LogLevel;
 import edu.nust.game.MainWorld;
-import edu.nust.game.audio.Audios;
-import edu.nust.game.scenes.StartScene;
+import edu.nust.game.systems.audio.Audios;
+import edu.nust.game.scenes.start.StartScene;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -22,7 +22,7 @@ public class Main extends Application
         world.setScene(new StartScene(world));
         world.start();
 
-        Audios.setManagerFromWorld(world);
+        Audios.setManager(world);
     }
 
     public static void main(String[] ignored)
