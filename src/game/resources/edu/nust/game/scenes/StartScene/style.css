@@ -113,5 +113,5 @@
 }
 
 .exit-button-tile {
-    -fx-background-image: url('../../assets/images/StartScene/New/OptionsButton.png');
+    -fx-background-image: url('../../assets/images/GeneralButtons/ExitButton.png');
 }

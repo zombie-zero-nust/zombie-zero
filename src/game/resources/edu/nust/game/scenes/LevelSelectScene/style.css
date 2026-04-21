@@ -85,3 +85,26 @@
     -fx-opacity: 0.88;
     -fx-cursor: default;
 }
+
+.back-image-button {
+    -fx-min-width: 220px;
+    -fx-pref-width: 220px;
+    -fx-max-width: 220px;
+    -fx-min-height: 70px;
+    -fx-pref-height: 70px;
+    -fx-max-height: 70px;
+    -fx-background-image: url('../../assets/images/HighScore/BackButton.png');
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 100% 100%;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.back-image-button:hover {
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+}
+

@@ -88,4 +88,58 @@
     -fx-font-weight: bold;
 }
 
+.pause-heading-tile {
+    -fx-min-width: 320px;
+    -fx-pref-width: 320px;
+    -fx-max-width: 320px;
+    -fx-min-height: 90px;
+    -fx-pref-height: 90px;
+    -fx-max-height: 90px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: 100% 100%;
+    -fx-background-image: url('../assets/images/GeneralButtons/PauseHeading.png');
+}
 
+.pause-button-tile {
+    -fx-min-width: 280px;
+    -fx-pref-width: 280px;
+    -fx-max-width: 280px;
+    -fx-min-height: 80px;
+    -fx-pref-height: 80px;
+    -fx-max-height: 80px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: 100% 100%;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-text-fill: transparent;
+    -fx-font-size: 0;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.pause-button-tile:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-background-color: transparent;
+}
+
+.pause-button-tile:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+    -fx-background-color: transparent;
+}
+
+.resume-button-tile {
+    -fx-background-image: url('../assets/images/GeneralButtons/ResumeButton.png');
+}
+
+.retry-button-tile {
+    -fx-background-image: url('../assets/images/GeneralButtons/RetryGame.png');
+}
+
+.overlay-exit-button-tile {
+    -fx-background-image: url('../assets/images/GeneralButtons/ExitButton.png');
+}

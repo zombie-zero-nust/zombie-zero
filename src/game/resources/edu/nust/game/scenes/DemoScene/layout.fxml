@@ -19,9 +19,9 @@
                StackPane.alignment="CENTER" maxWidth="Infinity" maxHeight="Infinity" minWidth="0" minHeight="0">
 
         <VBox alignment="CENTER" spacing="20" styleClass="overlay-content-box">
-            <Label fx:id="overlayTitleLabel" styleClass="overlay-title" text="Paused" />
-            <Button onAction="#resumeGame" styleClass="primary-button" text="Resume" />
-            <Button onAction="#exitToMainMenu" styleClass="primary-button" text="Exit to Main Menu" />
+            <Region styleClass="pause-heading-tile" />
+            <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="pause-button-tile, resume-button-tile" text="" />
+            <Button onAction="#exitToMainMenu" styleClass="pause-button-tile, overlay-exit-button-tile" text="" />
         </VBox>
 
     </StackPane>

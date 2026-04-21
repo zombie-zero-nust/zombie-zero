@@ -85,7 +85,7 @@
 }
 
 .score-row {
-    -fx-padding: 8px 0;
+    -fx-padding: 16px 0;
     -fx-border-color: transparent;
     -fx-border-width: 0;
 }

@@ -41,10 +41,11 @@
                StackPane.alignment="CENTER" maxWidth="Infinity" maxHeight="Infinity" minWidth="0" minHeight="0">
 
         <VBox alignment="CENTER" spacing="20" styleClass="overlay-content-box">
-            <Label fx:id="overlayTitleLabel" styleClass="overlay-title" text="Paused" />
-            <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="primary-button" text="Resume" />
-            <Button onAction="#retryLevel" styleClass="primary-button" text="Retry" />
-            <Button onAction="#exitToMainMenu" styleClass="primary-button" text="Exit to Main Menu" />
+            <Region fx:id="pauseHeadingTile" styleClass="pause-heading-tile" />
+            <Label fx:id="overlayTitleLabel" managed="false" styleClass="overlay-title" text="Game Over" visible="false" />
+            <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="pause-button-tile, resume-button-tile" text="" />
+            <Button onAction="#retryLevel" styleClass="pause-button-tile, retry-button-tile" text="" />
+            <Button onAction="#exitToMainMenu" styleClass="pause-button-tile, overlay-exit-button-tile" text="" />
         </VBox>
 
     </StackPane>

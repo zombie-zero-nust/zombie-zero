@@ -14,7 +14,6 @@ import edu.nust.game.scenes.demo.tags.MovingTag;
 import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.audio.Audios;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -28,7 +27,6 @@ public class DemoScene extends GameScene
 {
     @FXML private StackPane pauseOverlay;
     @FXML private VBox helpTextContainer;
-    @FXML private Label overlayTitleLabel;
 
     private boolean isPaused = false;
 
@@ -120,8 +118,6 @@ public class DemoScene extends GameScene
     private void setPaused(boolean newState)
     {
         this.isPaused = newState;
-        if (overlayTitleLabel != null)
-            overlayTitleLabel.setText("Paused");
         pauseOverlay.setVisible(newState);
         pauseOverlay.setManaged(newState);
         this.setActive(!newState);
