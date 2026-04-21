@@ -90,18 +90,46 @@ def requireOs = { String target ->
     }
 }
 
+def cmdExists = { String cmd ->
+    def checker = currentOs.isWindows() ? ['where', cmd] : ['which', cmd]
+    def process = checker.execute()
+    process.waitFor()
+    return process.exitValue() == 0
+}
 
+def requireCommand = { String cmd, String installHint ->
+    try {
+        if (!cmdExists(cmd)) {
+            throw new Exception()
+        }
+    } catch (Exception ignored) {
+        throw new GradleException("""
+Missing required command: '${cmd}'
+
+${installHint}
+
+Verification:
+   ${cmd} --help
+""".stripIndent())
+    }
+}
 /* ICONS */
 
+// Mac Icon
 tasks.register('generateMacIcon') {
     onlyIf { currentOs.isMacOsX() }
 
-    def iconPng = file("${projectDir}/src/main/resources/icon.png")
+    def iconPng = file("${projectDir}/src/main/resources/edu/nust/game/icon.png")
     def iconSetDir = file("${buildDir}/icon.iconset")
     def icnsFile = file("${buildDir}/icon.icns")
 
     inputs.file(iconPng)
     outputs.file(icnsFile)
+
+    doFirst {
+        requireCommand('sips', 'sips should already be available on macOS')
+        requireCommand('iconutil', 'iconutil should already be available on macOS (Xcode Command Line Tools may be required: xcode-select --install)')
+    }
 
     doLast {
         iconSetDir.mkdirs()
@@ -131,10 +159,77 @@ tasks.register('generateMacIcon') {
     }
 }
 
+// Windows Icon
+tasks.register('generateWindowsIcon') {
+    onlyIf { currentOs.isWindows() }
+
+    def iconPng = file("${projectDir}/src/main/resources/edu/nust/game/icon.png")
+    def icoFile = file("${buildDir}/icon.ico")
+
+    inputs.file(iconPng)
+    outputs.file(icoFile)
+
+    doFirst {
+        requireCommand('convert', 'ImageMagick is required (https://imagemagick.org/script/download.php)')
+    }
+
+    doLast {
+        def runCmd = { List<String> args ->
+            def process = args.execute()
+            process.waitForProcessOutput(System.out, System.err)
+            if (process.exitValue() != 0) {
+                throw new GradleException("Command failed: ${args.join(' ')}")
+            }
+        }
+
+        // Multiple sizes packed into one .ico
+        runCmd(['magick',
+                iconPng.absolutePath,
+                '-define', 'icon:auto-resize=256,128,64,48,32,16',
+                icoFile.absolutePath])
+    }
+}
+
+// Linux Icon
+tasks.register('generateLinuxIcons') {
+    onlyIf { currentOs.isLinux() }
+
+    def iconPng = file("${projectDir}/src/main/resources/edu/nust/game/icon.png")
+    def outputDir = file("${buildDir}/linux-icons")
+
+    inputs.file(iconPng)
+    outputs.dir(outputDir)
+
+    doFirst {
+        requireCommand('convert', 'ImageMagick is required')
+    }
+
+    doLast {
+        outputDir.mkdirs()
+
+        def runCmd = { List<String> args ->
+            def process = args.execute()
+            process.waitForProcessOutput(System.out, System.err)
+            if (process.exitValue() != 0) {
+                throw new GradleException("Command failed: ${args.join(' ')}")
+            }
+        }
+
+        def sizes = [16, 32, 48, 64, 128, 256, 512]
+
+        sizes.each { size ->
+            runCmd(['convert',
+                    iconPng.absolutePath,
+                    '-resize', "${size}x${size}",
+                    "${outputDir}/icon_${size}x${size}.png"])
+        }
+    }
+}
+
 def iconPath = {
     if (currentOs.isMacOsX()) return "${buildDir}/icon.icns"
-    if (currentOs.isWindows()) return "${projectDir}/src/main/resources/icon.ico"
-    return "${projectDir}/src/main/resources/icon.png"
+    if (currentOs.isWindows()) return "${buildDir}/icon.ico"
+    if (currentOs.isLinux()) return "${buildDir}/linux-icons/icon_256x256.png"
 }.call()
 
 /* DISTRIBUTION */
@@ -147,6 +242,12 @@ def registerPackageTask = { String name, String targetOs, String installerType -
     tasks.register(name, Exec) {
         if (targetOs == 'mac') {
             dependsOn 'generateMacIcon'
+        }
+        if (targetOs == 'windows') {
+            dependsOn 'generateWindowsIcon'
+        }
+        if (targetOs == 'linux') {
+            dependsOn 'generateLinuxIcons'
         }
 
         group = 'distribution'

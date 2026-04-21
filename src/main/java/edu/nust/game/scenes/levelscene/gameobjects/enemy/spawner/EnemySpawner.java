@@ -1,16 +1,17 @@
-package edu.nust.game.scenes.levelscene.gameobjects.enemy;
+package edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 
 import java.util.ArrayList;
 
 public class EnemySpawner extends GameObject
 {
-    private final ArrayList<Enemy> enemies = new ArrayList<>();
+    private final ArrayList<BasicEnemy> enemies = new ArrayList<>();
     private final Vector2D pos;
 
     private final int totalEnemies;
@@ -52,7 +53,7 @@ public class EnemySpawner extends GameObject
     {
         for (int i = 0; i < enemies; i++)
         {
-            this.enemies.add(new Enemy(pos, 30, 100));
+            this.enemies.add(new BasicEnemy(pos, 30, 100));
         }
     }
 

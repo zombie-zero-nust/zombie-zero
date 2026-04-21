@@ -43,7 +43,7 @@ public final class Resources
      * <p>
      * For example, calling:
      * <pre>
-     *     tryGetResource("assets", "images", "player.png")
+     *     getResourceOrThrow("assets", "images", "player.png")
      * </pre>
      * will look for the resource at:
      * <pre>
@@ -111,13 +111,26 @@ public final class Resources
      *
      * @return {@code true} if a resource exists at the specified path, {@code false} otherwise.
      */
-    public static boolean exists(String... path)
-    {
-        return tryGetResource(path) != null;
-    }
+    public static boolean exists(String... path) { return tryGetResource(path) != null; }
 
     /* TYPES */
 
+    /**
+     * Attempts to retrieve an image relative to the base path "/edu/nust/game/", throws if not found.
+     * <p>
+     * For example, calling:
+     * <pre>
+     *     loadImageOrThrow("assets", "images", "player.png")
+     * </pre>
+     * will look for the image at:
+     * <pre>
+     *     /edu/nust/game/assets/images/player.png
+     * </pre>
+     *
+     * @param path Path segments leading to the image.
+     *
+     * @return A new {@link Image} generated from the resource at the specified path.
+     */
     public static Image loadImageOrThrow(String... path) throws FileNotFoundException
     {
         return new Image(getResourceOrThrow(path).toExternalForm());

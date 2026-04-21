@@ -1,8 +1,11 @@
 package edu.nust.game;
 
 import edu.nust.engine.core.GameWorld;
+import edu.nust.engine.resources.Resources;
 import edu.nust.game.systems.audio.Audios;
 import javafx.stage.Stage;
+
+import java.io.FileNotFoundException;
 
 public class MainWorld extends GameWorld
 {
@@ -15,6 +18,11 @@ public class MainWorld extends GameWorld
         stage.setWidth(1280);
         stage.setHeight(768);
         stage.centerOnScreen();
+        try
+        {
+            stage.getIcons().add((Resources.loadImageOrThrow("icon.png")));
+        }
+        catch (FileNotFoundException ignored) { }
     }
 
     @Override

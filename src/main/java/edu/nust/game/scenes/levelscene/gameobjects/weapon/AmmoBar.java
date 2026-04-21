@@ -9,34 +9,19 @@ public class AmmoBar extends Bar
     private static final int BULLETS_PER_CELL = 2;
     private static final int MAX_AMMO = TOTAL_CELLS * BULLETS_PER_CELL;
 
-    public AmmoBar()
-    {
-        super(18, 12, 4);
-    }
+    public AmmoBar() { super(18, 12, 4); }
 
     @Override
-    protected Color getFilledColor()
-    {
-        return Color.web("#00FF00");
-    }
+    protected Color getFilledColor() { return Color.web("#00FF00"); }
 
     @Override
-    protected Color getFilledStrokeColor()
-    {
-        return Color.web("#00AA00");
-    }
+    protected Color getFilledStrokeColor() { return Color.web("#00AA00"); }
 
     @Override
-    protected Color getEmptyColor()
-    {
-        return Color.web("#1A1A1A");
-    }
+    protected Color getEmptyColor() { return Color.web("#1A1A1A"); }
 
     @Override
-    protected Color getEmptyStrokeColor()
-    {
-        return Color.web("#333333");
-    }
+    protected Color getEmptyStrokeColor() { return Color.web("#333333"); }
 
     public void updateAmmo(int currentAmmo)
     {

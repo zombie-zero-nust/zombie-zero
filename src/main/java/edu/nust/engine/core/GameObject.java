@@ -17,14 +17,14 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Represents an object in the game world that can have components and tags, and can be updated and rendered.
+ * Represents an object in the game world that can have components and _tags, and can be updated and rendered.
  * <br><br>
  * A {@link GameObject} can have multiple {@link Component}s (e.g., {@link Transform}, Renderer, Collider) that define
  * its behavior and appearance, and multiple {@link Tag}s that can be used for identification and grouping. The
  * GameObject itself can also be updated and rendered.
  * <br><br>
  * To use, create a subclass of GameObject or use the provided factory method to create an instance. Then, add
- * components and tags as needed, and implement the onUpdate() and onRender() methods for custom behavior and
+ * components and _tags as needed, and implement the onUpdate() and onRender() methods for custom behavior and
  * rendering.
  */
 public abstract class GameObject implements Initiable, Updatable<GameObject>, Renderable<GameObject>
@@ -33,7 +33,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
 
     private GameScene scene;
     private final List<Component> components = new ArrayList<>();
-    // tags are identifiers themselves, no instance is stored
+    // _tags are identifiers themselves, no instance is stored
     private final Set<Class<? extends Tag>> tags = new HashSet<>();
 
     /// Controls whether to update components and self
@@ -63,7 +63,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      * Creates a {@link GameObject} with a custom initializer function ({@link Consumer})
      *
      * @param initializer A Consumer that takes the newly created GameObject as a parameter, allows adding components,
-     *                    tags, etc. to it in a lambda expression.
+     *                    _tags, etc. to it in a lambda expression.
      *
      * @return The same {@link GameObject} that was created, for chaining
      */
@@ -308,7 +308,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      * <b>Syntax:</b> {@code gameObject.addTag(EnemyTag.class)}
      * <br><br>
      * Adds the specified tag to this {@link GameObject}. If the tag already exists, nothing happens. No
-     * {@link GameObject} can have multiple tags of same type.
+     * {@link GameObject} can have multiple _tags of same type.
      *
      * @param tagClass The {@link Tag} class to add, which must extend {@link Tag}.
      *

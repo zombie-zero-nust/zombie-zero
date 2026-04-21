@@ -1,25 +1,90 @@
 package edu.nust.game.scenes.levelscene.gameobjects.weapon;
 
+import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.math.TimeSpan;
 
-public interface Ammo
+public class Ammo
 {
-    void decreaseAmmo();
+    private final GameLogger logger = GameLogger.getLogger(this.getClass());
 
-    void increaseAmmo(int amount);
+    private static final int MAX_AMMO = 20;
+    private static final double RELOAD_TIME = 10.0;
 
-    void startReload();
+    private int currentAmmo;
+    private boolean isReloading;
+    private double reloadTimer;
 
-    boolean isReloading();
+    public Ammo()
+    {
+        this.currentAmmo = MAX_AMMO;
+        this.isReloading = false;
+        this.reloadTimer = 0.0;
+        logger.debug("Ammo initialized: {} bullets", MAX_AMMO);
+    }
 
-    boolean hasAmmo();
+    public void decreaseAmmo()
+    {
+        if (currentAmmo > 0)
+        {
+            currentAmmo--;
+            if (currentAmmo == 0) startReload();
+        }
+    }
 
-    int getCurrentAmmo();
+    public void increaseAmmo(int amount)
+    {
+        if (amount > 0) currentAmmo = Math.min(currentAmmo + amount, MAX_AMMO);
+    }
 
-    double getReloadTimeRemaining();
+    public void startReload()
+    {
+        if (!isReloading)
+        {
+            isReloading = true;
+            reloadTimer = RELOAD_TIME;
+            logger.info("Reload started");
+        }
+    }
 
-    void update(TimeSpan deltaTime);
+    public boolean isReloading()
+    {
+        return isReloading;
+    }
 
-    void refillAmmo();
+    public boolean hasAmmo()
+    {
+        return currentAmmo > 0;
+    }
+
+    public int getCurrentAmmo()
+    {
+        return currentAmmo;
+    }
+
+    public double getReloadTimeRemaining()
+    {
+        return reloadTimer;
+    }
+
+    public void update(TimeSpan deltaTime)
+    {
+        if (isReloading)
+        {
+            reloadTimer -= deltaTime.asSeconds();
+
+            if (reloadTimer <= 0.0)
+            {
+                isReloading = false;
+                reloadTimer = 0.0;
+                refillAmmo();
+                logger.info("Reload complete");
+            }
+        }
+    }
+
+    public void refillAmmo()
+    {
+        currentAmmo = MAX_AMMO;
+    }
 }
 

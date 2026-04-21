@@ -7,7 +7,7 @@ package edu.nust.game.systems.assets;
 public enum AssetType
 {
     CHARACTER("Character"),
-    ENEMY("Enemy"),
+    ENEMY("BasicEnemy"),
     TILESET("Tileset"),
     UI("UI"),
     EFFECT("Effect"),

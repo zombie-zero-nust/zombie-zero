@@ -1,12 +1,12 @@
-package edu.nust.game.scenes.levelscene.gameobjects.enemy;
+package edu.nust.game.scenes.levelscene.gameobjects.enemy.types;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.EnemyConfig;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Health;
-import edu.nust.game.scenes.levelscene.gameobjects.player.HealthImplementation;
 import edu.nust.game.systems.assets.EnemyAsset;
 import edu.nust.game.systems.collision.Concrete;
 import edu.nust.game.systems.collision.Damageable;
@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Enemy extends GameObject implements Concrete, Damageable, Damaging
+public class BasicEnemy extends GameObject implements Concrete, Damageable, Damaging
 {
     private PathFinder pathFinder;
     private Vector2D targetPosition = Vector2D.zero();
@@ -36,20 +36,20 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     private ArrayList<Node> movement;
 
 
-    public Enemy(Vector2D startPosition, double speed, int health)
+    public BasicEnemy(Vector2D startPosition, double speed, int health)
     {
         this(startPosition, speed, EnemyAsset.ZOMBIE_SMALL, health);
     }
 
-    public Enemy(Vector2D startPosition, double speed, int health, double height, double width, double damage, EnemyAsset enemyType)
+    public BasicEnemy(Vector2D startPosition, double speed, int health, double height, double width, double damage, EnemyAsset enemyType)
     {
-        this.health = new HealthImplementation();
+        this.health = new Health();
         this.movementSpeed = speed;
         this.width = width;
         this.height = height;
         this.enemyType = enemyType;
         this.getTransform().setPosition(startPosition);
-        this.health = new HealthImplementation(health);
+        this.health = new Health(health);
         try
         {
             // Load enemy sprite from PostApocalypse assets
@@ -74,15 +74,15 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     }
 
 
-    public Enemy(Vector2D startPosition, double speed, EnemyAsset enemyType, int health)
+    public BasicEnemy(Vector2D startPosition, double speed, EnemyAsset enemyType, int health)
     {
-        this.health = new HealthImplementation();
+        this.health = new Health();
         this.movementSpeed = speed;
         this.width = EnemyConfig.DEFAULT_SIZE.getValue();
         this.height = EnemyConfig.DEFAULT_SIZE.getValue();
         this.enemyType = enemyType;
         this.getTransform().setPosition(startPosition);
-        this.health = new HealthImplementation(health);
+        this.health = new Health(health);
 
         try
         {
@@ -261,13 +261,13 @@ public class Enemy extends GameObject implements Concrete, Damageable, Damaging
     @Override
     public List<Class<? extends Concrete>> notInteractWith()
     {
-        return List.of(Enemy.class);
+        return List.of(BasicEnemy.class);
     }
 
     @Override
     public List<Class<? extends Damageable>> notDamageObj()
     {
-        return List.of(Enemy.class);
+        return List.of(BasicEnemy.class);
     }
 
     @Override

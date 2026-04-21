@@ -1,19 +1,53 @@
 package edu.nust.game.scenes.levelscene.gameobjects.player;
 
-import edu.nust.engine.math.TimeSpan;
+import edu.nust.engine.logger.GameLogger;
 
-public interface Health
+public class Health
 {
-    void takeDamage(int damage);
+    private final GameLogger logger = GameLogger.getLogger(this.getClass());
 
-    void heal(int amount);
+    private static final int DEFAULT_HEALTH = 100;
 
-    boolean isAlive();
+    private int currentHealth;
 
-    int getCurrentHealth();
+    public Health()
+    {
+        this.currentHealth = DEFAULT_HEALTH;
+        logger.debug("Health initialized: {} HP", DEFAULT_HEALTH);
+    }
 
-    int getMaxHealth();
+    public Health(int health)
+    {
+        this.currentHealth = health;
+        logger.debug("Health initialized: {} HP", health);
+    }
 
-    void update(TimeSpan deltaTime);
+    public void takeDamage(int damage)
+    {
+        currentHealth = Math.max(0, currentHealth - damage);
+        logger.debug("Damage taken: {} HP. Health: {}", damage, currentHealth);
+    }
+
+    public void heal(int amount)
+    {
+        currentHealth = Math.min(currentHealth + amount, DEFAULT_HEALTH);
+        logger.debug("Healed: {} HP. Health: {}", amount, currentHealth);
+    }
+
+    public boolean isAlive()
+    {
+        return currentHealth > 0;
+    }
+
+    public int getCurrentHealth()
+    {
+        return currentHealth;
+    }
+
+    public int getMaxHealth()
+    {
+        return DEFAULT_HEALTH;
+    }
 }
+
 

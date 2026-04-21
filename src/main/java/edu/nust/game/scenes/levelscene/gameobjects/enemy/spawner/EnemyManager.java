@@ -1,10 +1,11 @@
-package edu.nust.game.scenes.levelscene.gameobjects.enemy;
+package edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
-import edu.nust.game.scenes.levelscene.tags.EnemyTag;
+import edu.nust.game.scenes.levelscene.gameobjects._tags.EnemyTag;
 import edu.nust.game.systems.Score;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class EnemyManager
 {
-    private Enemy enemy;
+    private BasicEnemy enemy;
     private ArrayList<EnemySpawner> enemySpawners;
     private ArrayList<Vector2D> spawnersPos;
     private final GameScene scene;
@@ -44,26 +45,20 @@ public class EnemyManager
     {
         score.setScore(score.getScore() - 2);
 
-        if (score.getScore() < 0)
-            score.setScore(0);
+        if (score.getScore() < 0) score.setScore(0);
     }
 
-    public void respawnEnemyAfterCollision()
-    {
-        respawnEnemy();
-    }
+    public void respawnEnemyAfterCollision() { respawnEnemy(); }
 
     private void checkBulletEnemyCollisions()
     {
         List<GameObject> allObjects = this.scene.getAllGameObjects();
         for (GameObject obj : new ArrayList<>(allObjects))
         {
-            if (!(obj instanceof Bullet))
-                continue;
+            if (!(obj instanceof Bullet)) continue;
 
             Bullet bullet = (Bullet) obj;
-            if (bullet.isDestroyed())
-                continue;
+            if (bullet.isDestroyed()) continue;
 
             if (enemy.checkBulletCollision(bullet.getTransform().getPosition()))
             {
@@ -82,7 +77,7 @@ public class EnemyManager
     private void respawnEnemy()
     {
         scene.removeGameObject(enemy);
-        enemy = new Enemy(getRandomEdgePosition(), 30, 100);
+        enemy = new BasicEnemy(getRandomEdgePosition(), 30, 100);
         scene.addGameObject(enemy.addTag(EnemyTag.class));
     }
 
@@ -135,19 +130,10 @@ public class EnemyManager
         return enemy != null && enemy.checkPlayerCollision(playerPos);
     }
 
-    public Enemy getEnemy()
-    {
-        return enemy;
-    }
+    public BasicEnemy getEnemy() { return enemy; }
 
-    public void setSpawners(EnemySpawner... spawners)
-    {
-        this.enemySpawners = new ArrayList<>(Arrays.asList(spawners));
-    }
+    public void setSpawners(EnemySpawner... spawners) { this.enemySpawners = new ArrayList<>(Arrays.asList(spawners)); }
 
-    public void setMap(GameScene scene)
-    {
-
-    }
+    public void setMap(GameScene scene) { }
 }
 

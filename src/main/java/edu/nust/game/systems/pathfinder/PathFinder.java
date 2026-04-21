@@ -2,7 +2,7 @@ package edu.nust.game.systems.pathfinder;
 
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.math.Vector2D;
-import edu.nust.game.scenes.levelscene.gameobjects.enemy.Enemy;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class PathFinder
         goal = nodes[row][col];
     }
 
-    public void updateStatus(Enemy enemy)
+    public void updateStatus(BasicEnemy enemy)
     {
         if (nodes == null || mapTopLeftPos == null) return;
 
@@ -68,7 +68,7 @@ public class PathFinder
         }
     }
 
-    public ArrayList<Node> getPath(Enemy enemy)
+    public ArrayList<Node> getPath(BasicEnemy enemy)
     {
         ArrayList<Node> pathNodes = new ArrayList<>();
         if (nodes == null || mapTopLeftPos == null) return pathNodes;

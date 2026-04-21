@@ -50,7 +50,7 @@ public class Weapon extends GameObject
         fireCooldown = 0;
         muzzleElapsed = 0;
         muzzlePlaying = false;
-        ammo = new AmmoImplementation();
+        ammo = new Ammo();
     }
 
     private void loadWeaponAimAssets()
@@ -58,7 +58,13 @@ public class Weapon extends GameObject
         try
         {
             gunIdleRightSheet = Resources.loadImageOrThrow(
-                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Gun", "Gun_side_idle-and-run-Sheet6.png"
+                    "assets",
+                    "raw",
+                    "PostApocalypse",
+                    "Character",
+                    "Guns",
+                    "Gun",
+                    "Gun_side_idle-and-run-Sheet6.png"
             );
         }
         catch (FileNotFoundException e)
@@ -66,8 +72,8 @@ public class Weapon extends GameObject
             weaponRenderer = null;
             this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(
                     36,
-                    36,
-                    javafx.scene.paint.Color.CYAN
+                                                                                        36,
+                                                                                        javafx.scene.paint.Color.CYAN
             ));
         }
         try
@@ -87,8 +93,8 @@ public class Weapon extends GameObject
             weaponRenderer = null;
             this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(
                     36,
-                    36,
-                    javafx.scene.paint.Color.CYAN
+                                                                                        36,
+                                                                                        javafx.scene.paint.Color.CYAN
             ));
 
         }
@@ -100,8 +106,7 @@ public class Weapon extends GameObject
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
-        if (!muzzlePlaying || muzzleFlashRenderer == null)
-            return;
+        if (!muzzlePlaying || muzzleFlashRenderer == null) return;
 
         muzzleElapsed += deltaTime.asSeconds();
         int frame = (int) (muzzleElapsed / MUZZLE_FRAME_DURATION);
@@ -120,8 +125,7 @@ public class Weapon extends GameObject
     @Override
     public void onRender(GraphicsContext context)
     {
-        if (!muzzlePlaying || muzzleFlashRenderer == null)
-            return;
+        if (!muzzlePlaying || muzzleFlashRenderer == null) return;
 
         double rotation = this.getTransform().getRotation().getRadians();
         Vector2D weaponPos = this.getTransform().getPosition();
@@ -139,11 +143,14 @@ public class Weapon extends GameObject
         context.rotate(this.getTransform().getRotation().getDegrees());
         context.drawImage(
                 muzzleFlashRenderer.getImage(),
-                sx, sy,
+                sx,
+                sy,
                 muzzleFlashRenderer.getFrameWidth(),
                 muzzleFlashRenderer.getFrameHeight(),
-                -w / 2 - 2, -h / 2 - 2,
-                w, h
+                -w / 2 - 2,
+                -h / 2 - 2,
+                w,
+                h
         );
         context.restore();
     }
@@ -151,8 +158,7 @@ public class Weapon extends GameObject
     public void updatePosition(Vector2D mousePos, Vector2D playerPos)
     {
         Vector2D delta = mousePos.subtract(playerPos);
-        if (delta.isZeroEpsilon(0.0001))
-            delta = Vector2D.right();
+        if (delta.isZeroEpsilon(0.0001)) delta = Vector2D.right();
 
         double dx = delta.getX();
         double dy = delta.getY();
@@ -192,11 +198,9 @@ public class Weapon extends GameObject
         ammo.update(deltaTime);
 
 
-        if (ammo.isReloading() || !ammo.hasAmmo())
-            return null;
+        if (ammo.isReloading() || !ammo.hasAmmo()) return null;
 
-        if (!isFiring)
-            return null;
+        if (!isFiring) return null;
 
         if (!autoFire)
         {
@@ -243,16 +247,40 @@ public class Weapon extends GameObject
         try
         {
             fireUpSheet = Resources.loadImageOrThrow(
-                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Fire", "Fire_Up-Sheet3.png"
+                    "assets",
+                    "raw",
+                    "PostApocalypse",
+                    "Character",
+                    "Guns",
+                    "Fire",
+                    "Fire_Up-Sheet3.png"
             );
             fireDownSheet = Resources.loadImageOrThrow(
-                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Fire", "Fire_Down-Sheet3.png"
+                    "assets",
+                    "raw",
+                    "PostApocalypse",
+                    "Character",
+                    "Guns",
+                    "Fire",
+                    "Fire_Down-Sheet3.png"
             );
             fireRightSheet = Resources.loadImageOrThrow(
-                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Fire", "Fire_side-Sheet3.png"
+                    "assets",
+                    "raw",
+                    "PostApocalypse",
+                    "Character",
+                    "Guns",
+                    "Fire",
+                    "Fire_side-Sheet3.png"
             );
             fireLeftSheet = Resources.loadImageOrThrow(
-                    "assets", "raw", "PostApocalypse", "Character", "Guns", "Fire", "Fire_side-left-Sheet3.png"
+                    "assets",
+                    "raw",
+                    "PostApocalypse",
+                    "Character",
+                    "Guns",
+                    "Fire",
+                    "Fire_side-left-Sheet3.png"
             );
 
             muzzleFlashRenderer = new SpriteRenderer(10, 10, fireRightSheet, MUZZLE_FRAMES, 1);
@@ -267,13 +295,11 @@ public class Weapon extends GameObject
 
     private void triggerMuzzleFlash(Vector2D weaponPos, Vector2D targetPos)
     {
-        if (muzzleFlashRenderer == null)
-            return;
+        if (muzzleFlashRenderer == null) return;
 
         Vector2D direction = targetPos.subtract(weaponPos);
         Image directionalSheet = getDirectionalFireSheet();
-        if (directionalSheet == null)
-            return;
+        if (directionalSheet == null) return;
 
         muzzleFlashRenderer.setImage(directionalSheet, MUZZLE_FRAMES, 1);
         muzzleFlashRenderer.setFrame(0, 0);
@@ -283,23 +309,11 @@ public class Weapon extends GameObject
         muzzlePlaying = true;
     }
 
-    private Image getDirectionalFireSheet()
-    {
-        return fireRightSheet;
-    }
+    private Image getDirectionalFireSheet() { return fireRightSheet; }
 
-    private Image getDirectionalGunIdleSheet()
-    {
-        return gunIdleRightSheet;
-    }
+    private Image getDirectionalGunIdleSheet() { return gunIdleRightSheet; }
 
-    public int getDamage()
-    {
-        return damage;
-    }
+    public int getDamage() { return damage; }
 
-    public void setDamage(int damage)
-    {
-        this.damage = damage;
-    }
+    public void setDamage(int damage) { this.damage = damage; }
 }

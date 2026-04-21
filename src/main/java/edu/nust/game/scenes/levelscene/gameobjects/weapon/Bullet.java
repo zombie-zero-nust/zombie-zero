@@ -48,15 +48,10 @@ public class Bullet extends GameObject implements Damaging, Concrete
                     "raw/PostApocalypse/Character/Guns/Bullets",
                     "Gun-bullet_Bullet.png"
             );
-
         }
-        catch (FileNotFoundException ignored)
-        {
-        }
+        catch (FileNotFoundException ignored) { }
         this.addComponent(new SpriteRenderer(width, height, image));
         this.getTransform().setPosition(pos);
-
-
     }
 
     public Bullet(int speed, Vector2D pos, Image image, double range, int height, int width, Vector2D mousePos)
@@ -70,8 +65,6 @@ public class Bullet extends GameObject implements Damaging, Concrete
         this.width = width;
         this.addComponent(new SpriteRenderer(width, height, image));
         this.getTransform().setPosition(pos);
-
-
     }
 
 
@@ -91,52 +84,28 @@ public class Bullet extends GameObject implements Damaging, Concrete
         this.getTransform().setPosition(pos);
         this.getTransform().setRotationRadians(angle);
         totalDistance += moveDistance.magnitude();
-        if (totalDistance >= range)
-        {
-            destroyed = true;
-        }
+        if (totalDistance >= range) destroyed = true;
     }
 
     @Override
-    public void lateUpdate(TimeSpan deltaTime)
-    {
-        if (destroyed) this.destroy();
-    }
+    public void lateUpdate(TimeSpan deltaTime) { if (destroyed) this.destroy(); }
 
-    public boolean isDestroyed()
-    {
-        return destroyed;
-    }
+    public boolean isDestroyed() { return destroyed; }
 
     @Override
-    public int getDamage()
-    {
-        return this.damage;
-    }
+    public int getDamage() { return this.damage; }
 
     @Override
-    public boolean isDestroyable()
-    {
-        return true;
-    }
+    public boolean isDestroyable() { return true; }
 
     @Override
-    public HitBox getHitbox()
-    {
-        return hitbox;
-    }
+    public HitBox getHitbox() { return hitbox; }
 
     @Override
-    public void destroyThis()
-    {
-        if (isDestroyable()) this.destroy();
-    }
+    public void destroyThis() { if (isDestroyable()) this.destroy(); }
 
     @Override
-    public List<Class<? extends Damageable>> notDamageObj()
-    {
-        return List.of(Player.class);
-    }
+    public List<Class<? extends Damageable>> notDamageObj() { return List.of(Player.class); }
 
     @Override
     public void setHitbox()
@@ -149,14 +118,8 @@ public class Bullet extends GameObject implements Damaging, Concrete
     }
 
     @Override
-    public void triggerCollisionEffect(Concrete collidedObj)
-    {
-        destroyThis();
-    }
+    public void triggerCollisionEffect(Concrete collidedObj) { destroyThis(); }
 
     @Override
-    public List<Class<? extends Concrete>> notInteractWith()
-    {
-        return List.of(Player.class);
-    }
+    public List<Class<? extends Concrete>> notInteractWith() { return List.of(Player.class); }
 }

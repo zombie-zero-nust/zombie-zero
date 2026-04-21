@@ -4,7 +4,7 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
-import edu.nust.game.scenes.levelscene.tags.PlayerTag;
+import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.systems.assets.CharacterAsset;
 import edu.nust.game.systems.collision.Concrete;
 import edu.nust.game.systems.collision.Damageable;
@@ -59,7 +59,7 @@ public class Player extends Character implements Damageable, Concrete
     public Player(Vector2D pos, int initialHealth, int mSpeed, boolean moveable)
     {
         super(pos, initialHealth, mSpeed, moveable);
-        health = new HealthImplementation(initialHealth);
+        health = new Health(initialHealth);
         this.addTag(PlayerTag.class);
 
         try
