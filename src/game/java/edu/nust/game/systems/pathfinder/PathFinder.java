@@ -24,11 +24,9 @@ public class PathFinder
 
     private boolean goalReached = false;
 
-    // PriorityQueue is much faster than scanning openList every time
-    private final PriorityQueue<Node> openQueue =
-            new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
+    private final PriorityQueue<Node> openQueue = new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
 
-    // Track visited nodes so we reset only those (fast)
+
     private final ArrayList<Node> visitedNodes = new ArrayList<>();
 
     public PathFinder(LevelScene scene)
@@ -111,7 +109,6 @@ public class PathFinder
 
     private int heuristic(Node a, Node b)
     {
-        // Manhattan Distance
         return Math.abs(a.getRow() - b.getRow()) + Math.abs(a.getCol() - b.getCol());
     }
 
@@ -137,7 +134,6 @@ public class PathFinder
             }
             else
             {
-                // Reinsert to update priority
                 openQueue.remove(neighbor);
                 openQueue.add(neighbor);
             }
