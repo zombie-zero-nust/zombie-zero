@@ -44,6 +44,7 @@ public final class Level1Background
         GameObject object = GameObject.create().setRenderLayer(-1);
         Image bgImage = Resources.loadImageOrThrow("assets", "scenes", "level_1", "background.png");
         object.addComponent(new SpriteRenderer(bgImage));
+        object.getTransform().setAnchorTopLeft().setPosition(0, 0);
         return object;
     }
 }

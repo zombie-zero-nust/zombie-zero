@@ -6,6 +6,7 @@ import edu.nust.engine.core.interfaces.InputHandler;
 import edu.nust.engine.core.interfaces.Updatable;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.LogProgress;
+import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
@@ -15,6 +16,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -62,10 +64,14 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     private final GameCamera worldCamera;
     private final Canvas worldCanvas;
+
     protected final List<GameObject> gameObjects = new ArrayList<>();
     // we need to hold separate lists to add or remove during updates
     protected final List<GameObject> gameObjectsToAdd = new ArrayList<>();
     protected final List<GameObject> gameObjectsToRemove = new ArrayList<>();
+
+    private final List<Pair<Vector2D, Double>> debugPoints = new ArrayList<>();
+    private final List<Rectangle> debugRectangles = new ArrayList<>();
 
     // debug options
     private boolean debugGrid = false;
@@ -480,8 +486,39 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     /* DEBUG */
 
+    /// Must be called in <b>{@code EACH FRAME}</b>
+    public void addDebugPoint(Vector2D position, double radius)
+    {
+        debugPoints.add(new Pair<>(position, radius));
+        logger.trace("Added debug point at {} with radius {}", position, radius);
+    }
+
+    /// Must be called in <b>{@code EACH FRAME}</b>
+    public void addDebugRectangle(Rectangle rect)
+    {
+        debugRectangles.add(rect);
+        logger.trace("Added debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
+    }
+
     private void renderDebug(GraphicsContext ctx)
     {
+        ctx.setFill(new Color(1, 0, 1, 0.2));
+        
+        for (Pair<Vector2D, Double> point : debugPoints)
+        {
+            final double radius = point.getValue();
+
+            Vector2D startPos = point.getKey().subtract(radius / 2, radius / 2);
+            Vector2D size = new Vector2D(radius, radius);
+
+            ctx.fillOval(startPos.getX(), startPos.getY(), size.getX(), size.getY());
+        }
+
+        for (Rectangle rect : debugRectangles)
+        {
+            ctx.fillRect(rect.getLeft(), rect.getTop(), rect.getSize().getX(), rect.getSize().getY());
+        }
+
         if (debugGrid)
         {
             ctx.setStroke(Color.GRAY);
@@ -523,6 +560,11 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
                 ctx.strokeLine(left, y, right, y);
             }
         }
+
+        debugRectangles.clear();
+        debugPoints.clear();
+
+        ctx.restore();
     }
 
     /* ACTIVE */

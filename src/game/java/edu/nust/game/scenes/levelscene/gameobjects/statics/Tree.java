@@ -2,7 +2,6 @@ package edu.nust.game.scenes.levelscene.gameobjects.statics;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
-import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
@@ -13,8 +12,6 @@ import java.io.FileNotFoundException;
 
 public class Tree extends GameObject
 {
-    private static final GameLogger LOGGER = GameLogger.getLogger(Tree.class);
-
     private static final int PLAYER_DETECTION_RADIUS = 15;
     private static final TimeSpan OPACITY_CHANGE_DURATION = TimeSpan.fromMilliseconds(50);
     private static final double DEFAULT_OPACITY = 1.0;
@@ -52,10 +49,13 @@ public class Tree extends GameObject
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
-        if (player != null) isInScreenCenter = this.getTransform()
-                .getPosition()
-                .subtract(player.getTransform().getPosition())
-                .magnitude() < PLAYER_DETECTION_RADIUS;
+        if (player != null)
+        {
+            isInScreenCenter = this.getTransform()
+                    .getPosition()
+                    .subtract(player.getTransform().getPosition())
+                    .magnitude() < PLAYER_DETECTION_RADIUS;
+        }
 
         currentOpacity = lerpOpacity(currentOpacity, isInScreenCenter ? HIDDEN_OPACITY : DEFAULT_OPACITY, deltaTime);
     }
@@ -67,6 +67,8 @@ public class Tree extends GameObject
         if (sprite == null) return;
         sprite.setOpacity(this.currentOpacity);
     }
+
+    /* HELPERS */
 
     private double lerpOpacity(double current, double target, TimeSpan deltaTime)
     {

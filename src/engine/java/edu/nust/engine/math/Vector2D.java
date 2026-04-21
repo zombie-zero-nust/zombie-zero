@@ -321,15 +321,9 @@ public class Vector2D
         return Angle.fromRadians(Math.atan2(dy, dx));
     }
 
-    public static Angle angleBetween(double x1, double y1, Vector2D b)
-    {
-        return angleBetween(new Vector2D(x1, y1), b);
-    }
+    public static Angle angleBetween(double x1, double y1, Vector2D b) { return angleBetween(new Vector2D(x1, y1), b); }
 
-    public static Angle angleBetween(Vector2D a, double x2, double y2)
-    {
-        return angleBetween(a, new Vector2D(x2, y2));
-    }
+    public static Angle angleBetween(Vector2D a, double x2, double y2) { return angleBetween(a, new Vector2D(x2, y2)); }
 
     public static Angle angleBetween(double x1, double y1, double x2, double y2)
     {
