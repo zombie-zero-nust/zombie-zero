@@ -1,8 +1,10 @@
 package edu.nust.engine.core;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -16,6 +18,7 @@ public class DevConsole
     private final VBox container = new VBox(6);
     private final Label hint = new Label();
     private final TextField input = new TextField();
+    private final VBox output = new VBox(4);
 
     private final Map<String, DevCommand> commands = new LinkedHashMap<>();
     private final List<String> suggestions = new ArrayList<>();
@@ -40,8 +43,9 @@ public class DevConsole
         container.setStyle("-fx-background-color: rgba(20,20,20,0.92);" + "-fx-border-color: rgba(255,255,255,0.22);" + "-fx-border-width: 1;");
 
         hint.setText("Dev Console");
-        hint.setStyle("-fx-text-fill: #b8e0ff;");
+        hint.setStyle("-fx-text-fill: #eeeeee;");
 
+        input.setStyle("-fx-background-color: rgba(40,40,40,0.50);" + "-fx-text-fill: #cccccc;");
         input.setPromptText("Type a command");
         input.setFocusTraversable(false);
         input.setText("/");
@@ -72,7 +76,14 @@ public class DevConsole
                 }
         );
 
-        container.getChildren().setAll(hint, input);
+        ScrollPane scroll = new ScrollPane(output);
+        scroll.setFitToWidth(true);
+        scroll.setMaxHeight(200);
+        scroll.setStyle("-fx-background: transparent;");
+
+        container.getChildren().setAll(hint, input, scroll);
+
+        Platform.runLater(() -> scroll.setVvalue(1.0));
     }
 
     public StackPane createLayer()
@@ -138,7 +149,8 @@ public class DevConsole
         history.add(text);
         historyIndex = history.size();
 
-        hint.setText(runCommand(text));
+        addLine("> " + text);
+        addLine(runCommand(text));
         input.clear();
         updateAutocomplete();
     }
@@ -157,6 +169,21 @@ public class DevConsole
 
         try { return cmd.executor.execute(args); }
         catch (Exception e) { return "Command failed: " + e.getMessage(); }
+    }
+
+    /// Adds a line to output box
+    private void addLine(String text)
+    {
+        Label line = new Label(text);
+        line.setStyle("-fx-text-fill: #000000;");
+        output.getChildren().add(line);
+
+        // optional: limit history (prevents memory/UI explosion)
+        int maxLines = 50;
+        if (output.getChildren().size() > maxLines)
+        {
+            output.getChildren().removeFirst();
+        }
     }
 
     /* REGISTRATION */
