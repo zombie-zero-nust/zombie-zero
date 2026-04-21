@@ -12,7 +12,10 @@ import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -40,6 +43,9 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
     protected boolean active = true;
     /// Controls whether to render components and self
     protected boolean visible = true;
+
+    /// The Render Layer used to control render order
+    protected int renderLayer = 0;
 
     /**
      * Initializes a {@link  GameObject} with a default {@link  Transform} component.
@@ -472,4 +478,14 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
 
     @Override
     public void onRender(GraphicsContext context) { }
+
+    /* GETTERS & SETTERS */
+
+    public int getRenderLayer() { return renderLayer; }
+
+    public GameObject setRenderLayer(int renderLayer)
+    {
+        this.renderLayer = renderLayer;
+        return this;
+    }
 }

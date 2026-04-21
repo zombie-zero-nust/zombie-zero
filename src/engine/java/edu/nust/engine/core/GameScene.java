@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -154,7 +155,9 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
         fetchWorldContextAndRun((ctx) -> {
             // Create a copy of the list to iterate over to avoid ConcurrentModificationException
-            new ArrayList<>(this.gameObjects).forEach(obj -> obj.invokeRender(ctx));
+            this.gameObjects.stream()
+                    .sorted(Comparator.comparingInt(GameObject::getRenderLayer))
+                    .forEach(obj -> obj.invokeRender(ctx));
 
             this.renderDebug(ctx);
         });

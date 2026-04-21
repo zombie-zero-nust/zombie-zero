@@ -34,7 +34,7 @@ public final class Level1Background
 
     private static GameObject backgroundGO() throws FileNotFoundException
     {
-        GameObject object = GameObject.create();
+        GameObject object = GameObject.create().setRenderLayer(-1);
         Image bgImage = Resources.loadImageOrThrow("assets", "scenes", "level_1", "background.png");
         object.addComponent(new SpriteRenderer(bgImage));
         return object;
@@ -42,7 +42,7 @@ public final class Level1Background
 
     private static GameObject treeGO(double x, double y) throws FileNotFoundException
     {
-        GameObject object = GameObject.create();
+        GameObject object = GameObject.create().setRenderLayer(1);
         Image treeImage = Resources.loadImageOrThrow("assets", "scenes", "level_1", "tree.png");
         object.addComponent(new SpriteRenderer(treeImage));
         object.getTransform().setPosition(x, y);
