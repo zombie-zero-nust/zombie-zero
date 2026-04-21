@@ -3,6 +3,7 @@ package edu.nust.game.scenes.levelselect;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
 import edu.nust.game.scenes.levelscene.LevelScene;
+import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -45,4 +46,7 @@ public class LevelSelectScene extends GameScene
 
     @FXML
     private void startLevel1TileClicked(MouseEvent ignored) { startLevel1(); }
+
+    @FXML
+    private void goBack(MouseEvent ignored) { this.getWorld().setScene(new StartScene(this.getWorld())); }
 }

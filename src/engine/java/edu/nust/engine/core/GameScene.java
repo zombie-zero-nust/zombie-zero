@@ -103,6 +103,10 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
             this.gameWorld.getRawScene().getStylesheets().add(cssUrl.toExternalForm());
         }
 
+        // initialize camera
+        logger.trace("Initializing world camera");
+        this.worldCamera = new GameCamera();
+
         // bind canvas size to world layer, which is bound to `window.root`
         logger.trace("Binding canvas dimensions to world layer");
         this.worldCanvas.widthProperty().bind(this.worldLayer.widthProperty());
@@ -122,10 +126,6 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         this.gameWorld.getRawScene().setOnMouseReleased(this::onMouseReleased);
         this.gameWorld.getRawScene().setOnMouseMoved(this::onMouseMoved);
         this.gameWorld.getRawScene().setOnMouseDragged(this::onMouseDragged);
-
-        // initialize camera
-        logger.trace("Initializing world camera");
-        this.worldCamera = new GameCamera();
 
         initSceneLogger.end("Scene initialized successfully");
     }

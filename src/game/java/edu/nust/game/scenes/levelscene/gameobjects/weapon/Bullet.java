@@ -18,7 +18,7 @@ import java.util.List;
 
 public class Bullet extends GameObject implements Damaging, Concrete
 {
-    private int speed;
+    private final int speed;
     private Vector2D pos;
     private Vector2D direction;
     private Image image;
@@ -26,44 +26,34 @@ public class Bullet extends GameObject implements Damaging, Concrete
 
     private double totalDistance;
     private double range;
-    private int height;
-    private int width;
     private boolean destroyed = false;
     private HitBox hitbox;
 
-    public Bullet(int speed, Vector2D pos, double range, int height, int width, Vector2D mousePos, int damage)
+    public Bullet(int speed, Vector2D pos, double range, Vector2D mousePos, int damage)
     {
         this.speed = speed;
         this.pos = pos;
         totalDistance = 0;
         this.range = range;
-        this.height = height;
-        this.width = width;
         direction = mousePos.subtract(pos).normalize();
         this.damage = damage;
         try
         {
-            image = Resources.loadImageOrThrow(
-                    "assets",
-                    "raw/PostApocalypse/Character/Guns/Bullets",
-                    "Gun-bullet_Bullet.png"
-            );
+            image = Resources.loadImageOrThrow("assets", "player", "weapon", "bullet.png");
         }
         catch (FileNotFoundException ignored) { }
-        this.addComponent(new SpriteRenderer(width, height, image));
+        this.addComponent(new SpriteRenderer(image));
         this.getTransform().setPosition(pos);
     }
 
-    public Bullet(int speed, Vector2D pos, Image image, double range, int height, int width, Vector2D mousePos)
+    public Bullet(int speed, Vector2D pos, Image image, double range, Vector2D mousePos)
     {
         this.speed = speed;
         this.pos = pos;
         this.image = image;
         totalDistance = 0;
         this.range = range;
-        this.height = height;
-        this.width = width;
-        this.addComponent(new SpriteRenderer(width, height, image));
+        this.addComponent(new SpriteRenderer(image));
         this.getTransform().setPosition(pos);
     }
 
@@ -71,7 +61,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     @Override
     public void onInit()
     {
-        hitbox = new HitBox(this.pos, height, width);
+        hitbox = new HitBox(pos, image.getHeight(), image.getWidth());
         this.addComponent(hitbox);
     }
 
@@ -112,7 +102,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     {
         if (this.hitbox == null)
         {
-            hitbox = new HitBox(pos, height, width);
+            hitbox = new HitBox(pos, image.getHeight(), image.getWidth());
             this.addComponent(hitbox);
         }
     }

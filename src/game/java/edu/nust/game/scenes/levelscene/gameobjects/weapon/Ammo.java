@@ -7,8 +7,9 @@ public class Ammo
 {
     private final GameLogger logger = GameLogger.getLogger(this.getClass());
 
-    private static final int MAX_AMMO = 20;
-    private static final double RELOAD_TIME = 10.0;
+    // TODO: Change after development
+    private static final int MAX_AMMO = 50;
+    private static final double RELOAD_TIME = 2.0;
 
     private int currentAmmo;
     private boolean isReloading;

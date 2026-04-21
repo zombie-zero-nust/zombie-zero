@@ -30,11 +30,11 @@ public class Player extends Character implements Damageable, Concrete
 
     private final Set<KeyCode> activeKeys = new HashSet<>();
     private HitBox hitbox;
-    private final double height = 15;
-    private final double width = 10;
+    private final double height = 12;
+    private final double width = 8;
+    private final SpriteRenderer spriteRenderer;
+    private final SpriteRenderer handsRenderer;
     private Health health;
-    private SpriteRenderer spriteRenderer;
-    private SpriteRenderer handsRenderer;
     private Image idleUp;
     private Image idleDown;
     private Image idleLeft;
@@ -94,11 +94,12 @@ public class Player extends Character implements Damageable, Concrete
         }
 
         spriteRenderer = new SpriteRenderer(width, height, idleDown, 6, 1);
-        spriteRenderer.setFrame(6, 1).setAnimationTime(TimeSpan.fromMilliseconds(200)).startAnimation();
+        spriteRenderer.setFrame(6, 1).setAnimationTime(TimeSpan.fromMilliseconds(75)).startAnimation();
         this.addComponent(spriteRenderer);
 
         handsRenderer = new SpriteRenderer(width, height, handsIdleDown, 6, 1);
-        handsRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).setFrame(0, 0);
+        handsRenderer.setAnimationTime(TimeSpan.fromMilliseconds(75)).setFrame(0, 0);
+        handsRenderer.setVisible(false); // TODO: combine weapon as well
         this.addComponent(handsRenderer);
 
         this.getTransform().setPosition(getSpawnPos());
@@ -179,23 +180,13 @@ public class Player extends Character implements Damageable, Concrete
             else facing = dy >= 0 ? Facing.DOWN : Facing.UP;
         }
 
-        Image target;
-        switch (facing)
+        Image target = switch (facing)
         {
-            case UP:
-                target = moving ? runUp : idleUp;
-                break;
-            case LEFT:
-                target = moving ? runLeft : idleLeft;
-                break;
-            case RIGHT:
-                target = moving ? runRight : idleRight;
-                break;
-            case DOWN:
-            default:
-                target = moving ? runDown : idleDown;
-                break;
-        }
+            case UP -> moving ? runUp : idleUp;
+            case LEFT -> moving ? runLeft : idleLeft;
+            case RIGHT -> moving ? runRight : idleRight;
+            default -> moving ? runDown : idleDown;
+        };
 
         Image handsTarget = switch (facing)
         {
@@ -211,7 +202,6 @@ public class Player extends Character implements Damageable, Concrete
         if (handsRenderer != null && handsTarget != null && handsRenderer.getImage() != handsTarget)
         {
             handsRenderer.setImage(handsTarget, 6, 1).startAnimation();
-            handsRenderer.setVisible(false);
         }
     }
 

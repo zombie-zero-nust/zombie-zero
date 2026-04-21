@@ -1,6 +1,7 @@
 package edu.nust.game.scenes.levelscene.gameobjects.weapon;
 
 import edu.nust.engine.core.GameObject;
+import edu.nust.engine.core.components.renderers.BoxRenderer;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
@@ -12,12 +13,12 @@ import java.io.FileNotFoundException;
 
 public class Weapon extends GameObject
 {
-    private static final double WEAPON_OFFSET = 15;
-    private final double fireRate = 10;
+    private static final double WEAPON_OFFSET = 12;
+    private final double fireRate = 25; // more -> more bullets
     private static final double MUZZLE_FRAME_DURATION = 0.04;
     private static final int MUZZLE_FRAMES = 3;
-    private double width = 30;
-    private double height = 15;
+    private double width = 12;
+    private double height = 8;
     private int damage;
 
     private static final int GUN_IDLE_FRAMES = 6;
@@ -25,7 +26,7 @@ public class Weapon extends GameObject
     private SpriteRenderer weaponRenderer;
     private boolean isFiring;
     private boolean autoFire;
-    private double fireCooldown = 0;
+    private double fireCooldown = 2;
     private double muzzleElapsed;
     private boolean muzzlePlaying;
     private Ammo ammo;
@@ -70,11 +71,7 @@ public class Weapon extends GameObject
         catch (FileNotFoundException e)
         {
             weaponRenderer = null;
-            this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(
-                    36,
-                                                                                        36,
-                                                                                        javafx.scene.paint.Color.CYAN
-            ));
+            this.addComponent(new BoxRenderer(36, 36, javafx.scene.paint.Color.CYAN));
         }
         try
         {
@@ -91,15 +88,11 @@ public class Weapon extends GameObject
         catch (FileNotFoundException e)
         {
             weaponRenderer = null;
-            this.addComponent(new edu.nust.engine.core.components.renderers.BoxRenderer(
-                    36,
-                                                                                        36,
-                                                                                        javafx.scene.paint.Color.CYAN
-            ));
+            this.addComponent(new BoxRenderer(36, 36, javafx.scene.paint.Color.CYAN));
 
         }
         weaponRenderer = new SpriteRenderer(width, height, gunIdleLeftSheet, GUN_IDLE_FRAMES, 1);
-        weaponRenderer.setAnimationTime(TimeSpan.fromMilliseconds(120)).startAnimation();
+        weaponRenderer.setAnimationTime(TimeSpan.fromMilliseconds(60)).startAnimation();
         this.addComponent(weaponRenderer);
     }
 
@@ -207,7 +200,7 @@ public class Weapon extends GameObject
             setFiring(false);
             ammo.decreaseAmmo();
             triggerMuzzleFlash(bulletPos, targetPos);
-            return new Bullet(2000, bulletPos, 1000, 10, 30, targetPos, damage);
+            return new Bullet(500, bulletPos, 1000, targetPos, damage);
         }
 
         fireCooldown -= deltaTime.asSeconds();
@@ -216,7 +209,7 @@ public class Weapon extends GameObject
             fireCooldown = 1.0 / fireRate;
             ammo.decreaseAmmo();
             triggerMuzzleFlash(weaponPos, targetPos);
-            return new Bullet(2000, bulletPos, 1000, 30, 30, targetPos, damage);
+            return new Bullet(500, bulletPos, 1000, targetPos, damage);
         }
 
         return null;
