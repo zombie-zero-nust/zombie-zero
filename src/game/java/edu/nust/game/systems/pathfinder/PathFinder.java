@@ -24,25 +24,22 @@ public class PathFinder
 
     private boolean goalReached = false;
 
-    private final PriorityQueue<Node> openQueue = new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
+    private final PriorityQueue<Node> openQueue =
+            new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
 
-
-    private final ArrayList<Node> visitedNodes = new ArrayList<>();
+    private final Set<Node> closedSet = new HashSet<>();
+    private final Set<Node> openSet = new HashSet<>();
 
     public PathFinder(LevelScene scene)
     {
         this.scene = scene;
 
-        getMap(scene,
-                (int) scene.getWorldWidth(),
-                (int) scene.getWorldHeight(),
-                new Vector2D(scene.getWorldWidth() / 2.0, scene.getWorldHeight() / 2.0));
+        getMap(scene, (int) scene.getWorldWidth(), (int) scene.getWorldHeight(), new Vector2D(scene.getWorldWidth() / 2.0, scene.getWorldHeight() / 2.0));
     }
 
     public void getMap(LevelScene scene, int mapWidth, int mapHeight, Vector2D mapCenterPos)
     {
         MapNodeSetter nodeSetter = new MapNodeSetter(mapWidth, mapHeight, mapCenterPos);
-
 
         this.maxCol = mapWidth - 1;
         this.maxRow = mapHeight - 1;
@@ -59,23 +56,17 @@ public class PathFinder
     public void setStartNode(int row, int col)
     {
         if (isNotWithinBounds(row, col)) return;
-
         start = nodes[row][col];
-        start.setAsStart(true);
     }
 
     public void setGoalNode(int row, int col)
     {
         if (isNotWithinBounds(row, col)) return;
-
         goal = nodes[row][col];
-        goal.setAsGoal(true);
     }
 
     private void updateStatus(BasicEnemy enemy)
     {
-        if (nodes == null || mapTopLeftPos == null) return;
-
         Player player = (Player) scene.getFirstOfType(Player.class);
 
         if (enemy != null)
@@ -91,83 +82,46 @@ public class PathFinder
         }
     }
 
-    private void resetVisitedNodes()
-    {
-        for (Node node : visitedNodes)
-        {
-            node.setAsStart(false);
-            node.setAsGoal(false);
-            node.setOpen(false);
-            node.setChecked(false);
-            node.setParent(null);
-            node.setgCost(0);
-            node.sethCost(0);
-            node.setfCost(0);
-        }
-        visitedNodes.clear();
-    }
-
     private int heuristic(Node a, Node b)
     {
-        return Math.abs(a.getRow() - b.getRow()) + Math.abs(a.getCol() - b.getCol());
-    }
-
-    private void openNode(Node neighbor, Node parent)
-    {
-        if (neighbor.isChecked() || neighbor.isSolid())
-            return;
-
-        int newGCost = parent.getgCost() + 1;
-
-        if (!neighbor.isOpen() || newGCost < neighbor.getgCost())
-        {
-            neighbor.setParent(parent);
-            neighbor.setgCost(newGCost);
-            neighbor.sethCost(heuristic(neighbor, goal));
-            neighbor.setfCost(neighbor.getgCost() + neighbor.gethCost());
-
-            if (!neighbor.isOpen())
-            {
-                neighbor.setOpen(true);
-                openQueue.add(neighbor);
-                visitedNodes.add(neighbor);
-            }
-            else
-            {
-                openQueue.remove(neighbor);
-                openQueue.add(neighbor);
-            }
-        }
+        return Math.abs(a.getRow() - b.getRow()) +
+                Math.abs(a.getCol() - b.getCol());
     }
 
     public ArrayList<Node> getPath(BasicEnemy enemy)
     {
-        ArrayList<Node> pathNodes = new ArrayList<>();
+        ArrayList<Node> path = new ArrayList<>();
 
-        if (nodes == null || mapTopLeftPos == null) return pathNodes;
-
-        resetVisitedNodes();
-        openQueue.clear();
-        goalReached = false;
+        if (nodes == null) return path;
 
         updateStatus(enemy);
 
-        if (start == null || goal == null) return pathNodes;
-        if (start.isSolid() || goal.isSolid()) return pathNodes;
+        if (start == null || goal == null) return path;
+        if (start.isSolid() || goal.isSolid()) return path;
 
+        openQueue.clear();
+        closedSet.clear();
+        openSet.clear();
+
+        // reset only important fields (avoid full reset spam)
+        start.setParent(null);
         start.setgCost(0);
         start.sethCost(heuristic(start, goal));
-        start.setfCost(start.getgCost() + start.gethCost());
+        start.setfCost(start.gethCost());
 
-        start.setOpen(true);
         openQueue.add(start);
-        visitedNodes.add(start);
-
-        while (!openQueue.isEmpty())
+        openSet.add(start);
+        int i = 0;
+        while (!openQueue.isEmpty() || i<1500)
         {
             Node current = openQueue.poll();
 
-            current.setChecked(true);
+
+            if (closedSet.contains(current))
+                continue;
+
+            openSet.remove(current);
+            closedSet.add(current);
 
             if (current == goal)
             {
@@ -175,20 +129,14 @@ public class PathFinder
                 break;
             }
 
-            int row = current.getRow();
-            int col = current.getCol();
+            int r = current.getRow();
+            int c = current.getCol();
 
-            // Down
-            if (row < maxRow) openNode(nodes[row + 1][col], current);
-
-            // Up
-            if (row > 0) openNode(nodes[row - 1][col], current);
-
-            // Right
-            if (col < maxCol) openNode(nodes[row][col + 1], current);
-
-            // Left
-            if (col > 0) openNode(nodes[row][col - 1], current);
+            tryNeighbor(r + 1, c, current);
+            tryNeighbor(r - 1, c, current);
+            tryNeighbor(r, c + 1, current);
+            tryNeighbor(r, c - 1, current);
+            i++;
         }
 
         if (goalReached)
@@ -196,12 +144,38 @@ public class PathFinder
             Node temp = goal;
             while (temp != null && temp != start)
             {
-                pathNodes.add(temp);
+                path.add(temp);
                 temp = temp.getParent();
             }
-            Collections.reverse(pathNodes);
+            Collections.reverse(path);
         }
 
-        return pathNodes;
+        return path;
+    }
+
+    private void tryNeighbor(int row, int col, Node parent)
+    {
+        if (isNotWithinBounds(row, col)) return;
+
+        Node neighbor = nodes[row][col];
+
+        if (neighbor.isSolid() || closedSet.contains(neighbor))
+            return;
+
+        int newG = parent.getgCost() + 1;
+
+        if (!openSet.contains(neighbor) || newG < neighbor.getgCost())
+        {
+            neighbor.setParent(parent);
+            neighbor.setgCost(newG);
+            neighbor.sethCost(heuristic(neighbor, goal));
+            neighbor.setfCost(neighbor.getgCost() + neighbor.gethCost());
+
+            if (!openSet.contains(neighbor))
+            {
+                openQueue.add(neighbor);
+                openSet.add(neighbor);
+            }
+        }
     }
 }

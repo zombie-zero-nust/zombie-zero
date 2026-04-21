@@ -69,7 +69,7 @@ public class LevelScene extends GameScene
 
         level1CollisionMask = new Level1CollisionMask();
 
-        collisionManager = new CollisionManager(this, 1);
+        collisionManager = new CollisionManager(this);
 
         score = new Score();
         player = new Player(new Vector2D(80, 80), 100, 50, true);
