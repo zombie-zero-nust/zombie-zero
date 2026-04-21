@@ -6,7 +6,7 @@ import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
-import edu.nust.game.scenes.highscores.highscores.HighscoreStore;
+import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemyManager;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
@@ -373,7 +373,7 @@ public class LevelScene extends GameScene
         if (scoreSaved) return;
 
         scoreSaved = true;
-        HighscoreStore.append(PlayerSession.getPlayerName(), getCurrentScore(), LocalDateTime.now());
+        HighScoreStorage.append(PlayerSession.getPlayerName(), getCurrentScore(), LocalDateTime.now());
     }
 
     @FXML

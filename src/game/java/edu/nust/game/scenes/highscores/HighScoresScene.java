@@ -2,8 +2,8 @@ package edu.nust.game.scenes.highscores;
 
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
-import edu.nust.game.scenes.highscores.highscores.HighscoreEntry;
-import edu.nust.game.scenes.highscores.highscores.HighscoreStore;
+import edu.nust.game.scenes.highscores.highscores.HighScoreEntry;
+import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.start.StartScene;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
-public class HighscoresScene extends GameScene
+public class HighScoresScene extends GameScene
 {
     private static final int MAX_ROWS = 10;
 
@@ -21,7 +21,7 @@ public class HighscoresScene extends GameScene
     @FXML private Label bannerSubLabel;
     @FXML private VBox scoreRowsContainer;
 
-    public HighscoresScene(GameWorld world)
+    public HighScoresScene(GameWorld world)
     {
         super(world);
     }
@@ -29,12 +29,12 @@ public class HighscoresScene extends GameScene
     @Override
     public void onInit()
     {
-        List<HighscoreEntry> topScores = HighscoreStore.loadTop(MAX_ROWS);
+        List<HighScoreEntry> topScores = HighScoreStorage.loadTop(MAX_ROWS);
         updateBanner(topScores);
         populateRows(topScores);
     }
 
-    private void updateBanner(List<HighscoreEntry> topScores)
+    private void updateBanner(List<HighScoreEntry> topScores)
     {
         if (bannerLabel == null || bannerSubLabel == null)
             return;
@@ -46,13 +46,13 @@ public class HighscoresScene extends GameScene
             return;
         }
 
-        HighscoreEntry best = topScores.get(0);
-        bannerLabel.setText("#1 " + best.getName());
-        bannerSubLabel.setText("Score: " + best.getScore() + "   |   " + best.getTimestamp()
-                .format(HighscoreStore.TIMESTAMP_FORMAT));
+        HighScoreEntry best = topScores.getFirst();
+        bannerLabel.setText("#1 " + best.name());
+        bannerSubLabel.setText("Score: " + best.score() + "   |   " + best.timestamp()
+                .format(HighScoreStorage.TIMESTAMP_FORMAT));
     }
 
-    private void populateRows(List<HighscoreEntry> topScores)
+    private void populateRows(List<HighScoreEntry> topScores)
     {
         if (scoreRowsContainer == null)
             return;
@@ -61,15 +61,15 @@ public class HighscoresScene extends GameScene
 
         for (int i = 0; i < topScores.size(); i++)
         {
-            HighscoreEntry entry = topScores.get(i);
+            HighScoreEntry entry = topScores.get(i);
             HBox row = new HBox();
             row.setSpacing(8);
             row.getStyleClass().add("score-row");
 
             Label rank = createCell("#" + (i + 1), "col-rank");
-            Label name = createCell(entry.getName(), "col-name");
-            Label score = createCell(String.valueOf(entry.getScore()), "col-score");
-            Label timestamp = createCell(entry.getTimestamp().format(HighscoreStore.TIMESTAMP_FORMAT), "col-time");
+            Label name = createCell(entry.name(), "col-name");
+            Label score = createCell(String.valueOf(entry.score()), "col-score");
+            Label timestamp = createCell(entry.timestamp().format(HighScoreStorage.TIMESTAMP_FORMAT), "col-time");
 
             row.getChildren().addAll(rank, name, score, timestamp);
             scoreRowsContainer.getChildren().add(row);

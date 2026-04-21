@@ -12,12 +12,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public final class HighscoreStore
+public final class HighScoreStorage
 {
     private static final Path FILE_PATH = Path.of("highscores.txt");
     public static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private HighscoreStore() { }
+    private HighScoreStorage() { }
 
     public static void append(String name, int score, LocalDateTime timestamp)
     {
@@ -40,25 +40,25 @@ public final class HighscoreStore
         }
     }
 
-    public static List<HighscoreEntry> loadTop(int limit)
+    public static List<HighScoreEntry> loadTop(int limit)
     {
-        List<HighscoreEntry> all = loadAllSorted();
-        int end = Math.min(Math.max(limit, 0), all.size());
+        List<HighScoreEntry> all = loadAllSorted();
+        int end = Math.clamp(limit, 0, all.size());
         return new ArrayList<>(all.subList(0, end));
     }
 
-    public static List<HighscoreEntry> loadAllSorted()
+    public static List<HighScoreEntry> loadAllSorted()
     {
         if (!Files.exists(FILE_PATH))
             return new ArrayList<>();
 
-        List<HighscoreEntry> entries = new ArrayList<>();
+        List<HighScoreEntry> entries = new ArrayList<>();
 
         try
         {
             for (String line : Files.readAllLines(FILE_PATH, StandardCharsets.UTF_8))
             {
-                HighscoreEntry parsed = parseLine(line);
+                HighScoreEntry parsed = parseLine(line);
                 if (parsed != null)
                     entries.add(parsed);
             }
@@ -70,15 +70,15 @@ public final class HighscoreStore
 
         entries.sort(
                 Comparator
-                        .comparingInt(HighscoreEntry::getScore)
+                        .comparingInt(HighScoreEntry::score)
                         .reversed()
-                        .thenComparing(HighscoreEntry::getTimestamp)
+                        .thenComparing(HighScoreEntry::timestamp)
         );
 
         return entries;
     }
 
-    private static HighscoreEntry parseLine(String line)
+    private static HighScoreEntry parseLine(String line)
     {
         if (line == null || line.isBlank())
             return null;
@@ -95,7 +95,7 @@ public final class HighscoreStore
         {
             int score = Integer.parseInt(parts[1].trim());
             LocalDateTime timestamp = LocalDateTime.parse(parts[2].trim(), TIMESTAMP_FORMAT);
-            return new HighscoreEntry(name, score, timestamp);
+            return new HighScoreEntry(name, score, timestamp);
         }
         catch (NumberFormatException | DateTimeParseException ignored)
         {

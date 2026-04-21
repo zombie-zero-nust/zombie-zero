@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.layout.*?>
 <StackPane xmlns:fx="http://javafx.com/fxml" styleClass="ui-root"
            style="-fx-padding: 0; -fx-border-width: 0;"
            maxWidth="Infinity" maxHeight="Infinity" minWidth="0" minHeight="0">
@@ -11,15 +9,15 @@
           maxWidth="Infinity" maxHeight="Infinity">
 
         <StackPane styleClass="start-button-tile, game-button-tile"
-                   onMouseClicked="#switchToGameSceneTileClicked" />
+                   onMouseClicked="#switchToGameScene"/>
 
         <StackPane styleClass="start-button-tile, levels-button-tile"
-                   onMouseClicked="#switchToLevelSceneTileClicked" />
+                   onMouseClicked="#switchToLevelScene"/>
 
         <StackPane styleClass="start-button-tile, highscores-button-tile"
-                   onMouseClicked="#switchToHighscoresSceneTileClicked" />
+                   onMouseClicked="#switchToHighScoresScene"/>
 
         <StackPane styleClass="start-button-tile, exit-button-tile"
-                   onMouseClicked="#exitApplicationTileClicked" />
+                   onMouseClicked="#exitApplication"/>
     </VBox>
 </StackPane>
