@@ -230,6 +230,8 @@ public class Weapon extends GameObject
         return ammo;
     }
 
+    public void setCurrentAmmo(int amount) { ammo.setCurrentAmmo(amount); }
+
     public void reload()
     {
         ammo.startReload();

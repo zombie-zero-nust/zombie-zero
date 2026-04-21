@@ -1,5 +1,6 @@
 package edu.nust.engine.core;
 
+import edu.nust.engine.logger.GameLogger;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,6 +17,10 @@ import java.util.stream.Collectors;
 
 public class DevConsole
 {
+    private static final GameLogger logger = GameLogger.getLogger(DevConsole.class);
+
+    private final GameScene consoleFor;
+
     private final VBox container = new VBox(6);
     private final Label hint = new Label();
     private final TextField input = new TextField();
@@ -31,7 +36,12 @@ public class DevConsole
 
     private boolean open = false;
 
-    public DevConsole() { setupUI(); }
+    /// <b>{@code INTERNAL}</b>
+    DevConsole(GameScene consoleFor)
+    {
+        this.consoleFor = consoleFor;
+        setupUI();
+    }
 
     /* UI */
 

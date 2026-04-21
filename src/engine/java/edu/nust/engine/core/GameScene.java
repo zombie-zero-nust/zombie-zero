@@ -83,7 +83,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     protected Vector2D mousePosition = Vector2D.zero();
 
-    private final DevConsole devConsole = new DevConsole();
+    private final DevConsole devConsole = new DevConsole(this);
 
     public GameScene(GameWorld gameWorld)
     {
@@ -130,10 +130,16 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         this.worldCanvas.heightProperty().bind(this.worldLayer.heightProperty());
 
         registerDefaultDevCommands();
+        logger.trace("All Default DevCommands registered");
 
         // start the scene
         logger.trace("Calling onStart() for scene setup");
         onInit();
+
+        registerDevCommands();
+        logger.trace("All Custom DevCommands registered");
+        logger.info("All DevCommands registered");
+
         logger.trace("Initializing all GameObjects");
         this.gameObjects.forEach(GameObject::onInit);
 
@@ -475,6 +481,40 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
                     }
                 }
         );
+    }
+
+    /**
+     * Registers a developer console command specific to this scene.
+     *
+     * @param commandName The name of the command, used to activate the command
+     * @param usage       The help text shown
+     * @param description A description of what the command does, shown in the list of commands
+     * @param executor    The function that is executed when the command is run, taking the command arguments as input
+     *                    and returning a string output, that output is shown in the output list
+     */
+    protected final void registerDevCommand(String commandName, String usage, String description, DevConsole.DevCommandExecutor executor)
+    {
+        devConsole.registerDevCommand(commandName, usage, description, executor);
+    }
+
+    /**
+     * Unregisters a developer console command specific to this scene.
+     *
+     * @param commandName The name of the command to unregister
+     */
+    protected final void unregisterDevCommand(String commandName)
+    {
+        devConsole.unregisterDevCommand(commandName);
+    }
+
+    /**
+     * Gets a list of all registered developer console commands for this scene.
+     *
+     * @return List of all registered developer console command names for this scene
+     */
+    protected final List<String> getRegisteredDevCommands()
+    {
+        return devConsole.getRegisteredDevCommands();
     }
 
     /* UI LAYER */
@@ -824,4 +864,11 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     @Override
     public void lateUpdate(TimeSpan deltaTime) { }
+
+    /**
+     * Optional hook for scene-specific developer console commands.
+     * <br><br>
+     * Override in a scene and call {@link #registerDevCommand(String, String, String, DevConsole.DevCommandExecutor)}.
+     */
+    protected void registerDevCommands() { }
 }

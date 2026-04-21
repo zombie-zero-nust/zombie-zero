@@ -62,6 +62,16 @@ public class Ammo
         return currentAmmo;
     }
 
+    public int getMaxAmmo() { return MAX_AMMO; }
+
+    public void setCurrentAmmo(int amount)
+    {
+        currentAmmo = Math.clamp(amount, 0, MAX_AMMO);
+        // Direct dev set should take effect immediately.
+        isReloading = false;
+        reloadTimer = 0.0;
+    }
+
     public double getReloadTimeRemaining()
     {
         return reloadTimer;

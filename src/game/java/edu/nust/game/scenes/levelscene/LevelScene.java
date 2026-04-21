@@ -62,6 +62,51 @@ public class LevelScene extends GameScene
     public LevelScene(GameWorld world) { super(world); }
 
     @Override
+    protected void registerDevCommands()
+    {
+        registerDevCommand(
+                "/setPlayerSpeed", "/setPlayerSpeed <speed>", "Set player's movement speed directly.", args -> {
+                    if (args.isEmpty()) return "Usage: /setPlayerSpeed <speed>";
+                    if (player == null) return "Player not initialized";
+
+                    int speed;
+                    try
+                    {
+                        speed = Integer.parseInt(args.getFirst());
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        return "Invalid speed: " + args.getFirst();
+                    }
+
+                    if (speed < 0) return "Speed must be >= 0";
+                    player.setMovementSpeed(speed);
+                    return "playerSpeed = " + player.getMovementSpeed();
+                }
+        );
+
+        registerDevCommand(
+                "/setCurrentAmmo", "/setCurrentAmmo <amount>", "Set weapon current ammo directly.", args -> {
+                    if (args.isEmpty()) return "Usage: /setCurrentAmmo <amount>";
+                    if (weapon == null || weapon.getAmmo() == null) return "Weapon not initialized";
+
+                    int amount;
+                    try
+                    {
+                        amount = Integer.parseInt(args.getFirst());
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        return "Invalid ammo amount: " + args.getFirst();
+                    }
+
+                    weapon.setCurrentAmmo(amount);
+                    return "ammo = " + weapon.getAmmo().getCurrentAmmo() + "/" + weapon.getAmmo().getMaxAmmo();
+                }
+        );
+    }
+
+    @Override
     public void onInit()
     {
 
