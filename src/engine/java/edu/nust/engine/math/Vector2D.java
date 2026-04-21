@@ -34,6 +34,8 @@ public class Vector2D
 
     public static Vector2D zero() { return new Vector2D(0, 0); }
 
+    public static Vector2D one() { return new Vector2D(1, 1); }
+
     public static Vector2D fromAngle(Angle angle)
     {
         return new Vector2D(Math.cos(angle.getRadians()), Math.sin(angle.getRadians()));

@@ -4,6 +4,10 @@ import edu.nust.engine.core.gameobjects.Tag;
 import edu.nust.engine.core.interfaces.Initiable;
 import edu.nust.engine.core.interfaces.InputHandler;
 import edu.nust.engine.core.interfaces.Updatable;
+import edu.nust.engine.debug.DebugEllipse;
+import edu.nust.engine.debug.DebugPoint;
+import edu.nust.engine.debug.DebugRectangle;
+import edu.nust.engine.debug.DebugShape;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.Rectangle;
@@ -16,7 +20,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -70,11 +73,13 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     protected final List<GameObject> gameObjectsToAdd = new ArrayList<>();
     protected final List<GameObject> gameObjectsToRemove = new ArrayList<>();
 
-    private final List<Pair<Vector2D, Double>> debugPoints = new ArrayList<>();
-    private final List<Rectangle> debugRectangles = new ArrayList<>();
+    private final List<DebugShape> debugShapes = new ArrayList<>();
 
     // debug options
     private boolean debugGrid = false;
+    private boolean debugMouseLocation = false;
+
+    protected Vector2D mousePosition = Vector2D.zero();
 
     public GameScene(GameWorld gameWorld)
     {
@@ -131,8 +136,14 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         this.gameWorld.getRawScene().setOnKeyReleased(this::onKeyReleased);
         this.gameWorld.getRawScene().setOnMousePressed(this::onMousePressed);
         this.gameWorld.getRawScene().setOnMouseReleased(this::onMouseReleased);
-        this.gameWorld.getRawScene().setOnMouseMoved(this::onMouseMoved);
-        this.gameWorld.getRawScene().setOnMouseDragged(this::onMouseDragged);
+        this.gameWorld.getRawScene().setOnMouseMoved(mEv -> {
+            onMouseMoved(mEv);
+            this.mousePosition = new Vector2D(mEv.getX(), mEv.getY());
+        });
+        this.gameWorld.getRawScene().setOnMouseDragged(mEv -> {
+            onMouseDragged(mEv);
+            this.mousePosition = new Vector2D(mEv.getX(), mEv.getY());
+        });
 
         initSceneLogger.end("Scene initialized successfully");
     }
@@ -486,85 +497,129 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     /* DEBUG */
 
-    /// Must be called in <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code EACH FRAME}</b>
     public void addDebugPoint(Vector2D position, double radius)
     {
-        debugPoints.add(new Pair<>(position, radius));
+        debugShapes.add(DebugPoint.from(position, radius));
         logger.trace("Added debug point at {} with radius {}", position, radius);
     }
 
-    /// Must be called in <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addDebugPoint(Vector2D position) { addDebugPoint(position, DebugPoint.DEFAULT_RADIUS); }
+
+    /// Must be called <b>{@code EACH FRAME}</b>
     public void addDebugRectangle(Rectangle rect)
     {
-        debugRectangles.add(rect);
+        debugShapes.add(DebugRectangle.fromSize(rect.getTopLeft(), rect.getSize()));
+        logger.trace("Added debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
+    }
+
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addDebugEllipse(Rectangle rect)
+    {
+        debugShapes.add(DebugEllipse.fromSize(rect.getTopLeft(), rect.getSize()));
         logger.trace("Added debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
     }
 
     private void renderDebug(GraphicsContext ctx)
     {
-        ctx.setFill(new Color(1, 0, 1, 0.2));
-        
-        for (Pair<Vector2D, Double> point : debugPoints)
-        {
-            final double radius = point.getValue();
+        debugShapes.forEach(obj -> {
+            obj.setColors(ctx);
+            obj.render(ctx);
+        });
 
-            Vector2D startPos = point.getKey().subtract(radius / 2, radius / 2);
-            Vector2D size = new Vector2D(radius, radius);
+        drawDebugGrid(ctx);
+        drawDebugMouseLocation(ctx);
 
-            ctx.fillOval(startPos.getX(), startPos.getY(), size.getX(), size.getY());
-        }
-
-        for (Rectangle rect : debugRectangles)
-        {
-            ctx.fillRect(rect.getLeft(), rect.getTop(), rect.getSize().getX(), rect.getSize().getY());
-        }
-
-        if (debugGrid)
-        {
-            ctx.setStroke(Color.GRAY);
-            ctx.setLineWidth(1);
-
-            double zoom = worldCamera.getZoom();
-
-            double canvasW = worldCanvas.getWidth();
-            double canvasH = worldCanvas.getHeight();
-
-            // camera center
-            double camX = worldCamera.getPosition().getX();
-            double camY = worldCamera.getPosition().getY();
-
-            // visible world bounds
-            double halfW = canvasW / 2.0 / zoom;
-            double halfH = canvasH / 2.0 / zoom;
-
-            double left = camX - halfW;
-            double right = camX + halfW;
-            double top = camY - halfH;
-            double bottom = camY + halfH;
-
-            double gridSize = 100;
-
-            // snap to grid
-            double startX = Math.floor(left / gridSize) * gridSize;
-            double startY = Math.floor(top / gridSize) * gridSize;
-
-            // vertical lines
-            for (double x = startX; x <= right; x += gridSize)
-            {
-                ctx.strokeLine(x, top, x, bottom);
-            }
-
-            // horizontal lines
-            for (double y = startY; y <= bottom; y += gridSize)
-            {
-                ctx.strokeLine(left, y, right, y);
-            }
-        }
-
-        debugRectangles.clear();
-        debugPoints.clear();
-
+        debugShapes.clear();
         ctx.restore();
+    }
+
+    private void drawDebugGrid(GraphicsContext ctx)
+    {
+        if (!debugGrid) return;
+
+        ctx.setStroke(Color.GRAY);
+        ctx.setLineWidth(1);
+
+        double zoom = worldCamera.getZoom();
+
+        double canvasW = worldCanvas.getWidth();
+        double canvasH = worldCanvas.getHeight();
+
+        // camera center
+        double camX = worldCamera.getPosition().getX();
+        double camY = worldCamera.getPosition().getY();
+
+        // visible world bounds
+        double halfW = canvasW / 2.0 / zoom;
+        double halfH = canvasH / 2.0 / zoom;
+
+        double left = camX - halfW;
+        double right = camX + halfW;
+        double top = camY - halfH;
+        double bottom = camY + halfH;
+
+        double gridSize = 100;
+
+        // snap to grid
+        double startX = Math.floor(left / gridSize) * gridSize;
+        double startY = Math.floor(top / gridSize) * gridSize;
+
+        // vertical lines
+        for (double x = startX; x <= right; x += gridSize)
+        {
+            ctx.strokeLine(x, top, x, bottom);
+        }
+
+        // horizontal lines
+        for (double y = startY; y <= bottom; y += gridSize)
+        {
+            ctx.strokeLine(left, y, right, y);
+        }
+    }
+
+    private void drawDebugMouseLocation(GraphicsContext ctx)
+    {
+        if (!debugMouseLocation) return;
+
+        Vector2D worldPos = screenToWorld(mousePosition);
+
+        // clamp to integer
+        worldPos.setX(Math.floor(worldPos.getX()));
+        worldPos.setY(Math.floor(worldPos.getY()));
+
+        double zoom = worldCamera.getZoom();
+        double canvasW = worldCanvas.getWidth();
+        double canvasH = worldCanvas.getHeight();
+
+        double camX = worldCamera.getPosition().getX();
+        double camY = worldCamera.getPosition().getY();
+
+        double halfW = canvasW / 2.0 / zoom;
+        double halfH = canvasH / 2.0 / zoom;
+
+        double left = camX - halfW;
+        double right = camX + halfW;
+        double top = camY - halfH;
+        double bottom = camY + halfH;
+
+        ctx.setStroke(Color.RED);
+        ctx.setLineWidth(1);
+
+        // vertical line
+        ctx.strokeLine(worldPos.getX(), top, worldPos.getX(), bottom);
+
+        // horizontal line
+        ctx.strokeLine(left, worldPos.getY(), right, worldPos.getY());
+
+        // draw coordinates
+        ctx.setFill(Color.WHITE);
+        ctx.fillText(
+                String.format("(%.2f, %.2f)", worldPos.getX(), worldPos.getY()),
+                worldPos.getX() + 5,
+                worldPos.getY() - 5
+        );
     }
 
     /* ACTIVE */
@@ -614,6 +669,29 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
      */
     public GameCamera getWorldCamera() { return worldCamera; }
 
+    /// <b>{@code INTERNAL}</b>
+    private Vector2D screenToWorld(Vector2D screen)
+    {
+        double zoom = worldCamera.getZoom();
+
+        double canvasW = worldCanvas.getWidth();
+        double canvasH = worldCanvas.getHeight();
+
+        // move origin to center
+        double x = screen.getX() - canvasW / 2.0;
+        double y = screen.getY() - canvasH / 2.0;
+
+        // undo zoom
+        x /= zoom;
+        y /= zoom;
+
+        // add camera position
+        x += worldCamera.getPosition().getX();
+        y += worldCamera.getPosition().getY();
+
+        return new Vector2D(x, y);
+    }
+
     /* DEBUG */
 
     /// Gets whether the debug grid is currently shown or not.
@@ -643,6 +721,33 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     ///
     /// @see GameScene#setDebugGrid(boolean)
     public GameScene hideDebugGrid() { return setDebugGrid(false); }
+
+    /// Gets whether to show debug mouse coordinates or not
+    ///
+    /// @see GameScene#setDebugGrid(boolean)
+    public boolean hasDebugMouseLocation() { return debugMouseLocation; }
+
+    /// **`CHAINABLE`** Sets whether to show debug mouse location or not.
+    public GameScene setDebugMouseLocation(boolean debugMouseLocation)
+    {
+        this.debugMouseLocation = debugMouseLocation;
+        return this;
+    }
+
+    /// **`CHAINABLE`** Toggles the debug mouse location on/off.
+    ///
+    /// @see GameScene#setDebugMouseLocation(boolean)
+    public GameScene toggleDebugMouseLocation() { return setDebugMouseLocation(!debugMouseLocation); }
+
+    /// **`CHAINABLE`** Shows the debug mouse location.
+    ///
+    /// @see GameScene#setDebugMouseLocation(boolean)
+    public GameScene showDebugMouseLocation() { return setDebugMouseLocation(true); }
+
+    /// **`CHAINABLE`** Hides the debug mouse location.
+    ///
+    /// @see GameScene#setDebugMouseLocation(boolean)
+    public GameScene hideDebugMouseLocation() { return setDebugMouseLocation(false); }
 
     /* LIFETIME EVENTS */
 
