@@ -1,6 +1,7 @@
 package edu.nust.engine.core;
 
 import edu.nust.engine.logger.GameLogger;
+import edu.nust.engine.logger.LogProgress;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -39,6 +40,7 @@ public class DevConsole
     /// <b>{@code INTERNAL}</b>
     DevConsole(GameScene consoleFor)
     {
+        logger.trace("Constructing DevConsole");
         this.consoleFor = consoleFor;
         setupUI();
     }
@@ -47,6 +49,9 @@ public class DevConsole
 
     private void setupUI()
     {
+        LogProgress initConsoleLogger = LogProgress.create("CONSOLE", logger);
+        initConsoleLogger.begin("Initializing DevConsole UI");
+
         container.setVisible(false);
         container.setManaged(false);
         container.getStyleClass().add("dev-console");
@@ -63,6 +68,7 @@ public class DevConsole
         input.setFocusTraversable(false);
         input.setText("/");
 
+        logger.trace("Configuring input field event listeners");
         input.textProperty().addListener((obs, o, n) -> updateAutocomplete());
         input.setOnKeyPressed(this::handleKey);
 
@@ -89,6 +95,7 @@ public class DevConsole
                 }
         );
 
+        logger.trace("Configuring output holder and constraints");
         outputHolder.setContent(outputContainer);
         outputHolder.setFitToWidth(true);
         outputHolder.setPrefHeight(Integer.MAX_VALUE);
@@ -101,6 +108,8 @@ public class DevConsole
         container.getChildren().setAll(hint, input, outputHolder);
 
         Platform.runLater(() -> outputHolder.setVvalue(1.0));
+
+        initConsoleLogger.end("DevConsole UI initialized successfully");
     }
 
     public StackPane createLayer()
@@ -116,6 +125,7 @@ public class DevConsole
     public void toggle()
     {
         open = !open;
+        logger.debug("DevConsole is now {}", open ? "OPEN" : "CLOSED");
         container.setVisible(open);
         container.setManaged(open);
         if (open)
@@ -163,6 +173,8 @@ public class DevConsole
         String text = input.getText().trim();
         if (text.isBlank()) return;
 
+        logger.info("DevConsole input: {}", text);
+
         history.add(text);
         historyIndex = history.size();
 
@@ -174,18 +186,36 @@ public class DevConsole
 
     private String runCommand(String input)
     {
-        if (!input.startsWith("/")) return "Commands must start with '/'";
+        if (!input.startsWith("/"))
+        {
+            logger.warn("Invalid command format (missing '/'): {}", input);
+            return "Commands must start with '/'";
+        }
 
         String[] words = input.split("\\s+");
         String name = normalizeCommandName(words[0]);
 
         DevCommand cmd = commands.get(name);
-        if (cmd == null) return getUnknownCommandsString();
+        if (cmd == null)
+        {
+            logger.warn("Attempted to execute unknown command: {}", name);
+            return getUnknownCommandsString();
+        }
 
         List<String> args = Arrays.asList(words).subList(1, words.length);
 
-        try { return cmd.executor.execute(args); }
-        catch (Exception e) { return "Command failed: " + e.getMessage(); }
+        try
+        {
+            logger.trace("Executing command '{}' with args: {}", name, args);
+            String result = cmd.executor.execute(args);
+            logger.debug("Command '{}' executed successfully", name);
+            return result;
+        }
+        catch (Exception e)
+        {
+            logger.error(false, "Command '" + name + "' failed to execute", e);
+            return "Command failed: " + e.getMessage();
+        }
     }
 
     private String getUnknownCommandsString()
@@ -225,18 +255,23 @@ public class DevConsole
 
     public void register(String name, String usage, String desc, DevCommandExecutor exec)
     {
-        commands.put(normalizeCommandName(name), new DevCommand(name, usage, desc, exec));
+        String normalized = normalizeCommandName(name);
+        logger.trace("Registering command: {}", normalized);
+        commands.put(normalized, new DevCommand(name, usage, desc, exec));
     }
 
     public final void registerDevCommand(String commandName, String usage, String description, DevCommandExecutor executor)
     {
         String normalized = normalizeCommandName(commandName);
+        logger.trace("Registering dev command: {}", normalized);
         commands.put(normalized, new DevCommand(normalized, usage, description, executor));
     }
 
     public final void unregisterDevCommand(String commandName)
     {
-        commands.remove(normalizeCommandName(commandName));
+        String normalized = normalizeCommandName(commandName);
+        logger.trace("Unregistering dev command: {}", normalized);
+        commands.remove(normalized);
     }
 
     public final List<String> getRegisteredDevCommands()
