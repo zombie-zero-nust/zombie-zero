@@ -12,6 +12,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DevConsole
 {
@@ -71,7 +72,7 @@ public class DevConsole
                     String ch = event.getCharacter();
 
                     // allow only alphanumeric, slash and space
-                    if (!ch.matches("[a-zA-Z0-9/ ]"))
+                    if (!ch.matches("[a-zA-Z0-9/ -]"))
                     {
                         event.consume();
                     }
@@ -169,12 +170,22 @@ public class DevConsole
         String name = normalizeCommandName(words[0]);
 
         DevCommand cmd = commands.get(name);
-        if (cmd == null) return "Unknown command";
+        if (cmd == null) return getUnknownCommandsString();
 
         List<String> args = Arrays.asList(words).subList(1, words.length);
 
         try { return cmd.executor.execute(args); }
         catch (Exception e) { return "Command failed: " + e.getMessage(); }
+    }
+
+    private String getUnknownCommandsString()
+    {
+        if (commands.isEmpty()) return "No Commands Registered.";
+
+        return commands.values()
+                .stream()
+                .map(c -> String.format("- %s: %s", c.usage, c.description))
+                .collect(Collectors.joining("\n", "Unknown command.\nRegistered commands:\n", ""));
     }
 
     /// Adds a line to outputHolder box

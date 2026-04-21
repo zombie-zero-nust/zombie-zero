@@ -432,6 +432,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     private void registerDefaultDevCommands()
     {
+        // Debug Grid
         devConsole.registerDevCommand(
                 "/debugGrid", //
                 "/debugGrid true|false", //
@@ -443,6 +444,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
                 }
         );
 
+        // Debug Mouse Location
         devConsole.registerDevCommand(
                 "/debugMouseLocation",
                 "/debugMouseLocation true|false",
@@ -451,6 +453,26 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
                     boolean val = DevConsole.parseBooleanArg(args.getFirst());
                     setDebugMouseLocation(val);
                     return "debugMouseLocation = " + debugMouseLocation;
+                }
+        );
+
+        // Set Camera Zoom
+        devConsole.registerDevCommand(
+                "/setCameraZoom",
+                "/setCameraZoom <zoom>",
+                "Set camera zoom level (default 1.0, must be > 0)",
+                (args) -> {
+                    try
+                    {
+                        double zoom = Double.parseDouble(args.getFirst());
+                        if (zoom <= 0) return "Zoom must be greater than 0";
+                        worldCamera.setZoom(zoom);
+                        return "Camera zoom set to " + zoom;
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        return "Invalid zoom value: " + args.getFirst();
+                    }
                 }
         );
     }
