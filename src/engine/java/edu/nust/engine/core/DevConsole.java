@@ -18,7 +18,8 @@ public class DevConsole
     private final VBox container = new VBox(6);
     private final Label hint = new Label();
     private final TextField input = new TextField();
-    private final VBox output = new VBox(4);
+    private final ScrollPane outputHolder = new ScrollPane();
+    private final VBox outputContainer = new VBox(8);
 
     private final Map<String, DevCommand> commands = new LinkedHashMap<>();
     private final List<String> suggestions = new ArrayList<>();
@@ -38,14 +39,15 @@ public class DevConsole
         container.setVisible(false);
         container.setManaged(false);
         container.getStyleClass().add("dev-console");
+        container.setSpacing(8);
         container.setMaxWidth(520);
         container.setPadding(new Insets(10));
-        container.setStyle("-fx-background-color: rgba(20,20,20,0.92);" + "-fx-border-color: rgba(255,255,255,0.22);" + "-fx-border-width: 1;");
+        container.setStyle("-fx-background-color: rgba(15,15,15,0.95);" + "-fx-border-color: rgba(255,255,255,0.15);" + "-fx-border-width: 1;" + "-fx-background-radius: 6;" + "-fx-border-radius: 6;");
 
         hint.setText("Dev Console");
-        hint.setStyle("-fx-text-fill: #eeeeee;");
+        hint.setStyle("-fx-text-fill: #9aa4ad;" + "-fx-font-size: 12px;");
 
-        input.setStyle("-fx-background-color: rgba(40,40,40,0.50);" + "-fx-text-fill: #cccccc;");
+        input.setStyle("-fx-background-color: rgba(30,30,30,0.9);" + "-fx-text-fill: #e6e6e6;" + "-fx-prompt-text-fill: #666666;" + "-fx-border-color: rgba(255,255,255,0.10);" + "-fx-border-radius: 3;" + "-fx-background-radius: 3;");
         input.setPromptText("Type a command");
         input.setFocusTraversable(false);
         input.setText("/");
@@ -76,14 +78,18 @@ public class DevConsole
                 }
         );
 
-        ScrollPane scroll = new ScrollPane(output);
-        scroll.setFitToWidth(true);
-        scroll.setMaxHeight(200);
-        scroll.setStyle("-fx-background: transparent;");
+        outputHolder.setContent(outputContainer);
+        outputHolder.setFitToWidth(true);
+        outputHolder.setPrefHeight(Integer.MAX_VALUE);
+        outputHolder.setPadding(new Insets(8));
+        outputHolder.setStyle("-fx-background: transparent;" + "-fx-background-color: transparent;" + "-fx-border-color: rgba(255,255,255,0.10);" + "-fx-border-radius: 4;");
 
-        container.getChildren().setAll(hint, input, scroll);
+        outputHolder.setFitToWidth(true);
+        outputHolder.setPannable(true);
 
-        Platform.runLater(() -> scroll.setVvalue(1.0));
+        container.getChildren().setAll(hint, input, outputHolder);
+
+        Platform.runLater(() -> outputHolder.setVvalue(1.0));
     }
 
     public StackPane createLayer()
@@ -171,19 +177,27 @@ public class DevConsole
         catch (Exception e) { return "Command failed: " + e.getMessage(); }
     }
 
-    /// Adds a line to output box
+    /// Adds a line to outputHolder box
     private void addLine(String text)
     {
         Label line = new Label(text);
-        line.setStyle("-fx-text-fill: #000000;");
-        output.getChildren().add(line);
 
-        // optional: limit history (prevents memory/UI explosion)
+        line.setStyle("-fx-text-fill: #d6d6d6;" + "-fx-font-family: monospace;" + "-fx-font-size: 12px;");
+
+        line.setWrapText(true);
+        line.setMaxWidth(480);
+
+        outputContainer.getChildren().add(line);
+
+        // limit history (prevents memory/UI explosion)
         int maxLines = 50;
-        if (output.getChildren().size() > maxLines)
+        if (outputContainer.getChildren().size() > maxLines)
         {
-            output.getChildren().removeFirst();
+            outputContainer.getChildren().removeFirst();
         }
+
+        // Auto-scroll to bottom
+        Platform.runLater(() -> outputHolder.setVvalue(1.1));
     }
 
     /* REGISTRATION */
