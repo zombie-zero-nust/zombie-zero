@@ -83,7 +83,7 @@ public class LevelScene extends GameScene
 
         initLevel1WithBackground();
 
-        BasicEnemy enemy = new BasicEnemy(new Vector2D(300, 0), 30, 100);
+        BasicEnemy enemy = new BasicEnemy(new Vector2D(100, 200), 30, 100);
         this.addGameObject(enemy.addTag(EnemyTag.class));
 
 

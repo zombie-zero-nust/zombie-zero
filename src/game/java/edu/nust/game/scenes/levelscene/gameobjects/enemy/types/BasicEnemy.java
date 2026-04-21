@@ -29,9 +29,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     private double height;
     private double width;
 
-    private int hits = 0;
     private EnemyAsset enemyType;
-
     private SpriteRenderer spriteRenderer;
     private HitBox hitbox;
 
@@ -41,9 +39,11 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     private ArrayList<Node> movement = new ArrayList<>();
     private int currentPathIndex = 0;
 
-    // ✅ Path update delay (IMPORTANT)
+    // PATH UPDATE DELAY
     private TimeSpan pathTimer = TimeSpan.zero();
     private final TimeSpan pathUpdateInterval = TimeSpan.fromMilliseconds(300);
+
+    private final int nodeSize = 4; // IMPORTANT NODE SIZE
 
     public BasicEnemy(Vector2D startPosition, double speed, int health)
     {
@@ -111,6 +111,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
         if (pathFinder == null)
         {
             pathFinder = new PathFinder((LevelScene) this.getScene());
+            movement = pathFinder.getPath(this);
         }
 
         setHitbox();
@@ -120,7 +121,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
         if (pathTimer.asSeconds() >= pathUpdateInterval.asSeconds())
         {
             movement = pathFinder.getPath(this);
-            currentPathIndex = 0; // ✅ reset index when new path generated
+            currentPathIndex = 0;
             pathTimer = TimeSpan.zero();
         }
 
@@ -135,10 +136,10 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
         Vector2D currentPos = this.getTransform().getPosition();
         Node targetNode = movement.get(currentPathIndex);
 
-        // convert node grid pos into world pos
+        // FIXED: Convert node grid coords into world coords using nodeSize
         Vector2D targetPos = pathFinder.getMapTopLeftPos().add(
-                targetNode.getCol(),
-                targetNode.getRow()
+                targetNode.getCol() * nodeSize,
+                targetNode.getRow() * nodeSize
         );
 
         Vector2D direction = targetPos.subtract(currentPos);

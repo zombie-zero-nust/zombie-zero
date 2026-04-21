@@ -11,109 +11,80 @@ import edu.nust.game.systems.collision.HitBox;
 
 import java.util.ArrayList;
 
-public class MapNodeSetter extends GameObject
-{
+public class MapNodeSetter extends GameObject {
+
+    private static final int NODE_SIZE = 4;                    // FIX #5: node size
+
     private Node[][] nodes;
     private final int mapWidth;
     private final int mapHeight;
-
-    private Vector2D mapPos;
     private final Vector2D mapTopLeftPos;
-
     private HitBox hitbox;
-    private GameScene scene;
-
+    private final GameScene scene;                              // FIX #1: injected, not null
     private int xPos;
     private int yPos;
 
-    public MapNodeSetter(int mapWidth, int mapHeight, Vector2D mapCenterPos)
-    {
+    public MapNodeSetter(Vector2D mapPos, int mapWidth, int mapHeight, GameScene scene) {
         this.mapHeight = mapHeight;
         this.mapWidth = mapWidth;
-
-        // Initialize map center position
-        this.mapPos = mapCenterPos;
-
-        // Top-left position of the map
-        this.mapTopLeftPos = mapPos.subtract(new Vector2D(mapWidth / 2.0, mapHeight / 2.0));
-
-        // Initialize nodes array
-        nodes = new Node[mapHeight][mapWidth];
-
-        hitbox = new HitBox(mapTopLeftPos, 1, 1);
+        this.scene = scene;                                     // FIX #1: assigned here
+        mapTopLeftPos = mapPos.subtract(new Vector2D(mapWidth / 2.0, mapHeight / 2.0));
+        hitbox = new HitBox(mapTopLeftPos, NODE_SIZE, NODE_SIZE); // FIX #5: size 4
         this.addComponent(hitbox);
-
+        nodes = new Node[mapWidth][mapHeight];
         setNodes();
-
-        xPos = 0;
+        xPos = 0;                                               // FIX #3: was subtract(itself)
         yPos = 0;
+    }
 
-        scene = this.getScene();
+    @Override
+    public void onInit() {
         traceMap();
     }
 
-
-    private void setNodes()
-    {
-        for (int i = 0; i < mapHeight; i++)
-        {
-            for (int j = 0; j < mapWidth; j++)
-            {
-                nodes[i][j] = new Node(i, j);
-            }
-        }
+    @Override
+    public void onUpdate(TimeSpan deltaTime) {
+        Vector2D currentPos = this.getTransform().getPosition().subtract(mapTopLeftPos);
+        xPos = (int) currentPos.getX();
+        yPos = (int) currentPos.getY();
     }
 
-    private void traceMap()
-    {
-
-        if (scene == null) return;
-
-        ArrayList<GameObject> gameObjs = (ArrayList<GameObject>) scene.getAllGameObjects();
-
-        for (int i = 0; i < mapHeight; i++)
-        {
-            for (int j = 0; j < mapWidth; j++)
-            {
-                // Current world position for this node
-                Vector2D currPos = new Vector2D(
-                        mapTopLeftPos.getX() + j,
-                        mapTopLeftPos.getY() + i
-                );
-
-                // Move the object + hitbox to that node position
-                this.getTransform().setPosition(currPos);
-
-                xPos = j;
-                yPos = i;
-
-                // Check collision with all concrete objects
-                boolean isSolid = false;
-
-                for (GameObject obj : gameObjs)
-                {
-                    if (obj instanceof Concrete && !(obj instanceof Player) && !(obj instanceof BasicEnemy))
-                    {
-                        if (hitbox.isTouching(((Concrete) obj).getHitbox()))
-                        {
-                            isSolid = true;
-                            break;
-                        }
-                    }
+    public void setMapNode() {
+        if (xPos >= 0 && xPos < mapWidth && yPos >= 0 && yPos < mapHeight) {
+            ArrayList<GameObject> gameObjs = (ArrayList<GameObject>) this.scene.getAllGameObjects();
+            for (GameObject obj : gameObjs) {
+                if (obj instanceof Concrete && !(obj instanceof Player) && !(obj instanceof BasicEnemy)) {
+                    nodes[xPos][yPos].setSolid(hitbox.isTouching(((Concrete) obj).getHitbox()));
                 }
-
-                nodes[yPos][xPos].setSolid(isSolid);
             }
         }
     }
 
-    public Node[][] getNodes()
-    {
+    private void setNodes() {
+        for (int i = 0; i < mapHeight; i++) {
+            for (int j = 0; j < mapWidth; j++) {
+                nodes[j][i] = new Node(j, i);                  // FIX #2: was nodes[i][j]
+            }
+        }
+    }
+
+    private void traceMap() {
+        Vector2D currPos = new Vector2D(0, 0);
+        for (int i = 0; i < mapHeight; i++) {
+            for (int j = 0; j < mapWidth; j++) {
+                this.getTransform().setPosition(mapTopLeftPos.add(currPos)); // FIX #4: offset added
+                setMapNode();
+                currPos = currPos.add(new Vector2D(NODE_SIZE, 0)); // FIX #6: step by 4, not 1
+            }
+            currPos = new Vector2D(0, currPos.getY() + NODE_SIZE); // FIX #6: step by 4
+        }
+    }
+
+    public Node[][] getNodes() {
         return nodes;
     }
 
-    public Vector2D getMapTopLeftPos()
-    {
+    public Vector2D getMapTopLeftPos() {
         return mapTopLeftPos;
     }
 }
