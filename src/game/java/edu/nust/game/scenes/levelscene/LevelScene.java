@@ -64,7 +64,6 @@ public class LevelScene extends GameScene
     @Override
     public void onInit()
     {
-        initLevel1WithBackground();
 
         level1CollisionMask = new Level1CollisionMask();
 
@@ -73,6 +72,7 @@ public class LevelScene extends GameScene
         score = new Score();
         player = new Player(new Vector2D(80, 80), 100, 50, true);
         this.addGameObject(player.addTag(PlayerTag.class));
+
         player.setMovePos(clampPlayerToPlayArea(player.getTransform().getPosition()));
 
         // Set up collision checking for the player
@@ -80,6 +80,8 @@ public class LevelScene extends GameScene
 
         weapon = new Weapon();
         this.addGameObject(weapon);
+
+        initLevel1WithBackground();
 
         BasicEnemy enemy = new BasicEnemy(new Vector2D(300, 0), 30, 100);
         this.addGameObject(enemy.addTag(EnemyTag.class));
@@ -101,7 +103,7 @@ public class LevelScene extends GameScene
 
     private void initLevel1WithBackground()
     {
-        Arrays.stream(Level1Background.getObjects(logger)).forEach(this::addGameObject);
+        Arrays.stream(Level1Background.getObjects(this.getPlayer())).forEach(this::addGameObject);
     }
 
     @Override
@@ -171,7 +173,6 @@ public class LevelScene extends GameScene
     {
         if (weapon != null) weapon.updatePosition(mousePosition, playerPos);
     }
-
 
 
     private void updateCameraPosition(Vector2D playerPos, double canvasW, double canvasH, double zoom)
@@ -299,4 +300,6 @@ public class LevelScene extends GameScene
     public double getWorldWidth() { return worldWidth; }
 
     public double getWorldHeight() { return worldHeight; }
+
+    public Player getPlayer() { return player; }
 }

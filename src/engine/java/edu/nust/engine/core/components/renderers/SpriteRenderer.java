@@ -1,10 +1,12 @@
 package edu.nust.engine.core.components.renderers;
 
-import edu.nust.engine.core.components.Transform;
 import edu.nust.engine.core.Component;
+import edu.nust.engine.core.components.Transform;
 import edu.nust.engine.math.TimeSpan;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.*;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.Light;
+import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -16,6 +18,7 @@ public class SpriteRenderer extends Component
     private Image image;
 
     private Effect tintEffect = null;
+    private double opacity = 1.0;
 
     private double frameWidth;
     private double frameHeight;
@@ -88,6 +91,9 @@ public class SpriteRenderer extends Component
 
         context.setEffect(this.tintEffect);
 
+        double defaultAlpha = context.getGlobalAlpha();
+        context.setGlobalAlpha(this.opacity);
+
         context.drawImage(
                 this.image,
                 sx,
@@ -99,6 +105,8 @@ public class SpriteRenderer extends Component
                 this.width,
                 this.height
         );
+
+        context.setGlobalAlpha(defaultAlpha);
 
         context.setEffect(null);
 
@@ -177,8 +185,8 @@ public class SpriteRenderer extends Component
 
     public SpriteRenderer setFrame(int x, int y)
     {
-        this.frameX = clampMinMax(x, 0, columns - 1);
-        this.frameY = clampMinMax(y, 0, rows - 1);
+        this.frameX = Math.clamp(x, 0, columns - 1);
+        this.frameY = Math.clamp(y, 0, rows - 1);
         return this;
     }
 
@@ -213,6 +221,7 @@ public class SpriteRenderer extends Component
         this.height = -Math.abs(this.height);
         return this;
     }
+
     public SpriteRenderer unFlipVertical()
     {
         this.height = Math.abs(this.height);
@@ -235,6 +244,8 @@ public class SpriteRenderer extends Component
 
     public int getRows() { return rows; }
 
+    public double getOpacity() { return opacity; }
+
     public SpriteRenderer setImage(Image image, int numFramesX, int numFramesY)
     {
         this.image = image;
@@ -255,8 +266,9 @@ public class SpriteRenderer extends Component
         return this;
     }
 
-    /* HELPERS */
-
-    /// Clamps the value between min and max (inclusive both).
-    private int clampMinMax(int value, int min, int max) { return Math.max(min, Math.min(value, max)); }
+    public SpriteRenderer setOpacity(double opacity)
+    {
+        this.opacity = Math.clamp(opacity, 0.0, 1.0);
+        return this;
+    }
 }
