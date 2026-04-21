@@ -22,16 +22,18 @@ public class PathFinder
 
     private Vector2D mapTopLeftPos;
 
+    private int limit;
     private boolean goalReached = false;
 
-    private final PriorityQueue<Node> openQueue =
-            new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
+    private final PriorityQueue<Node> openQueue = new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
 
     private final Set<Node> closedSet = new HashSet<>();
     private final Set<Node> openSet = new HashSet<>();
+    private ArrayList<Node> path;
 
     public PathFinder(LevelScene scene)
     {
+        path = new ArrayList<>();
         this.scene = scene;
 
         getMap(scene, (int) scene.getWorldWidth(), (int) scene.getWorldHeight(), new Vector2D(scene.getWorldWidth() / 2.0, scene.getWorldHeight() / 2.0));
@@ -90,8 +92,7 @@ public class PathFinder
 
     public ArrayList<Node> getPath(BasicEnemy enemy)
     {
-        ArrayList<Node> path = new ArrayList<>();
-
+        path.clear();
         if (nodes == null) return path;
 
         updateStatus(enemy);
@@ -111,8 +112,8 @@ public class PathFinder
 
         openQueue.add(start);
         openSet.add(start);
-        int i = 0;
-        while (!openQueue.isEmpty() || i<1500)
+        limit = 0;
+        while (!openQueue.isEmpty() || limit<1500)
         {
             Node current = openQueue.poll();
 
@@ -136,7 +137,7 @@ public class PathFinder
             tryNeighbor(r - 1, c, current);
             tryNeighbor(r, c + 1, current);
             tryNeighbor(r, c - 1, current);
-            i++;
+            limit++;
         }
 
         if (goalReached)
@@ -177,5 +178,9 @@ public class PathFinder
                 openSet.add(neighbor);
             }
         }
+    }
+
+    public Vector2D getMapTopLeftPos(){
+        return mapTopLeftPos;
     }
 }

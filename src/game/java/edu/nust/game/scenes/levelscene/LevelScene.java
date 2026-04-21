@@ -7,7 +7,6 @@ import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.EnemyTag;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
-import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemyManager;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
@@ -45,7 +44,6 @@ public class LevelScene extends GameScene
     @FXML private Button resumeButton;
     private Player player;
     private Weapon weapon;
-    private EnemyManager enemyManager;
     private CollisionManager collisionManager;
     private Score score;
     private AmmoBar ammoBar;
@@ -86,7 +84,6 @@ public class LevelScene extends GameScene
         BasicEnemy enemy = new BasicEnemy(new Vector2D(300, 0), 30, 100);
         this.addGameObject(enemy.addTag(EnemyTag.class));
 
-        enemyManager = new EnemyManager(this, score);
 
         if (ammoBarContainer != null)
         {
@@ -135,7 +132,6 @@ public class LevelScene extends GameScene
             playerPos = player.getTransform().getPosition();
         }
         updateWeaponTracking(playerPos);
-        updateEnemyAndCollision(playerPos, deltaTime);
         updateCameraPosition(playerPos, canvasW, canvasH, zoom);
     }
 
@@ -176,19 +172,7 @@ public class LevelScene extends GameScene
         if (weapon != null) weapon.updatePosition(mousePosition, playerPos);
     }
 
-    private void updateEnemyAndCollision(Vector2D playerPos, TimeSpan deltaTime)
-    {
-        enemyManager.updateEnemyLogic(playerPos);
 
-        collisionCooldown -= deltaTime.asSeconds();
-        if (enemyManager.isPlayerColliding(playerPos) && collisionCooldown <= 0)
-        {
-            player.getHealthSystem().takeDamage(10);
-            enemyManager.respawnEnemyAfterCollision();
-            collisionCooldown = 1.0;
-            if (!player.getHealthSystem().isAlive()) gameOver();
-        }
-    }
 
     private void updateCameraPosition(Vector2D playerPos, double canvasW, double canvasH, double zoom)
     {

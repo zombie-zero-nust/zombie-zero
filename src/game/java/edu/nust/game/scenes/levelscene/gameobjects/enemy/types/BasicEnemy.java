@@ -24,18 +24,26 @@ import java.util.List;
 public class BasicEnemy extends GameObject implements Concrete, Damageable, Damaging
 {
     private PathFinder pathFinder;
-    private Vector2D targetPosition = Vector2D.zero();
-    private double movementSpeed;// nodes per second
+
+    private double movementSpeed;
     private double height;
     private double width;
+
     private int hits = 0;
     private EnemyAsset enemyType;
+
     private SpriteRenderer spriteRenderer;
     private HitBox hitbox;
+
     private int damage;
     private Health health;
-    private ArrayList<Node> movement;
 
+    private ArrayList<Node> movement = new ArrayList<>();
+    private int currentPathIndex = 0;
+
+    // ✅ Path update delay (IMPORTANT)
+    private TimeSpan pathTimer = TimeSpan.zero();
+    private final TimeSpan pathUpdateInterval = TimeSpan.fromMilliseconds(300);
 
     public BasicEnemy(Vector2D startPosition, double speed, int health)
     {
@@ -44,66 +52,48 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
 
     public BasicEnemy(Vector2D startPosition, double speed, int health, double height, double width, double damage, EnemyAsset enemyType)
     {
-        this.health = new Health();
         this.movementSpeed = speed;
         this.width = width;
         this.height = height;
         this.enemyType = enemyType;
+        this.damage = (int) damage;
+
         this.getTransform().setPosition(startPosition);
         this.health = new Health(health);
-        try
-        {
-            // Load enemy sprite from PostApocalypse assets
-            Image idleSprite = Resources.loadImageOrThrow(
-                    "assets",
-                    enemyType.getPath()
-            );
 
-            // Create sprite renderer with 6 frames
-            spriteRenderer = new SpriteRenderer(width, height, idleSprite, 6, 1);
-            spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150))
-                    .startAnimation();
-
-            this.addComponent(spriteRenderer);
-        }
-        catch (FileNotFoundException e)
-        {
-            // If sprite loading fails, still continue
-            System.err.println("Failed to load enemy sprite: " + e.getMessage());
-        }
-
+        loadSprite(enemyType);
     }
-
 
     public BasicEnemy(Vector2D startPosition, double speed, EnemyAsset enemyType, int health)
     {
-        this.health = new Health();
         this.movementSpeed = speed;
         this.width = EnemyConfig.DEFAULT_SIZE.getValue();
         this.height = EnemyConfig.DEFAULT_SIZE.getValue();
         this.enemyType = enemyType;
+
         this.getTransform().setPosition(startPosition);
         this.health = new Health(health);
 
+        loadSprite(enemyType);
+    }
+
+    private void loadSprite(EnemyAsset enemyType)
+    {
         try
         {
-            // Load enemy sprite from PostApocalypse assets
             Image idleSprite = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
                     "Zombie_Small_Down_Idle-Sheet6.png"
             );
 
-            // Create sprite renderer with 6 frames
             spriteRenderer = new SpriteRenderer(width, height, idleSprite, 6, 1);
-            spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150))
-                    .startAnimation();
+            spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150)).startAnimation();
 
             this.addComponent(spriteRenderer);
         }
         catch (FileNotFoundException e)
         {
-            // If sprite loading fails, still continue
             System.err.println("Failed to load enemy sprite: " + e.getMessage());
         }
     }
@@ -122,33 +112,40 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
         {
             pathFinder = new PathFinder((LevelScene) this.getScene());
         }
+
         setHitbox();
-        moveTowardsTarget(deltaTime);
+
+        pathTimer = pathTimer.add(deltaTime);
+
+        if (pathTimer.asSeconds() >= pathUpdateInterval.asSeconds())
+        {
+            movement = pathFinder.getPath(this);
+            currentPathIndex = 0; // ✅ reset index when new path generated
+            pathTimer = TimeSpan.zero();
+        }
+
+        moveAlongPath(deltaTime);
     }
 
-    public void setTargetPosition(Vector2D target)
+    private void moveAlongPath(TimeSpan deltaTime)
     {
-        this.targetPosition.set(target);
-    }
-
-    private int currentPathIndex = 0;
-
-    private void moveTowardsTarget(TimeSpan deltaTime)
-    {
-
-        movement = pathFinder.getPath(this);
-        if (movement == null || currentPathIndex >= movement.size()) return;
+        if (movement == null || movement.isEmpty()) return;
+        if (currentPathIndex >= movement.size()) return;
 
         Vector2D currentPos = this.getTransform().getPosition();
         Node targetNode = movement.get(currentPathIndex);
-        Vector2D targetPos = new Vector2D(targetNode.getCol(), targetNode.getRow());
 
+        // convert node grid pos into world pos
+        Vector2D targetPos = pathFinder.getMapTopLeftPos().add(
+                targetNode.getCol(),
+                targetNode.getRow()
+        );
 
         Vector2D direction = targetPos.subtract(currentPos);
         double distance = direction.magnitude();
 
-
         double moveDist = movementSpeed * deltaTime.asSeconds();
+
         if (distance <= moveDist)
         {
             this.getTransform().setPosition(targetPos);
@@ -159,45 +156,6 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
             Vector2D velocity = direction.normalize().multiply(moveDist);
             this.getTransform().setPosition(currentPos.add(velocity));
         }
-    }
-
-
-    public double getMovementSpeed()
-    {
-        return movementSpeed;
-    }
-
-    public void setMovementSpeed(double speed)
-    {
-        this.movementSpeed = speed;
-    }
-
-
-    public void addHit()
-    {
-        this.hits++;
-    }
-
-    public void resetHitCount()
-    {
-        this.hits = 0;
-    }
-
-    public boolean checkPlayerCollision(Vector2D playerPos)
-    {
-        double distance = Vector2D.subtract(playerPos, this.getTransform().getPosition()).magnitude();
-        return distance < EnemyConfig.ENEMY_ATTACK_DISTANCE.getValue();
-    }
-
-    public boolean checkBulletCollision(Vector2D bulletPos)
-    {
-        double distance = Vector2D.subtract(bulletPos, this.getTransform().getPosition()).magnitude();
-        return distance < EnemyConfig.BULLET_COLLISION_DISTANCE.getValue();
-    }
-
-    public boolean isDefeated()
-    {
-        return hits >= EnemyConfig.HITS_TO_DEFEAT.getIntValue();
     }
 
     @Override
@@ -213,11 +171,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     @Override
     public HitBox getHitbox()
     {
-        if (hitbox == null)
-        {
-
-            setHitbox();
-        }
+        if (hitbox == null) setHitbox();
         return hitbox;
     }
 
@@ -225,22 +179,12 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     public void triggerCollisionEffect(Concrete collidedObj)
     {
         double dx = 0, dy = 0;
-        if (hitbox.isLeftTouching())
-        {
-            dx += 1.0;
-        }
-        if (hitbox.isRightTouching())
-        {
-            dx -= 1.0;
-        }
-        if (hitbox.isTopTouching())
-        {
-            dy += 1.0;
-        }
-        if (hitbox.isBottomTouching())
-        {
-            dy -= 1.0;
-        }
+
+        if (hitbox.isLeftTouching()) dx += 1.0;
+        if (hitbox.isRightTouching()) dx -= 1.0;
+        if (hitbox.isTopTouching()) dy += 1.0;
+        if (hitbox.isBottomTouching()) dy -= 1.0;
+
         this.getTransform().setPosition(this.getTransform().getPosition().add(dx, dy));
     }
 
@@ -257,7 +201,10 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     }
 
     @Override
-    public void destroyThis() { if (isDestroyable()) this.destroy(); }
+    public void destroyThis()
+    {
+        if (isDestroyable()) this.destroy();
+    }
 
     @Override
     public List<Class<? extends Concrete>> notInteractWith()
@@ -292,8 +239,6 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     @Override
     public boolean isDead()
     {
-        if (health.isAlive()) return false;
-        return true;
+        return !health.isAlive();
     }
-
 }
