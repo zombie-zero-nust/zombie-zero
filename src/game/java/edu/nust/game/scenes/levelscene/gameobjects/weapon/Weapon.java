@@ -14,7 +14,7 @@ import java.io.FileNotFoundException;
 public class Weapon extends GameObject
 {
     private static final double WEAPON_OFFSET = 12;
-    private final double fireRate = 25; // more -> more bullets
+    private final double fireRate = 10; // more -> more bullets
     private static final double MUZZLE_FRAME_DURATION = 0.04;
     private static final int MUZZLE_FRAMES = 3;
     private double width = 12;
@@ -32,13 +32,11 @@ public class Weapon extends GameObject
     private Ammo ammo;
 
 
-    // removing idleup and idledown sheet because it does match the rotation mechanism
+
     private Image gunIdleRightSheet;
-    private Image gunIdleLeftSheet;
-    private Image fireUpSheet;
-    private Image fireDownSheet;
+
     private Image fireRightSheet;
-    private Image fireLeftSheet;
+
 
     public Weapon()
     {
@@ -74,25 +72,8 @@ public class Weapon extends GameObject
             weaponRenderer = null;
             this.addComponent(new BoxRenderer(36, 36, javafx.scene.paint.Color.CYAN));
         }
-        try
-        {
-            gunIdleLeftSheet = Resources.loadImageOrThrow(
-                    "assets",
-                    "raw",
-                    "PostApocalypse",
-                    "Character",
-                    "Guns",
-                    "Gun",
-                    "Gun_side-left_idle-and-run-Sheet6.png"
-            );
-        }
-        catch (FileNotFoundException e)
-        {
-            weaponRenderer = null;
-            this.addComponent(new BoxRenderer(36, 36, javafx.scene.paint.Color.CYAN));
 
-        }
-        weaponRenderer = new SpriteRenderer(width, height, gunIdleLeftSheet, GUN_IDLE_FRAMES, 1);
+        weaponRenderer = new SpriteRenderer(width, height, gunIdleRightSheet, GUN_IDLE_FRAMES, 1);
         weaponRenderer.setAnimationTime(TimeSpan.fromMilliseconds(60)).startAnimation();
         this.addComponent(weaponRenderer);
     }
@@ -133,7 +114,7 @@ public class Weapon extends GameObject
         double sy = muzzleFlashRenderer.getFrameY() * muzzleFlashRenderer.getFrameHeight();
 
         context.save();
-        context.translate(barrelTip.getX() + 2, barrelTip.getY() - 1);
+        context.translate(barrelTip.getX() , barrelTip.getY() + 1);
         context.rotate(this.getTransform().getRotation().getDegrees());
         context.drawImage(
                 muzzleFlashRenderer.getImage(),
@@ -242,24 +223,8 @@ public class Weapon extends GameObject
     {
         try
         {
-            fireUpSheet = Resources.loadImageOrThrow(
-                    "assets",
-                    "raw",
-                    "PostApocalypse",
-                    "Character",
-                    "Guns",
-                    "Fire",
-                    "Fire_Up-Sheet3.png"
-            );
-            fireDownSheet = Resources.loadImageOrThrow(
-                    "assets",
-                    "raw",
-                    "PostApocalypse",
-                    "Character",
-                    "Guns",
-                    "Fire",
-                    "Fire_Down-Sheet3.png"
-            );
+
+
             fireRightSheet = Resources.loadImageOrThrow(
                     "assets",
                     "raw",
@@ -269,15 +234,7 @@ public class Weapon extends GameObject
                     "Fire",
                     "Fire_side-Sheet3.png"
             );
-            fireLeftSheet = Resources.loadImageOrThrow(
-                    "assets",
-                    "raw",
-                    "PostApocalypse",
-                    "Character",
-                    "Guns",
-                    "Fire",
-                    "Fire_side-left-Sheet3.png"
-            );
+
 
             muzzleFlashRenderer = new SpriteRenderer(10, 10, fireRightSheet, MUZZLE_FRAMES, 1);
             muzzleFlashRenderer.setVisible(false);

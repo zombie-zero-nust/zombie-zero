@@ -109,7 +109,6 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
-
         if(!health.isAlive()) this.destroy();
         if (pathFinder == null)
         {
@@ -217,7 +216,6 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     @Override
     public void takeDamage(int damage)
     {
-        System.out.println("Take damage called");
         health.takeDamage(damage);
     }
 
