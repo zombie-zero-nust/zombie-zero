@@ -28,9 +28,9 @@ public class Rectangle
         return new Rectangle(topLeft, bottomRight.subtract(topLeft));
     }
 
-    public static Rectangle fromCorners(double sx, double sy, double ex, double wy)
+    public static Rectangle fromCorners(double sx, double sy, double ex, double ey)
     {
-        return fromCorners(new Vector2D(sx, sy), new Vector2D(ex, wy));
+        return fromCorners(new Vector2D(sx, sy), new Vector2D(ex, ey));
     }
 
     public static Rectangle fromCenter(Vector2D center, Vector2D size)
