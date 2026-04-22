@@ -97,9 +97,17 @@ public class CollisionManager
                 if (otherObj == null || otherObj == obj || otherObj.getHitbox() == null)
                     continue;
 
-                if (obj.notInteractWith() != null && obj.notInteractWith().contains(otherObj.getClass()))
-                    continue;
-
+                if (obj.notInteractWith() != null) {
+                    boolean skip = false;
+                    for (Class<?> ignoredClass : obj.notInteractWith()) {
+                        // This checks if otherObj is an instance of ignoredClass (or a subclass)
+                        if (ignoredClass.isInstance(otherObj)) {
+                            skip = true;
+                            break;
+                        }
+                    }
+                    if (skip) continue;
+                }
                 obj.getHitbox().setMin(otherObj.getHitbox());
 
                 if (obj.getHitbox().isTouching(otherObj.getHitbox()))

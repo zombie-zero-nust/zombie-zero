@@ -3,7 +3,7 @@ package edu.nust.game.systems.pathfinder;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.levelscene.LevelScene;
-import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 
 import java.util.*;
@@ -36,7 +36,7 @@ public class PathFinder {
         mapTopLeftPos = nodeSetter.getMapTopLeftPos();
     }
 
-    public void updateStatus(BasicEnemy enemy){
+    public void updateStatus(Enemy enemy){
         Player player = (Player) scene.getFirstOfType(Player.class);
         if(player != null){
             Vector2D playerPos = player.getTransform().getPosition().subtract(mapTopLeftPos);
@@ -52,7 +52,7 @@ public class PathFinder {
         }
     }
 
-    public ArrayList<Node> getPath(BasicEnemy enemy){
+    public ArrayList<Node> getPath(Enemy enemy){
         resetNodes(); // Must clear EVERYTHING before starting
         updateStatus(enemy);
 

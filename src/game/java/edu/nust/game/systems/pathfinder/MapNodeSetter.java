@@ -4,7 +4,7 @@ import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
-import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.systems.collision.Concrete;
 import edu.nust.game.systems.collision.HitBox;
@@ -53,7 +53,7 @@ public class MapNodeSetter extends GameObject {
         if (xPos >= 0 && xPos < mapWidth && yPos >= 0 && yPos < mapHeight) {
             ArrayList<GameObject> gameObjs = (ArrayList<GameObject>) this.scene.getAllGameObjects();
             for (GameObject obj : gameObjs) {
-                if (obj instanceof Concrete && !(obj instanceof Player) && !(obj instanceof BasicEnemy)) {
+                if (obj instanceof Concrete && !(obj instanceof Player) && !(obj instanceof Enemy)) {
                     nodes[xPos][yPos].setSolid(hitbox.isTouching(((Concrete) obj).getHitbox()));
                 }
             }
