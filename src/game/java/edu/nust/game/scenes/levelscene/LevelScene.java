@@ -128,7 +128,7 @@ public class LevelScene extends GameScene
 
         initLevel1WithBackground();
 
-        EnemySpawner spawner = new EnemySpawner(5,1,new Vector2D(100,200));
+        EnemySpawner spawner = new EnemySpawner(5,3,new Vector2D(100,200));
         this.addGameObject(spawner);
 
         if (ammoBarContainer != null)

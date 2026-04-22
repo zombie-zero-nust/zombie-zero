@@ -14,8 +14,7 @@ public class CollisionManager
     private final Set<Damaging> damagingObjs = new HashSet<>();
     private final Set<Damageable> damageableObjs = new HashSet<>();
 
-    // 🔥 SAFE destruction queue (prevents freezing)
-    private final Set<GameObject> destroyQueue = new HashSet<>();
+    private final Set<Damaging> destroyQueue = new HashSet<>();
 
     public CollisionManager(GameScene scene)
     {
@@ -66,13 +65,12 @@ public class CollisionManager
                     obj.getHitbox().setTouchingFalse();
                     obj.takeDamage(otherObj.getDamage());
 
-                    // ✅ DO NOT destroy immediately (fix freeze)
-                    destroyQueue.add((GameObject) otherObj);
+
+                    destroyQueue.add( otherObj);
                 }
             }
         }
 
-        // ---------------- CONCRETE COLLISION ----------------
         for (Concrete obj : concreteObjs)
         {
             if (obj == null || obj.getHitbox() == null)
@@ -83,8 +81,7 @@ public class CollisionManager
                 if (otherObj == null || otherObj == obj || otherObj.getHitbox() == null)
                     continue;
 
-                if (obj.notInteractWith() != null &&
-                        obj.notInteractWith().contains(otherObj.getClass()))
+                if (obj.notInteractWith() != null && obj.notInteractWith().contains(otherObj.getClass()))
                     continue;
 
                 obj.getHitbox().setMin(otherObj.getHitbox());
@@ -97,9 +94,9 @@ public class CollisionManager
         }
 
 
-        for (GameObject obj : destroyQueue)
+        for (Damaging obj : destroyQueue)
         {
-            obj.destroy();
+            obj.destroyThis();
         }
         destroyQueue.clear();
     }

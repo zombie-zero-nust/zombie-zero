@@ -108,13 +108,13 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
+
         if (pathFinder == null)
         {
             pathFinder = new PathFinder((LevelScene) this.getScene());
             movement = pathFinder.getPath(this);
         }
 
-        setHitbox();
 
         pathTimer = pathTimer.add(deltaTime);
 
@@ -164,7 +164,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     {
         if (hitbox == null)
         {
-            hitbox = new HitBox(this.getTransform().getPosition(), height, width);
+            hitbox = new HitBox(this.getTransform().getPosition(), 16, 16);
             this.addComponent(hitbox);
         }
     }
@@ -179,14 +179,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     @Override
     public void triggerCollisionEffect(Concrete collidedObj)
     {
-        double dx = 0, dy = 0;
 
-        if (hitbox.isLeftTouching()) dx += 1.0;
-        if (hitbox.isRightTouching()) dx -= 1.0;
-        if (hitbox.isTopTouching()) dy += 1.0;
-        if (hitbox.isBottomTouching()) dy -= 1.0;
-
-        this.getTransform().setPosition(this.getTransform().getPosition().add(dx, dy));
     }
 
     @Override

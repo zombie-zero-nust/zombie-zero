@@ -41,7 +41,7 @@ public class EnemySpawner extends GameObject
         updateStatus(this.getScene());
         if (isSpawnActive())
         {
-            System.out.println("spawnACtive");
+
             if (!enemies.isEmpty())
             {
                 spawn(this.getScene(), deltaTime);
@@ -76,7 +76,7 @@ public class EnemySpawner extends GameObject
 
     public void spawn(GameScene scene, TimeSpan deltaTime)
     {
-        System.out.println("Enemy spawned");
+
         elapsed = elapsed.add(deltaTime);
         if (elapsed.asSeconds() >= spawnTime)
         {
@@ -89,7 +89,7 @@ public class EnemySpawner extends GameObject
 
     public void updateStatus(GameScene scene)
     {
-        System.out.println("update Status called");
+        
         Player player = (Player) scene.getFirstOfType(Player.class);
         if (player != null)
         {

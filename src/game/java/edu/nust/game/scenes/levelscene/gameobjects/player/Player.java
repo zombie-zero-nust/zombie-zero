@@ -5,6 +5,7 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.systems.assets.CharacterAsset;
 import edu.nust.game.systems.collision.Concrete;
 import edu.nust.game.systems.collision.Damageable;
@@ -256,7 +257,7 @@ public class Player extends Character implements Damageable, Concrete
     @Override
     public List<Class<? extends Concrete>> notInteractWith()
     {
-        return null;
+        return List.of(BasicEnemy.class);
     }
 
     public void setWalkabilityChecker(BiFunction<Vector2D, Double, Boolean> checker) { this.walkabilityChecker = checker; }

@@ -19,12 +19,12 @@ public class PathFinder {
     private int maxCol;
     private Vector2D mapTopLeftPos;
 
-    private final ArrayList<Node> openList = new ArrayList<>();
-    private final ArrayList<Node> checkedList = new ArrayList<>();
+    // Use PriorityQueue for O(log n) efficiency and HashSet for fast lookups
+    private final PriorityQueue<Node> openList = new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
+    private final HashSet<Node> checkedList = new HashSet<>();
 
     private boolean goalReached = false;
-
-    private final int nodeSize = 4; // NODE SIZE = 4
+    private final int nodeSize = 4;
 
     public PathFinder(GameScene scene){
         this.scene = scene;
@@ -32,7 +32,6 @@ public class PathFinder {
     }
 
     public void getMap(GameScene scene, int mapWidth, int mapHeight){
-
         MapNodeSetter nodeSetter = new MapNodeSetter(new Vector2D(0,0), mapWidth, mapHeight, scene);
 
         this.maxCol = (mapWidth / nodeSize) - 1;
@@ -43,160 +42,133 @@ public class PathFinder {
     }
 
     public void setStartNode(int row, int col){
-        nodes[row][col].setAsStart(true);
-        start = nodes[row][col];
+        if (row >= 0 && row <= maxRow && col >= 0 && col <= maxCol) {
+            nodes[row][col].setAsStart(true);
+            start = nodes[row][col];
+        }
     }
 
     public void setGoalNode(int row, int col){
-        nodes[row][col].setAsGoal(true);
-        goal = nodes[row][col];
+        if (row >= 0 && row <= maxRow && col >= 0 && col <= maxCol) {
+            nodes[row][col].setAsGoal(true);
+            goal = nodes[row][col];
+        }
     }
 
     public void updateStatus(BasicEnemy enemy){
-
         Player player = (Player) scene.getFirstOfType(Player.class);
 
         if(player != null){
             Vector2D playerPos = player.getTransform().getPosition().subtract(mapTopLeftPos);
-
             int row = (int)(playerPos.getY() / nodeSize);
             int col = (int)(playerPos.getX() / nodeSize);
-
             setStartNode(row, col);
         }
 
         if(enemy != null){
             Vector2D enemyPos = enemy.getTransform().getPosition().subtract(mapTopLeftPos);
-
             int row = (int)(enemyPos.getY() / nodeSize);
             int col = (int)(enemyPos.getX() / nodeSize);
-
             setGoalNode(row, col);
         }
     }
 
     public ArrayList<Node> getPath(BasicEnemy enemy){
-
         resetNodes();
-        goalReached = false;
-        openList.clear();
-        checkedList.clear();
-
         updateStatus(enemy);
 
-        current = start;
+        if (start == null || goal == null) return new ArrayList<>();
+
         search();
 
         ArrayList<Node> pathNodes = new ArrayList<>();
-
         if(goalReached) {
             Node temp = goal;
             while(temp != start && temp != null){
                 pathNodes.add(temp);
                 temp = temp.getParent();
             }
+            // Reverse so the first element is the first step the enemy should take
+            Collections.reverse(pathNodes);
         }
 
         return pathNodes;
     }
 
     public void search() {
+        // Initial setup for the start node
+        start.setgCost(0);
+        start.sethCost(calculateHeuristic(start));
+        start.setfCost(start.getgCost() + start.gethCost());
+        openList.add(start);
 
-        setCosts();
-
-        int t = 0;
-
-        while (current != goal && t < 1000) {
-
-            int row = current.getRow();
-            int col = current.getCol();
-
-            current.setChecked(true);
-            checkedList.add(current);
-            current.setOpen(false);
-            openList.remove(current);
-
-            // open neighbors
-            if (row < maxRow) openNode(row + 1, col);
-            if (row > 0) openNode(row - 1, col);
-            if (col < maxCol) openNode(row, col + 1);
-            if (col > 0) openNode(row, col - 1);
-
-            // if no nodes left, break (no path exists)
-            if (openList.isEmpty()) {
-                break;
-            }
-
-            int bestNodeIndex = 0;
-            int bestNodefCost = openList.get(0).getfCost();
-
-            for (int i = 1; i < openList.size(); i++) {
-
-                if (openList.get(i).getfCost() < bestNodefCost) {
-                    bestNodeIndex = i;
-                    bestNodefCost = openList.get(i).getfCost();
-                }
-                else if (openList.get(i).getfCost() == bestNodefCost) {
-                    if (openList.get(i).getgCost() < openList.get(bestNodeIndex).getgCost()) {
-                        bestNodeIndex = i;
-                        bestNodefCost = openList.get(i).getfCost();
-                    }
-                }
-            }
-
-            current = openList.get(bestNodeIndex);
+        int iterations = 0;
+        // Max iterations prevents infinite loops in complex or blocked maps
+        while (!openList.isEmpty() && iterations < 1500) {
+            current = openList.poll();
 
             if (current == goal) {
                 goalReached = true;
                 break;
             }
 
-            t++;
+            current.setChecked(true);
+            checkedList.add(current);
+
+            int row = current.getRow();
+            int col = current.getCol();
+
+            // Check neighbors
+            if (row < maxRow) evaluateNeighbor(nodes[row + 1][col]);
+            if (row > 0) evaluateNeighbor(nodes[row - 1][col]);
+            if (col < maxCol) evaluateNeighbor(nodes[row][col + 1]);
+            if (col > 0) evaluateNeighbor(nodes[row][col - 1]);
+
+            iterations++;
         }
+    }
+
+    private void evaluateNeighbor(Node neighbor) {
+        if (neighbor.isSolid() || checkedList.contains(neighbor)) return;
+
+        // Current distance + 1 for adjacent movement
+        int totalGCost = current.getgCost() + 1;
+
+        if (!neighbor.isOpen() || totalGCost < neighbor.getgCost()) {
+            neighbor.setParent(current);
+            neighbor.setgCost(totalGCost);
+            neighbor.sethCost(calculateHeuristic(neighbor));
+            neighbor.setfCost(neighbor.getgCost() + neighbor.gethCost());
+
+            if (!neighbor.isOpen()) {
+                neighbor.setOpen(true);
+                openList.add(neighbor);
+            }
+        }
+    }
+
+    private int calculateHeuristic(Node node) {
+        // Manhattan distance: Row difference + Col difference
+        return Math.abs(node.getRow() - goal.getRow()) + Math.abs(node.getCol() - goal.getCol());
     }
 
     public void resetNodes(){
-        for(Node checked : checkedList){
-            checked.setChecked(false);
+        // Reset only the nodes that were touched to keep it fast
+        for (Node node : checkedList) {
+            node.setChecked(false);
+            node.setOpen(false);
         }
-    }
-
-    public void openNode(int row, int col){
-
-        Node node = nodes[row][col];
-
-        if(!node.isOpen() && !node.isChecked() && !node.isSolid()){
-            node.setOpen(true);
-            node.setParent(current);
-            openList.add(node);
+        for (Node node : openList) {
+            node.setOpen(false);
         }
-    }
 
-    public void setCosts(){
+        openList.clear();
+        checkedList.clear();
+        goalReached = false;
 
-        for(Node[] xNodes : nodes){
-            for(Node node : xNodes){
-
-                if(node.isStartingNode() || node.isGoalNode()){
-                    continue;
-                }
-
-                if(start != null){
-                    int dist = Math.abs(node.getRow() - start.getRow()) +
-                            Math.abs(node.getCol() - start.getCol());
-                    node.setgCost(dist);
-                }
-
-                if(goal != null){
-                    int dist = Math.abs(node.getRow() - goal.getRow()) +
-                            Math.abs(node.getCol() - goal.getCol());
-                    node.sethCost(dist);
-                }
-
-                // FIXED FCOST FORMULA
-                node.setfCost(node.getgCost() + node.gethCost());
-            }
-        }
+        // Clear start/goal states if your Node class tracks them
+        if (start != null) start.setAsStart(false);
+        if (goal != null) goal.setAsGoal(false);
     }
 
     public Vector2D getMapTopLeftPos(){
