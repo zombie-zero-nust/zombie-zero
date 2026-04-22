@@ -15,7 +15,7 @@ import java.util.List;
 
 public class HighScoresScene extends GameScene
 {
-    private static final int MAX_ROWS = 10;
+    private static final int MAX_ROWS = 5;
 
     @FXML private Label bannerLabel;
     @FXML private Label bannerSubLabel;
