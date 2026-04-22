@@ -20,15 +20,33 @@ import javafx.scene.image.Image;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class BasicEnemy extends GameObject implements Concrete, Damageable, Damaging
 {
+    private enum Facing{
+        UP,
+        DOWN,
+        RIGHT,
+        LEFT,
+    }
+    private Facing facing = Facing.DOWN;
     private PathFinder pathFinder;
+    private Image downIdleSheet;
+    private Image upIdleSheet;
+    private Image rightIdleSheet;
+    private Image leftIdleSheet;
+    private Image rightMoveSheet;
+    private Image leftMoveSheet;
+    private Image upMoveSheet;
+    private Image downMoveSheet;
+    private Image attackUpSheet;
+    private Image attackDownSheet;
+    private Image attackRightSheet;
+    private Image attackLeftSheet;
 
-    private double movementSpeed;
-    private double height;
-    private double width;
+    private final double movementSpeed;
+    private final double height;
+    private final double width;
     private boolean destroyable = false;
 
     private EnemyAsset enemyType;
@@ -63,33 +81,89 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
         this.getTransform().setPosition(startPosition);
         this.health = new Health(health);
 
-        loadSprite(enemyType);
+        loadSprites(enemyType);
     }
 
     public BasicEnemy(Vector2D startPosition, double speed, EnemyAsset enemyType, int health)
     {
         this.movementSpeed = speed;
-        this.width = EnemyConfig.DEFAULT_SIZE.getValue();
-        this.height = EnemyConfig.DEFAULT_SIZE.getValue();
+        this.width = 12;
+        this.height = 16;
         this.enemyType = enemyType;
 
         this.getTransform().setPosition(startPosition);
         this.health = new Health(health);
 
-        loadSprite(enemyType);
+        loadSprites(enemyType);
     }
 
-    private void loadSprite(EnemyAsset enemyType)
+    private void loadSprites(EnemyAsset enemyType)
     {
         try
         {
-            Image idleSprite = Resources.loadImageOrThrow(
+            downIdleSheet = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
                     "Zombie_Small_Down_Idle-Sheet6.png"
             );
+            upIdleSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Up_Idle-Sheet6.png"
+            );
+            rightIdleSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Side_Idle-Sheet6.png"
+            );
+            leftIdleSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Side-left_Idle-Sheet6.png"
+            );
+            downMoveSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Down_walk-Sheet6.png"
+            );
+            leftMoveSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Side-left_Walk-Sheet6.png"
+            );
+            rightMoveSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Side_Walk-Sheet6.png"
+            );
+            upMoveSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Up_Walk-Sheet6.png"
+            );
+            attackDownSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Down_First-Attack-Sheet4.png"
+            );
+            attackLeftSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Side-left_First-Attack-Sheet4.png"
+            );
+            attackRightSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Side_First-Attack-Sheet4.png"
+            );
+            attackUpSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Up_First-Attack-Sheet4.png"
+            );
 
-            spriteRenderer = new SpriteRenderer(width, height, idleSprite, 6, 1);
+
+            spriteRenderer = new SpriteRenderer(width, height, downIdleSheet, 6, 1);
             spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150)).startAnimation();
 
             this.addComponent(spriteRenderer);
@@ -145,6 +219,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
 
         Vector2D direction = targetPos.subtract(currentPos);
         double distance = direction.magnitude();
+        updateSprite(direction.getX(),direction.getY());
 
         double moveDist = movementSpeed * deltaTime.asSeconds();
 
@@ -236,5 +311,34 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     {
         return !health.isAlive();
     }
+
+
+    private void updateSprite(double dx,double dy){
+        Image image;
+        if(dx == 0 && dy == 0){
+            image = switch (facing) {
+                case UP -> upMoveSheet;
+                case DOWN -> downMoveSheet;
+                case LEFT -> leftMoveSheet;
+                case RIGHT -> rightMoveSheet;
+            };
+        }
+        else {
+            if (Math.abs(dx) > Math.abs(dy)) facing = dx > 0 ? Facing.RIGHT : Facing.LEFT;
+            else facing = dy > 0 ? Facing.DOWN : Facing.UP;
+            image = switch (facing) {
+                case UP -> upMoveSheet;
+                case DOWN -> downMoveSheet;
+                case LEFT -> leftMoveSheet;
+                case RIGHT -> rightMoveSheet;
+            };
+        }
+        spriteRenderer.setImage(image,6,1);
+
+    }
+
+
+
+
 
 }
