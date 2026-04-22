@@ -294,8 +294,8 @@ def registerPackageTask = { String name, String targetOs, String installerType -
                         '--app-version', normalizedAppVersion,
                         '--vendor', 'edu.nust',
                         '--icon', iconPath,
-                        '--java-options', "--enable-native-access=ALL-UNNAMED -Dlogback.configurationFile=${projectDir}/src/engine/resources/edu/nust/engine/logger/logback-off.xml"
-                        //
+                        '--java-options', '--enable-native-access=ALL-UNNAMED',
+                        '--java-options', "-Dlogback.configurationFile=${projectDir}/src/engine/resources/edu/nust/engine/logger/logback-off.xml"
             ]
 
             // Windows-only options
@@ -303,7 +303,7 @@ def registerPackageTask = { String name, String targetOs, String installerType -
                 args += ['--win-shortcut', '--win-menu', '--win-dir-chooser', '--win-console']
             }
 
-            commandLine(jpackageExecutable, args)
+            commandLine([jpackageExecutable] + args)
         }
     }
 }
