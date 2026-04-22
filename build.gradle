@@ -94,7 +94,7 @@ tasks.register('runTestLogger', JavaExec) {
 
 /* PRE REQUISITES */
 
-def packageBaseName = 'zombie-zero'
+def packageBaseName = 'Zombie Zero'
 def installLibDirProvider = layout.buildDirectory.dir("install/${project.name}/lib")
 def currentOs = org.gradle.internal.os.OperatingSystem.current()
 
@@ -285,17 +285,25 @@ def registerPackageTask = { String name, String targetOs, String installerType -
             def mainJarName = tasks.named('jar', Jar).get().archiveFileName.get()
             def inputDir = installLibDirProvider.get().asFile
 
-            commandLine(jpackageExecutable,
-                    '--type', installerType,
-                    '--name', packageBaseName,
-                    '--dest', installerDir.absolutePath,
-                    '--input', inputDir.absolutePath,
-                    '--main-jar', mainJarName,
-                    '--main-class', application.mainClass.get(),
-                    '--app-version', normalizedAppVersion,
-                    '--vendor', 'edu.nust',
-                    '--icon', iconPath,
-                    '--java-options', '--enable-native-access=ALL-UNNAMED')
+            def args = ['--type', installerType,
+                        '--name', packageBaseName,
+                        '--dest', installerDir.absolutePath,
+                        '--input', inputDir.absolutePath,
+                        '--main-jar', mainJarName,
+                        '--main-class', application.mainClass.get(),
+                        '--app-version', normalizedAppVersion,
+                        '--vendor', 'edu.nust',
+                        '--icon', iconPath,
+                        '--java-options', "--enable-native-access=ALL-UNNAMED -Dlogback.configurationFile=${projectDir}/src/engine/resources/edu/nust/engine/logger/logback-off.xml"
+                        //
+            ]
+
+            // Windows-only options
+            if (targetOs == 'windows') {
+                args += ['--win-shortcut', '--win-menu', '--win-dir-chooser', '--win-console']
+            }
+
+            commandLine(jpackageExecutable, args)
         }
     }
 }
