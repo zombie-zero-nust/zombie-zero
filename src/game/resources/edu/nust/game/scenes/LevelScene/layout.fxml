@@ -42,10 +42,14 @@
 
         <VBox alignment="CENTER" spacing="20" styleClass="overlay-content-box">
             <Region fx:id="pauseHeadingTile" styleClass="pause-heading-tile" />
+            <Region fx:id="gameOverHeadingTile" managed="false" styleClass="gameover-heading-tile" visible="false" />
             <Label fx:id="overlayTitleLabel" managed="false" styleClass="overlay-title" text="Game Over" visible="false" />
             <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="pause-button-tile, resume-button-tile" text="" />
-            <Button onAction="#retryLevel" styleClass="pause-button-tile, retry-button-tile" text="" />
-            <Button onAction="#exitToMainMenu" styleClass="pause-button-tile, overlay-exit-button-tile" text="" />
+            <Button fx:id="pauseRetryButton" onAction="#retryLevel" styleClass="pause-button-tile, retry-button-tile" text="" />
+            <Button fx:id="pauseExitButton" onAction="#exitToMainMenu" styleClass="pause-button-tile, overlay-exit-button-tile" text="" />
+            <Button fx:id="gameOverNewGameButton" managed="false" onAction="#startNewGame" styleClass="gameover-button-tile, gameover-newgame-button-tile" text="" visible="false" />
+            <Button fx:id="gameOverMainMenuButton" managed="false" onAction="#exitToMainMenu" styleClass="gameover-button-tile, gameover-mainmenu-button-tile" text="" visible="false" />
+            <Button fx:id="gameOverHighScoresButton" managed="false" onAction="#viewHighScores" styleClass="gameover-button-tile, gameover-highscores-button-tile" text="" visible="false" />
         </VBox>
 
     </StackPane>

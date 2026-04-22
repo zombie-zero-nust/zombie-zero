@@ -5,6 +5,7 @@ import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.game.scenes.highscores.HighScoresScene;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemySpawner;
@@ -26,6 +27,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -43,6 +45,13 @@ public class LevelScene extends GameScene
     @FXML private VBox ammoBarContainer;
     @FXML private VBox healthBarContainer;
     @FXML private Button resumeButton;
+    @FXML private Button pauseRetryButton;
+    @FXML private Button pauseExitButton;
+    @FXML private Button gameOverNewGameButton;
+    @FXML private Button gameOverMainMenuButton;
+    @FXML private Button gameOverHighScoresButton;
+    @FXML private Region pauseHeadingTile;
+    @FXML private Region gameOverHeadingTile;
     private Player player;
     private Weapon weapon;
     private CollisionManager collisionManager;
@@ -253,16 +262,36 @@ public class LevelScene extends GameScene
 
     private void setPaused(boolean newState)
     {
-        if (overlayTitleLabel != null) overlayTitleLabel.setText(gameOverState ? "Game Over" : "Paused");
-        if (resumeButton != null)
+        boolean pauseUi = newState && !gameOverState;
+        boolean gameOverUi = newState && gameOverState;
+
+        setVisibleManaged(pauseHeadingTile, pauseUi);
+        setVisibleManaged(resumeButton, pauseUi);
+        setVisibleManaged(pauseRetryButton, pauseUi);
+        setVisibleManaged(pauseExitButton, pauseUi);
+
+        setVisibleManaged(gameOverHeadingTile, gameOverUi);
+        setVisibleManaged(gameOverNewGameButton, gameOverUi);
+        setVisibleManaged(gameOverMainMenuButton, gameOverUi);
+        setVisibleManaged(gameOverHighScoresButton, gameOverUi);
+
+        if (overlayTitleLabel != null)
         {
-            boolean allowResume = !gameOverState;
-            resumeButton.setVisible(allowResume);
-            resumeButton.setManaged(allowResume);
+            // Title text is replaced by heading image tiles.
+            overlayTitleLabel.setVisible(false);
+            overlayTitleLabel.setManaged(false);
         }
+
         pauseOverlay.setVisible(newState);
         pauseOverlay.setManaged(newState);
         this.setActive(!newState);
+    }
+
+    private static void setVisibleManaged(javafx.scene.Node node, boolean visible)
+    {
+        if (node == null) return;
+        node.setVisible(visible);
+        node.setManaged(visible);
     }
 
 
@@ -296,6 +325,16 @@ public class LevelScene extends GameScene
     {
         gameOverState = false;
         this.getWorld().setScene(new LevelScene(this.getWorld()));
+    }
+
+    @FXML
+    private void startNewGame() { retryLevel(); }
+
+    @FXML
+    private void viewHighScores()
+    {
+        saveScoreIfNeeded();
+        this.getWorld().setScene(new HighScoresScene(this.getWorld()));
     }
 
     public int getCurrentScore() { return score != null ? score.getScore() : 0; }
