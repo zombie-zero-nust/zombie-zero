@@ -1,5 +1,6 @@
-package edu.nust.engine.debug;
+package edu.nust.engine.core.debug;
 
+import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -7,22 +8,14 @@ public final class DebugPoint extends DebugShape
 {
     public static final int DEFAULT_RADIUS = 5;
 
-    private DebugPoint(Vector2D position, double radius)
+    public DebugPoint(Vector2D position, double radius, TimeSpan lifespan)
     {
         super(
-                position.subtract(Vector2D.one().multiply(radius / 2)), // start
-                position.add(Vector2D.one().multiply(radius / 2))       // end
+                position.subtract(Vector2D.one().multiply(radius / 2)),
+                position.add(Vector2D.one().multiply(radius / 2)),
+                lifespan
         );
     }
-
-    /* FACTORY */
-
-    public static DebugPoint from(Vector2D position, double radius)
-    {
-        return new DebugPoint(position, radius);
-    }
-
-    public static DebugPoint from(Vector2D position) { return from(position, DEFAULT_RADIUS); }
 
     /* RENDER */
 

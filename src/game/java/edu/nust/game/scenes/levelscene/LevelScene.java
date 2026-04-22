@@ -313,6 +313,7 @@ public class LevelScene extends GameScene
     @Override
     protected void registerDevCommands()
     {
+        // speed
         registerDevCommand(
                 "/setPlayerSpeed", "/setPlayerSpeed <speed>", "Set player's movement speed directly.", args -> {
                     if (args.isEmpty()) return "Usage: /setPlayerSpeed <speed>";
@@ -334,6 +335,7 @@ public class LevelScene extends GameScene
                 }
         );
 
+        // ammo
         registerDevCommand(
                 "/setCurrentAmmo", "/setCurrentAmmo <amount>", "Set weapon current ammo directly.", args -> {
                     if (args.isEmpty()) return "Usage: /setCurrentAmmo <amount>";
@@ -351,6 +353,17 @@ public class LevelScene extends GameScene
 
                     weapon.setCurrentAmmo(amount);
                     return "ammo = " + weapon.getAmmo().getCurrentAmmo() + "/" + weapon.getAmmo().getMaxAmmo();
+                }
+        );
+
+        // show collision rects
+        registerDevCommand(
+                "/showCollisionRects",
+                "/showCollisionRects",
+                "Show collision rectangles for the level for 5 seconds.",
+                args -> {
+                    Arrays.stream(Level1CollisionMask.getCollisionRects()).forEach(this::addDebugRectangle);
+                    return "Showing collision rectangles for 5 seconds.";
                 }
         );
     }

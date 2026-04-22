@@ -41,6 +41,8 @@ public final class Level1CollisionMask
     }
 
     public static Rectangle getMapBounds() { return MAP_BOUNDS; }
+
+    public static Rectangle[] getCollisionRects() { return COLLISION_RECTS; }
 }
 
 

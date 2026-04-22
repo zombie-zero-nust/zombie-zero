@@ -1,23 +1,12 @@
-package edu.nust.engine.debug;
+package edu.nust.engine.core.debug;
 
+import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
 
 public final class DebugEllipse extends DebugShape
 {
-    private DebugEllipse(Vector2D start, Vector2D end)
-    {
-        super(start, end);
-    }
-
-    /* FACTORY */
-
-    public static DebugEllipse fromCorners(Vector2D start, Vector2D end) { return new DebugEllipse(start, end); }
-
-    public static DebugEllipse fromSize(Vector2D position, Vector2D size)
-    {
-        return new DebugEllipse(position, position.add(size));
-    }
+    public DebugEllipse(Vector2D start, Vector2D end, TimeSpan lifespan) { super(start, end, lifespan); }
 
     /* RENDER */
 

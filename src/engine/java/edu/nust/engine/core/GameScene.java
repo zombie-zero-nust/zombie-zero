@@ -1,13 +1,13 @@
 package edu.nust.engine.core;
 
+import edu.nust.engine.core.debug.DebugEllipse;
+import edu.nust.engine.core.debug.DebugPoint;
+import edu.nust.engine.core.debug.DebugRectangle;
+import edu.nust.engine.core.debug.DebugShape;
 import edu.nust.engine.core.gameobjects.Tag;
 import edu.nust.engine.core.interfaces.Initiable;
 import edu.nust.engine.core.interfaces.InputHandler;
 import edu.nust.engine.core.interfaces.Updatable;
-import edu.nust.engine.debug.DebugEllipse;
-import edu.nust.engine.debug.DebugPoint;
-import edu.nust.engine.debug.DebugRectangle;
-import edu.nust.engine.debug.DebugShape;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.Rectangle;
@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -75,7 +76,8 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     protected final List<GameObject> gameObjectsToAdd = new ArrayList<>();
     protected final List<GameObject> gameObjectsToRemove = new ArrayList<>();
 
-    private final List<DebugShape> debugShapes = new ArrayList<>();
+    // only one of each type
+    private final HashSet<DebugShape> debugShapes = new HashSet<>();
 
     // debug options
     private boolean debugGrid = false;
@@ -198,6 +200,9 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
             this.renderDebug(ctx);
         });
+
+        // remove debug shapes if times up
+        this.debugShapes.removeIf(shape -> shape.isPastDestroyTime(TimeSpan.fromMilliseconds(System.currentTimeMillis())));
     }
 
     /* GAME OBJECT */
@@ -602,27 +607,81 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     /* DEBUG */
 
     /// Must be called <b>{@code EACH FRAME}</b>
-    public void addDebugPoint(Vector2D position, double radius)
+    public void addDebugPoint(Vector2D position, double radius, TimeSpan lifespan)
     {
-        debugShapes.add(DebugPoint.from(position, radius));
-        logger.trace("Added debug point at {} with radius {}", position, radius);
+        if (debugShapes.add(new DebugPoint(position, radius, lifespan)))
+            // logs only on distinct addition
+            logger.trace("Added debug point at {} with radius {}", position, radius);
+        else logger.trace("WARNING: Duplicate debug point at {} with radius {}", position, radius);
     }
 
     /// Must be called <b>{@code EACH FRAME}</b>
-    public void addDebugPoint(Vector2D position) { addDebugPoint(position, DebugPoint.DEFAULT_RADIUS); }
+    public void addDebugPoint(Vector2D position, double radius)
+    {
+        addDebugPoint(position, radius, DebugPoint.DEFAULT_LIFESPAN);
+    }
+
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addDebugPoint(Vector2D position, TimeSpan lifespan)
+    {
+        addDebugPoint(position, DebugPoint.DEFAULT_RADIUS, lifespan);
+    }
+
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addDebugPoint(Vector2D position)
+    {
+        addDebugPoint(position, DebugPoint.DEFAULT_RADIUS, DebugPoint.DEFAULT_LIFESPAN);
+    }
+
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addDebugRectangle(Rectangle rect, TimeSpan lifespan)
+    {
+        if (debugShapes.add(new DebugRectangle(rect.getTopLeft(), rect.getBottomRight(), lifespan)))
+            // logs only on distinct addition
+            logger.trace("Added debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
+        else logger.trace("WARNING: Duplicate debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
+    }
 
     /// Must be called <b>{@code EACH FRAME}</b>
     public void addDebugRectangle(Rectangle rect)
     {
-        debugShapes.add(DebugRectangle.fromSize(rect.getTopLeft(), rect.getSize()));
-        logger.trace("Added debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
+        addDebugRectangle(rect, DebugShape.DEFAULT_LIFESPAN);
     }
 
     /// Must be called <b>{@code EACH FRAME}</b>
-    public void addDebugEllipse(Rectangle rect)
+    public void addDebugRectangle(double sx, double sy, double ex, double ey, TimeSpan lifespan)
     {
-        debugShapes.add(DebugEllipse.fromSize(rect.getTopLeft(), rect.getSize()));
-        logger.trace("Added debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
+        addDebugRectangle(Rectangle.fromCorners(sx, sy, ex, ey), lifespan);
+    }
+
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addDebugRectangle(double sx, double sy, double ex, double ey)
+    {
+        addDebugRectangle(Rectangle.fromCorners(sx, sy, ex, ey), DebugShape.DEFAULT_LIFESPAN);
+    }
+
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addDebugEllipse(Rectangle rect, TimeSpan lifespan)
+    {
+        if (debugShapes.add(new DebugEllipse(rect.getTopLeft(), rect.getBottomRight(), lifespan)))
+            // logs only on distinct addition
+            logger.trace("Added debug ellipse at {} with size {}", rect.getTopLeft(), rect.getSize());
+        else logger.trace("WARNING: Duplicate debug ellipse at {} with size {}", rect.getTopLeft(), rect.getSize());
+    }
+
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addDebugEllipse(Rectangle rect) { addDebugEllipse(rect, DebugShape.DEFAULT_LIFESPAN); }
+
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addDebugEllipse(double sx, double sy, double ex, double ey, TimeSpan lifespan)
+    {
+        addDebugEllipse(Rectangle.fromCorners(sx, sy, ex, ey), lifespan);
+    }
+
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addDebugEllipse(double sx, double sy, double ex, double ey)
+    {
+        addDebugEllipse(Rectangle.fromCorners(sx, sy, ex, ey), DebugShape.DEFAULT_LIFESPAN);
     }
 
     private void renderDebug(GraphicsContext ctx)
@@ -635,7 +694,6 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         drawDebugGrid(ctx);
         drawDebugMouseLocation(ctx);
 
-        debugShapes.clear();
         ctx.restore();
     }
 
