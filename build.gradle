@@ -273,38 +273,38 @@ def registerPackageTask = { String name, String targetOs, String installerType -
         group = 'distribution'
         dependsOn 'installDist'
 
+        def installerDir = layout.buildDirectory.dir("package/${targetOs}/installer").get().asFile
+
         doFirst {
             requireOs(targetOs)
-
-            def installerDir = layout.buildDirectory.dir("package/${targetOs}/installer").get().asFile
             installerDir.mkdirs()
-
-            def normalizedAppVersion = project.version.toString().replaceAll(/[^0-9.]/, '') ?: '1.0'
-
-            def jpackageExecutable = new File(System.getProperty('java.home'), 'bin/jpackage').absolutePath
-            def mainJarName = tasks.named('jar', Jar).get().archiveFileName.get()
-            def inputDir = installLibDirProvider.get().asFile
-
-            def args = ['--type', installerType,
-                        '--name', packageBaseName,
-                        '--dest', installerDir.absolutePath,
-                        '--input', inputDir.absolutePath,
-                        '--main-jar', mainJarName,
-                        '--main-class', application.mainClass.get(),
-                        '--app-version', normalizedAppVersion,
-                        '--vendor', 'edu.nust',
-                        '--icon', iconPath,
-                        '--java-options', '--enable-native-access=ALL-UNNAMED',
-                        '--java-options', "-Dlogback.configurationFile=${projectDir}/src/engine/resources/edu/nust/engine/logger/logback-off.xml"
-            ]
-
-            // Windows-only options
-            if (targetOs == 'windows') {
-                args += ['--win-shortcut', '--win-menu', '--win-dir-chooser', '--win-console']
-            }
-
-            commandLine([jpackageExecutable] + args)
         }
+
+        def normalizedAppVersion = project.version.toString().replaceAll(/[^0-9.]/, '') ?: '1.0'
+
+        def jpackageExecutable = new File(System.getProperty('java.home'), 'bin/jpackage').absolutePath
+        def mainJarName = tasks.named('jar', Jar).get().archiveFileName.get()
+        def inputDir = installLibDirProvider.get().asFile
+
+        def args = ['--type', installerType,
+                    '--name', packageBaseName,
+                    '--dest', installerDir.absolutePath,
+                    '--input', inputDir.absolutePath,
+                    '--main-jar', mainJarName,
+                    '--main-class', application.mainClass.get(),
+                    '--app-version', normalizedAppVersion,
+                    '--vendor', 'edu.nust',
+                    '--icon', iconPath,
+                    '--java-options', '--enable-native-access=ALL-UNNAMED',
+                    '--java-options', "-Dlogback.configurationFile=${projectDir}/src/engine/resources/edu/nust/engine/logger/logback-off.xml"
+        ]
+
+        // Windows-only options
+        if (targetOs == 'windows') {
+            args += ['--win-shortcut', '--win-menu', '--win-dir-chooser', '--win-console']
+        }
+
+        commandLine([jpackageExecutable] + args)
     }
 }
 
