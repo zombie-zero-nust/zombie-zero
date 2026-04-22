@@ -15,7 +15,7 @@ public class PathFinder {
     private final GameScene scene;
     private int maxRow, maxCol;
     private Vector2D mapTopLeftPos;
-    private MapNodeSetter nodeSetter;
+    private final MapNodeSetter nodeSetter;
 
     private final PriorityQueue<Node> openList = new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));
     private final HashSet<Node> checkedList = new HashSet<>();
@@ -26,10 +26,10 @@ public class PathFinder {
     public PathFinder(LevelScene scene){
         this.scene = scene;
         this.nodeSetter = scene.getNodeSetter();
-        getMap(scene, 3200, 800);
+        getMap(3200, 800);
     }
 
-    public void getMap(GameScene scene, int mapWidth, int mapHeight){
+    public void getMap( int mapWidth, int mapHeight){
         this.maxCol = (mapWidth / nodeSize) - 1;
         this.maxRow = (mapHeight / nodeSize) - 1;
         nodes = nodeSetter.getNodes();

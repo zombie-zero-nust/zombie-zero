@@ -48,25 +48,41 @@ public class CollisionManager
 
         for (Damageable obj : damageableObjs)
         {
+            // CAST to GameObject to check identity
+            GameObject targetObj = (GameObject) obj;
+
             if (obj == null || obj.isDead() || obj.getHitbox() == null)
                 continue;
 
             for (Damaging otherObj : damagingObjs)
             {
+                GameObject attackerObj = (GameObject) otherObj;
+
+                if (targetObj == attackerObj) continue;
+
                 if (otherObj == null || otherObj.getHitbox() == null)
                     continue;
 
-                if (otherObj.notDamageObj() != null &&
-                        otherObj.notDamageObj().contains(obj.getClass()))
-                    continue;
+
+                if (otherObj.notDamageObj() != null) {
+                    boolean shouldSkip = false;
+                    for (Class<?> clazz : otherObj.notDamageObj()) {
+                        if (clazz.isInstance(obj)) {
+                            shouldSkip = true;
+                            break;
+                        }
+                    }
+                    if (shouldSkip) continue;
+                }
 
                 if (obj.getHitbox().isTouching(otherObj.getHitbox()))
                 {
-                    obj.getHitbox().setTouchingFalse();
                     obj.takeDamage(otherObj.getDamage());
-
-
-                    destroyQueue.add( otherObj);
+                    System.out.println("Damaging logic working");
+                    // Only queue for destruction if it's actually meant to be destroyed (like a bullet)
+                    if (otherObj.isDestroyable()) {
+                        destroyQueue.add(otherObj);
+                    }
                 }
             }
         }
@@ -88,6 +104,8 @@ public class CollisionManager
 
                 if (obj.getHitbox().isTouching(otherObj.getHitbox()))
                 {
+
+
                     obj.triggerCollisionEffect(otherObj);
                 }
             }

@@ -29,6 +29,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     private double movementSpeed;
     private double height;
     private double width;
+    private boolean destroyable = false;
 
     private EnemyAsset enemyType;
     private SpriteRenderer spriteRenderer;
@@ -109,6 +110,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     public void onUpdate(TimeSpan deltaTime)
     {
 
+        if(!health.isAlive()) this.destroy();
         if (pathFinder == null)
         {
             pathFinder = new PathFinder((LevelScene) this.getScene());
@@ -191,7 +193,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     @Override
     public boolean isDestroyable()
     {
-        return false;
+        return destroyable;
     }
 
     @Override
@@ -215,6 +217,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     @Override
     public void takeDamage(int damage)
     {
+        System.out.println("Take damage called");
         health.takeDamage(damage);
     }
 

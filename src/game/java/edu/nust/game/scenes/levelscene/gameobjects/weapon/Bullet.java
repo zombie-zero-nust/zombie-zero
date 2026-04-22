@@ -25,7 +25,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     private int damage;
 
     private double totalDistance;
-    private double range;
+    private final double range;
     private boolean destroyed = false;
     private HitBox hitbox;
 
@@ -46,7 +46,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
         this.getTransform().setPosition(pos);
     }
 
-    public Bullet(int speed, Vector2D pos, Image image, double range, Vector2D mousePos)
+    public Bullet(int speed, Vector2D pos, Image image, double range)
     {
         this.speed = speed;
         this.pos = pos;
@@ -80,7 +80,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     @Override
     public void lateUpdate(TimeSpan deltaTime) { if (destroyed) this.destroy(); }
 
-    public boolean isDestroyed() { return destroyed; }
+
 
     @Override
     public int getDamage() { return this.damage; }

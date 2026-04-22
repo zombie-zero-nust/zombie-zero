@@ -52,6 +52,7 @@ public class Weapon extends GameObject
         muzzleElapsed = 0;
         muzzlePlaying = false;
         ammo = new Ammo();
+        damage = 10;
     }
 
     private void loadWeaponAimAssets()
@@ -200,7 +201,7 @@ public class Weapon extends GameObject
             setFiring(false);
             ammo.decreaseAmmo();
             triggerMuzzleFlash(bulletPos, targetPos);
-            return new Bullet(500, bulletPos, 1000, targetPos, damage);
+            return new Bullet(200, bulletPos, 1000, targetPos, damage);
         }
 
         fireCooldown -= deltaTime.asSeconds();
@@ -209,7 +210,7 @@ public class Weapon extends GameObject
             fireCooldown = 1.0 / fireRate;
             ammo.decreaseAmmo();
             triggerMuzzleFlash(weaponPos, targetPos);
-            return new Bullet(500, bulletPos, 1000, targetPos, damage);
+            return new Bullet(200, bulletPos, 1000, targetPos, damage);
         }
 
         return null;
