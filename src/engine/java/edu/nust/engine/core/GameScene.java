@@ -216,6 +216,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         logger.trace("addGameObject({}) called", gameObject.getClass().getSimpleName());
         gameObject.setScene(this);
         gameObjectsToAdd.add(gameObject);
+        gameObject.onInit();
         logger.debug("GameObject {} added to scene", gameObject.getClass().getSimpleName());
         return gameObject;
     }
