@@ -366,5 +366,28 @@ public class LevelScene extends GameScene
                     return "Showing collision rectangles for 5 seconds.";
                 }
         );
+
+        // move player to position
+        registerDevCommand(
+                "/movePlayerTo", "/movePlayerTo <x> <y>", "Move player to specified coordinates directly.", args -> {
+                    if (args.size() < 2) return "Usage: /movePlayerTo <x> <y>";
+                    if (player == null) return "Player not initialized";
+
+                    player.setX(Double.parseDouble(args.getFirst()));
+                    player.setY(Double.parseDouble(args.get(1)));
+                    return "Moving player to (" + args.getFirst() + ", " + args.get(1) + ")";
+                }
+        );
+
+        // mouse player to mouse
+        registerDevCommand(
+                "/movePlayerToMouse", "/movePlayerToMouse", "Move player to current mouse position directly.", args -> {
+                    if (player == null) return "Player not initialized";
+
+                    player.setX(mousePosition.getX());
+                    player.setY(mousePosition.getY());
+                    return "Moving player to mouse position (" + mousePosition.getX() + ", " + mousePosition.getY() + ")";
+                }
+        );
     }
 }
