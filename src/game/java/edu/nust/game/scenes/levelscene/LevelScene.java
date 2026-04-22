@@ -7,6 +7,7 @@ import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.EnemyTag;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemySpawner;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
@@ -54,7 +55,6 @@ public class LevelScene extends GameScene
     private Vector2D mousePosition = Vector2D.zero();
     private double screenX;
     private double screenY;
-    private double collisionCooldown = 0;
     private boolean cameraZoomInitialized = false;
     private boolean scoreSaved = false;
     private boolean gameOverState = false;
@@ -128,9 +128,8 @@ public class LevelScene extends GameScene
 
         initLevel1WithBackground();
 
-        BasicEnemy enemy = new BasicEnemy(new Vector2D(100, 200), 30, 100);
-        this.addGameObject(enemy.addTag(EnemyTag.class));
-
+        EnemySpawner spawner = new EnemySpawner(5,1,new Vector2D(100,200));
+        this.addGameObject(spawner);
 
         if (ammoBarContainer != null)
         {

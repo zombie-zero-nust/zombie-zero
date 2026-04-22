@@ -4,6 +4,7 @@ import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.game.scenes.levelscene.gameobjects._tags.EnemyTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 
@@ -15,12 +16,14 @@ public class EnemySpawner extends GameObject
     private final Vector2D pos;
 
     private final int totalEnemies;
+    private int currEnemies;
     private final double spawnTime;
     private boolean spawnActive = false;
     private TimeSpan elapsed = TimeSpan.zero();
 
     public EnemySpawner(int totalEnemies, double spawnTime, Vector2D pos)
     {
+        this.currEnemies = totalEnemies;
         this.totalEnemies = totalEnemies;
         this.spawnTime = spawnTime;
         this.pos = pos;
@@ -38,13 +41,16 @@ public class EnemySpawner extends GameObject
         updateStatus(this.getScene());
         if (isSpawnActive())
         {
+            System.out.println("spawnACtive");
             if (!enemies.isEmpty())
             {
                 spawn(this.getScene(), deltaTime);
+
             }
             else
             {
-                this.destroy();
+                setEnemies(currEnemies);
+                if(currEnemies <=0) this.destroy();
             }
         }
     }
@@ -70,10 +76,12 @@ public class EnemySpawner extends GameObject
 
     public void spawn(GameScene scene, TimeSpan deltaTime)
     {
+        System.out.println("Enemy spawned");
         elapsed = elapsed.add(deltaTime);
         if (elapsed.asSeconds() >= spawnTime)
         {
-            scene.addGameObject(enemies.getFirst());
+            scene.addGameObject(enemies.getFirst().addTag(EnemyTag.class));
+            currEnemies--;
             enemies.removeFirst();
             elapsed = elapsed.subtract(TimeSpan.fromSeconds(spawnTime));
         }
@@ -81,6 +89,7 @@ public class EnemySpawner extends GameObject
 
     public void updateStatus(GameScene scene)
     {
+        System.out.println("update Status called");
         Player player = (Player) scene.getFirstOfType(Player.class);
         if (player != null)
         {
