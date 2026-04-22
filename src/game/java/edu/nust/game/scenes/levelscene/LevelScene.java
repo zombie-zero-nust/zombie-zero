@@ -2,13 +2,12 @@ package edu.nust.game.scenes.levelscene;
 
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
+import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
-import edu.nust.game.scenes.levelscene.gameobjects._tags.EnemyTag;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemySpawner;
-import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
@@ -21,7 +20,6 @@ import edu.nust.game.systems.PlayerSession;
 import edu.nust.game.systems.Score;
 import edu.nust.game.systems.collision.CollisionManager;
 import edu.nust.game.systems.pathfinder.MapNodeSetter;
-import edu.nust.game.systems.pathfinder.PathFinder;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -33,7 +31,6 @@ import javafx.scene.layout.VBox;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Map;
 
 public class LevelScene extends GameScene
 {
@@ -66,54 +63,8 @@ public class LevelScene extends GameScene
     public LevelScene(GameWorld world) { super(world); }
 
     @Override
-    protected void registerDevCommands()
-    {
-        registerDevCommand(
-                "/setPlayerSpeed", "/setPlayerSpeed <speed>", "Set player's movement speed directly.", args -> {
-                    if (args.isEmpty()) return "Usage: /setPlayerSpeed <speed>";
-                    if (player == null) return "Player not initialized";
-
-                    int speed;
-                    try
-                    {
-                        speed = Integer.parseInt(args.getFirst());
-                    }
-                    catch (NumberFormatException e)
-                    {
-                        return "Invalid speed: " + args.getFirst();
-                    }
-
-                    if (speed < 0) return "Speed must be >= 0";
-                    player.setMovementSpeed(speed);
-                    return "playerSpeed = " + player.getMovementSpeed();
-                }
-        );
-
-        registerDevCommand(
-                "/setCurrentAmmo", "/setCurrentAmmo <amount>", "Set weapon current ammo directly.", args -> {
-                    if (args.isEmpty()) return "Usage: /setCurrentAmmo <amount>";
-                    if (weapon == null || weapon.getAmmo() == null) return "Weapon not initialized";
-
-                    int amount;
-                    try
-                    {
-                        amount = Integer.parseInt(args.getFirst());
-                    }
-                    catch (NumberFormatException e)
-                    {
-                        return "Invalid ammo amount: " + args.getFirst();
-                    }
-
-                    weapon.setCurrentAmmo(amount);
-                    return "ammo = " + weapon.getAmmo().getCurrentAmmo() + "/" + weapon.getAmmo().getMaxAmmo();
-                }
-        );
-    }
-
-    @Override
     public void onInit()
     {
-
         level1CollisionMask = new Level1CollisionMask();
 
         collisionManager = new CollisionManager(this);
@@ -131,12 +82,10 @@ public class LevelScene extends GameScene
         this.addGameObject(weapon);
 
         initLevel1WithBackground();
-        nodeSetter = new MapNodeSetter(new Vector2D(1600,400),3200,800,this);
+        nodeSetter = new MapNodeSetter(new Vector2D(1600, 400), 3200, 800, this);
 
-        EnemySpawner spawner = new EnemySpawner(5,3,new Vector2D(100,200));
+        EnemySpawner spawner = new EnemySpawner(5, 3, new Vector2D(100, 200));
         this.addGameObject(spawner);
-
-
 
         if (ammoBarContainer != null)
         {
@@ -150,6 +99,9 @@ public class LevelScene extends GameScene
             healthBarContainer.getChildren().add(healthBar);
         }
 
+        Rectangle bounds = Level1CollisionMask.getMapBounds();
+        worldWidth = bounds.getWidth();
+        worldHeight = bounds.getHeight();
     }
 
     private void initLevel1WithBackground()
@@ -354,7 +306,52 @@ public class LevelScene extends GameScene
 
     public Player getPlayer() { return player; }
 
-    public MapNodeSetter getNodeSetter(){
-        return nodeSetter;
+    public MapNodeSetter getNodeSetter() { return nodeSetter; }
+
+    /* DEV COMMANDS */
+
+    @Override
+    protected void registerDevCommands()
+    {
+        registerDevCommand(
+                "/setPlayerSpeed", "/setPlayerSpeed <speed>", "Set player's movement speed directly.", args -> {
+                    if (args.isEmpty()) return "Usage: /setPlayerSpeed <speed>";
+                    if (player == null) return "Player not initialized";
+
+                    int speed;
+                    try
+                    {
+                        speed = Integer.parseInt(args.getFirst());
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        return "Invalid speed: " + args.getFirst();
+                    }
+
+                    if (speed < 0) return "Speed must be >= 0";
+                    player.setMovementSpeed(speed);
+                    return "playerSpeed = " + player.getMovementSpeed();
+                }
+        );
+
+        registerDevCommand(
+                "/setCurrentAmmo", "/setCurrentAmmo <amount>", "Set weapon current ammo directly.", args -> {
+                    if (args.isEmpty()) return "Usage: /setCurrentAmmo <amount>";
+                    if (weapon == null || weapon.getAmmo() == null) return "Weapon not initialized";
+
+                    int amount;
+                    try
+                    {
+                        amount = Integer.parseInt(args.getFirst());
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        return "Invalid ammo amount: " + args.getFirst();
+                    }
+
+                    weapon.setCurrentAmmo(amount);
+                    return "ammo = " + weapon.getAmmo().getCurrentAmmo() + "/" + weapon.getAmmo().getMaxAmmo();
+                }
+        );
     }
 }

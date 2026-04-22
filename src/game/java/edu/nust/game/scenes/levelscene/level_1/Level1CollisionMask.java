@@ -5,7 +5,14 @@ import edu.nust.engine.math.Vector2D;
 
 public final class Level1CollisionMask
 {
+    private static final Rectangle MAP_BOUNDS = Rectangle.fromCorners(0, 0, 3200, 800);
+
     private static final Rectangle[] COLLISION_RECTS = new Rectangle[]{
+            /// Boundary
+            Rectangle.fromCorners(-50, -50, 3250, 4), // Top
+            Rectangle.fromCorners(-50, 4, 4, 794), // Left
+            Rectangle.fromCorners(3196, 4, 3250, 794), // Right
+            Rectangle.fromCorners(-50, 794, 3250, 850), // Bottom
             /// Ground
             Rectangle.fromCorners(4, 108, 68, 661), // Ground Left-Middle
             Rectangle.fromCorners(108, 4, 852, 308), // Ground Top Left 1
@@ -32,6 +39,8 @@ public final class Level1CollisionMask
 
         return true;
     }
+
+    public static Rectangle getMapBounds() { return MAP_BOUNDS; }
 }
 
 
