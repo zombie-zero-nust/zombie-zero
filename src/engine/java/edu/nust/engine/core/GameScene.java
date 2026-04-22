@@ -83,7 +83,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     protected Vector2D mousePosition = Vector2D.zero();
 
-    private final DevConsole devConsole = new DevConsole(this);
+    private final DevConsole devConsole = new DevConsole();
 
     public GameScene(GameWorld gameWorld)
     {
