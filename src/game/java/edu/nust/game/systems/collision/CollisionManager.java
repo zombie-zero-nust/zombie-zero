@@ -100,7 +100,6 @@ public class CollisionManager
                 if (obj.notInteractWith() != null) {
                     boolean skip = false;
                     for (Class<?> ignoredClass : obj.notInteractWith()) {
-                        // This checks if otherObj is an instance of ignoredClass (or a subclass)
                         if (ignoredClass.isInstance(otherObj)) {
                             skip = true;
                             break;

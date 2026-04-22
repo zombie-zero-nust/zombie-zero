@@ -118,10 +118,10 @@ public class BasicEnemy extends Enemy{
         Image image;
         if(dx == 0 && dy == 0){
             image = switch (facing) {
-                case UP -> upMoveSheet;
-                case DOWN -> downMoveSheet;
-                case LEFT -> leftMoveSheet;
-                case RIGHT -> rightMoveSheet;
+                case UP -> upIdleSheet;
+                case DOWN -> downIdleSheet;
+                case LEFT -> leftIdleSheet;
+                case RIGHT -> rightIdleSheet;
             };
         }
         else {
@@ -137,4 +137,8 @@ public class BasicEnemy extends Enemy{
         spriteRenderer.setImage(image,6,1);
 
     }
+
+    @Override
+    public void attack(){}
+
 }

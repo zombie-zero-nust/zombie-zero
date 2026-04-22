@@ -12,10 +12,17 @@ public class Boss extends Enemy
     }
 
     @Override
-    public void loadSprites(EnemyAsset enemyType){}
+    public void loadSprites(EnemyAsset enemyType){
+
+    }
 
     @Override
     public void updateSprite(double dx,double dy){
+
+    }
+
+    @Override
+    public void attack(){
 
     }
 

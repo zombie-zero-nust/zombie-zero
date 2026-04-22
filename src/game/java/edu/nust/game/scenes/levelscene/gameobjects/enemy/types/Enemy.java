@@ -227,6 +227,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
 
     public abstract void loadSprites(EnemyAsset enemyType);
 
+    public abstract void attack();
 
 
 }
