@@ -20,6 +20,8 @@ import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
 import edu.nust.game.systems.Score;
 import edu.nust.game.systems.collision.CollisionManager;
+import edu.nust.game.systems.pathfinder.MapNodeSetter;
+import edu.nust.game.systems.pathfinder.PathFinder;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -31,6 +33,7 @@ import javafx.scene.layout.VBox;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Map;
 
 public class LevelScene extends GameScene
 {
@@ -58,6 +61,7 @@ public class LevelScene extends GameScene
     private boolean cameraZoomInitialized = false;
     private boolean scoreSaved = false;
     private boolean gameOverState = false;
+    private MapNodeSetter nodeSetter;
 
     public LevelScene(GameWorld world) { super(world); }
 
@@ -127,9 +131,12 @@ public class LevelScene extends GameScene
         this.addGameObject(weapon);
 
         initLevel1WithBackground();
+        nodeSetter = new MapNodeSetter(new Vector2D(1600,400),3200,800,this);
 
         EnemySpawner spawner = new EnemySpawner(5,3,new Vector2D(100,200));
         this.addGameObject(spawner);
+
+
 
         if (ammoBarContainer != null)
         {
@@ -346,4 +353,8 @@ public class LevelScene extends GameScene
     public double getWorldHeight() { return worldHeight; }
 
     public Player getPlayer() { return player; }
+
+    public MapNodeSetter getNodeSetter(){
+        return nodeSetter;
+    }
 }

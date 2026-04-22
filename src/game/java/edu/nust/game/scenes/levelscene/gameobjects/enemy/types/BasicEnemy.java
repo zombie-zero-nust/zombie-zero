@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class BasicEnemy extends GameObject implements Concrete, Damageable, Damaging
 {
@@ -39,7 +40,7 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     private ArrayList<Node> movement = new ArrayList<>();
     private int currentPathIndex = 0;
 
-    // PATH UPDATE DELAY
+
     private TimeSpan pathTimer = TimeSpan.zero();
     private final TimeSpan pathUpdateInterval = TimeSpan.fromMilliseconds(300);
 
@@ -101,7 +102,6 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     @Override
     public void onInit()
     {
-        pathFinder = new PathFinder((LevelScene) this.getScene());
         setHitbox();
     }
 
@@ -235,4 +235,5 @@ public class BasicEnemy extends GameObject implements Concrete, Damageable, Dama
     {
         return !health.isAlive();
     }
+
 }

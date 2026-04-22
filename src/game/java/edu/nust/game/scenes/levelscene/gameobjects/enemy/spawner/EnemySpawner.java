@@ -7,6 +7,7 @@ import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.EnemyTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
+import edu.nust.game.systems.pathfinder.PathFinder;
 
 import java.util.ArrayList;
 
@@ -89,7 +90,7 @@ public class EnemySpawner extends GameObject
 
     public void updateStatus(GameScene scene)
     {
-        
+
         Player player = (Player) scene.getFirstOfType(Player.class);
         if (player != null)
         {
