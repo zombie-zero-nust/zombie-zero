@@ -81,6 +81,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     // debug options
     private boolean debugGrid = false;
+    private double debugGridSize = 128;
     private boolean debugMouseLocation = false;
 
     protected Vector2D mousePosition = Vector2D.zero();
@@ -447,21 +448,48 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         // Debug Grid
         devConsole.registerDevCommand(
                 "/debugGrid", //
-                "/debugGrid true|false", //
-                "Toggle grid", //
+                "/debugGrid true|false|number", //
+                "Toggle grid, with given size if number specified", //
                 (args) -> {
-                    boolean val = DevConsole.parseBooleanArg(args.getFirst());
-                    setDebugGrid(val);
-                    return "debugGrid = " + val;
+                    // toggle if no argument provided
+                    if (args.isEmpty())
+                    {
+                        setDebugGrid(!debugGrid);
+                        return "debugGrid = " + debugGrid;
+                    }
+
+                    // check if first arg is a number
+                    try
+                    {
+                        double arg = Double.parseDouble(args.getFirst());
+                        if (arg <= 0) return "Grid size must be greater than 0";
+                        setDebugGrid(true);
+                        debugGridSize = arg;
+                        return "debugGrid = true, size = " + debugGridSize;
+                    }
+                    // not a number -> treat a boolean
+                    catch (Exception ignored)
+                    {
+                        boolean val = DevConsole.parseBooleanArg(args.getFirst());
+                        setDebugGrid(val);
+                        return "debugGrid = " + val;
+                    }
                 }
         );
 
         // Debug Mouse Location
         devConsole.registerDevCommand(
                 "/debugMouseLocation",
-                "/debugMouseLocation true|false",
+                "/debugMouseLocation true|false|empty",
                 "Toggle world mouse crosshair + coordinates.",
                 (args) -> {
+                    if (args.isEmpty())
+                    {
+                        // toggle if no argument provided
+                        setDebugMouseLocation(!debugMouseLocation);
+                        return "debugMouseLocation = " + debugMouseLocation;
+                    }
+
                     boolean val = DevConsole.parseBooleanArg(args.getFirst());
                     setDebugMouseLocation(val);
                     return "debugMouseLocation = " + debugMouseLocation;
@@ -722,20 +750,18 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         double top = camY - halfH;
         double bottom = camY + halfH;
 
-        double gridSize = 100;
-
         // snap to grid
-        double startX = Math.floor(left / gridSize) * gridSize;
-        double startY = Math.floor(top / gridSize) * gridSize;
+        double startX = Math.floor(left / debugGridSize) * debugGridSize;
+        double startY = Math.floor(top / debugGridSize) * debugGridSize;
 
         // vertical lines
-        for (double x = startX; x <= right; x += gridSize)
+        for (double x = startX; x <= right; x += debugGridSize)
         {
             ctx.strokeLine(x, top, x, bottom);
         }
 
         // horizontal lines
-        for (double y = startY; y <= bottom; y += gridSize)
+        for (double y = startY; y <= bottom; y += debugGridSize)
         {
             ctx.strokeLine(left, y, right, y);
         }
@@ -857,6 +883,20 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     }
 
     /* DEBUG */
+
+    /// Gets the size of the debug grid squares.
+    ///
+    /// @see GameScene#setDebugGrid(boolean)
+    public double getDebugGridSize() { return debugGridSize; }
+
+    /// **`CHAINABLE`** Sets the size of the debug grid squares.
+    ///
+    /// @see GameScene#setDebugGrid(boolean)
+    public GameScene setDebugGridSize(double debugGridSize)
+    {
+        this.debugGridSize = debugGridSize;
+        return this;
+    }
 
     /// Gets whether the debug grid is currently shown or not.
     ///
