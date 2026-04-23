@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+// TODO: Cleanup code; Seperate pre building logic 
 public final class Level1Background
 {
     private Level1Background() { }
