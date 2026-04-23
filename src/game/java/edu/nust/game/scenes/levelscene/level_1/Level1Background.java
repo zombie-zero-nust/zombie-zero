@@ -25,15 +25,15 @@ public final class Level1Background
 
     public static GameObject[] getObjects(final LevelScene scene)
     {
-        final Random random = new Random(12345L);
+        final Random random = new Random(1);
         final ArrayList<GameObject> objects = new ArrayList<>();
         final ArrayList<ArrayList<Vector2D>> groupedPositions = new ArrayList<>();
 
         Level1CollisionMask.forEachInnerRect((rectangle) -> {
-            rectangle.shrinkSelf(20, 20);
+            rectangle.growSelf(20, 20);
             //scene.addDebugRectangle(rectangle, TimeSpan.fromDays(1));
-            final int stepX = 24;
-            final int stepY = 32;
+            final int stepX = 18;
+            final int stepY = 24;
             final int offset = 13;
 
             ArrayList<Vector2D> rectPositions = new ArrayList<>();
@@ -57,7 +57,7 @@ public final class Level1Background
             groupedPositions.add(rectPositions);
         });
 
-        //generateTreePositionsFile(groupedPositions);
+        generateTreePositionsFile(groupedPositions);
 
         try
         {
@@ -77,7 +77,7 @@ public final class Level1Background
 
     private static GameObject backgroundGO() throws FileNotFoundException
     {
-        GameObject object = GameObject.create().setRenderLayer(-1);
+        GameObject object = GameObject.create().setRenderLayer(-2);
         Image bgImage = Resources.loadImageOrThrow("assets", "scenes", "level_1", "background.png");
         object.addComponent(new SpriteRenderer(bgImage));
         object.getTransform().setAnchorTopLeft().setPosition(0, 0);

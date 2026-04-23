@@ -1,4 +1,4 @@
-package edu.nust.game.scenes.levelscene.gameobjects.statics.meta;
+package edu.nust.game.scenes.levelscene.gameobjects._tags;
 
 import edu.nust.engine.core.gameobjects.Tag;
 

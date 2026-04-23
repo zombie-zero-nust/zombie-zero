@@ -5,6 +5,9 @@ import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObject;
 public class Tree extends StaticObject
 {
     @Override
+    protected int renderLayer() { return 2; }
+
+    @Override
     protected int numImages() { return 4; }
 
     @Override

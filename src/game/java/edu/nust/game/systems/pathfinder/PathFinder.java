@@ -63,9 +63,6 @@ public class PathFinder
 
         if (start == null || goal == null || start == goal || goal.isSolid())
         {
-            System.out.println("triggered");
-
-
             return new ArrayList<>();
         }
 

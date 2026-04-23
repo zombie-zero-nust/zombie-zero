@@ -3,7 +3,7 @@ package edu.nust.game.scenes.levelscene.gameobjects.statics;
 import edu.nust.engine.core.GameObject;
 import edu.nust.game.scenes.levelscene.components.SeeThroughComponent;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
-import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticTag;
+import edu.nust.game.scenes.levelscene.gameobjects._tags.StaticTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,11 +68,11 @@ public class StaticObjectFactory
 
     public static GameObject randomStaticAt(double x, double y, @Nullable Player player, Random random)
     {
-        // weights (tune as needed)
-        final int plantWeight = 60;
-        final int bushWeight = 5;
-        final int garbageWeight = 20;
-        final int treeWeight = 10;
+        // weights
+        final int plantWeight = 75;
+        final int treeWeight = 0;
+        final int bushWeight = 10;
+        final int garbageWeight = 10;
         final int fallenTreeWeight = 5;
 
         final int totalWeight = bushWeight + fallenTreeWeight + garbageWeight + plantWeight + treeWeight;

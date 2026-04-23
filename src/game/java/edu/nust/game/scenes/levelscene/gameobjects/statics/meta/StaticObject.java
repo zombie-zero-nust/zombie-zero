@@ -22,7 +22,7 @@ public abstract class StaticObject extends GameObject
     @Override
     public void onInit()
     {
-        this.setRenderLayer(2);
+        this.setRenderLayer(renderLayer());
 
         final int i = random.nextInt(1, numImages() + 1);
         try
@@ -38,6 +38,8 @@ public abstract class StaticObject extends GameObject
     }
 
     /* ABSTRACT */
+
+    protected int renderLayer() { return -1; }
 
     protected abstract int numImages();
 

@@ -5,7 +5,7 @@ import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObject;
 public class Plant extends StaticObject
 {
     @Override
-    protected int numImages() { return 43; }
+    protected int numImages() { return 40; }
 
     @Override
     protected String folderName() { return "plants"; }
