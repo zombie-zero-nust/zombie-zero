@@ -34,7 +34,7 @@ public class Tree extends StaticObject
     public static GameObject at(Vector2D pos, Player player) { return at(pos.getX(), pos.getY(), player); }
 
     @Override
-    protected Random random() { return new Random(20); }
+    public Random random() { return new Random(); }
 
     @Override
     protected int numImages() { return 4; }

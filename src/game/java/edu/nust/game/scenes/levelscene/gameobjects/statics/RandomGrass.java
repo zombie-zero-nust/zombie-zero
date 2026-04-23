@@ -10,7 +10,7 @@ public class RandomGrass extends StaticObject
     }
 
     @Override
-    protected Random random() { return new Random(20); }
+    public Random random() { return new Random(20); }
 
     @Override
     protected int numImages() { return 25; }

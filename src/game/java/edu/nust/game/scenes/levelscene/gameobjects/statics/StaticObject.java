@@ -33,7 +33,7 @@ public abstract class StaticObject extends GameObject
 
     /* ABSTRACT */
 
-    protected Random random() { return new Random(1); }
+    public Random random() { return new Random(1); }
 
     protected abstract int numImages();
 
