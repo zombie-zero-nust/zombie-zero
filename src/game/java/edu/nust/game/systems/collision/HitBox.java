@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 public class HitBox extends Component
 {
     private Vector2D pos;
-    private double height, width;
+    private double halfH, halfW;
     private BoxRenderer box;
     private boolean visible = false;
     private boolean topTouching = false;
@@ -21,12 +21,12 @@ public class HitBox extends Component
     private double minX;
     private double minY;
 
-    public HitBox(Vector2D pos, double height, double width)
+    public HitBox(Vector2D pos, double halfH, double halfW)
     {
         this.pos = pos;
-        this.width = width;
-        this.height = height;
-        box = new BoxRenderer(width, height, Color.RED);
+        this.halfW = halfW;
+        this.halfH = halfH;
+        box = new BoxRenderer(this.halfW, this.halfH, Color.RED);
     }
 
 
@@ -37,6 +37,8 @@ public class HitBox extends Component
         double yDistance = this.pos.getY() - touchedHB.pos.getY();
 
 
+        minX = this.halfW + touchedHB.halfW;
+        minY = this.halfH + touchedHB.halfH;
         double overlapX = minX - Math.abs(xDistance);
         double overlapY = minY - Math.abs(yDistance);
 
@@ -78,8 +80,7 @@ public class HitBox extends Component
     public void onInit()
     {
         // Add BoxRenderer component when GameObject is ready
-
-        this.gameObject.addComponent(box).setVisible(visible);
+        if(this.gameObject != null) this.gameObject.addComponent(box).setVisible(visible);
 
     }
 
@@ -94,11 +95,6 @@ public class HitBox extends Component
     public void onRender(GraphicsContext context) { }
 
 
-    public void changeVisible()
-    {
-
-        visible = !visible;
-    }
 
     public void setPos(Vector2D pos)
     {
@@ -127,8 +123,8 @@ public class HitBox extends Component
 
     public void setMin(HitBox touchedHB)
     {
-        minX = this.width + touchedHB.width;
-        minY = this.height + touchedHB.height;
+        minX = this.halfW + touchedHB.halfW;
+        minY = this.halfH + touchedHB.halfH;
     }
 
 

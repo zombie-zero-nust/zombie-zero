@@ -119,6 +119,7 @@ public class Player extends Character implements Damageable, Concrete
     @Override
     public void onInit()
     {
+        System.out.println("Player onInit called");
         // Initialize hitbox here when GameObject is properly set up
         hitbox = new HitBox(getSpawnPos(), height / 2.0, width / 2.0);
         this.addComponent(hitbox);
