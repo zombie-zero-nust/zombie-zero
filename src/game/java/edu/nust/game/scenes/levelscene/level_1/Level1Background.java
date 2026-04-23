@@ -7,8 +7,7 @@ import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.LevelScene;
-import edu.nust.game.scenes.levelscene.gameobjects.statics.RandomGrass;
-import edu.nust.game.scenes.levelscene.gameobjects.statics.StaticObject;
+import edu.nust.game.scenes.levelscene.gameobjects.statics.StaticObjectFactory;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
@@ -16,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Random;
 
 public final class Level1Background
 {
@@ -23,27 +23,18 @@ public final class Level1Background
 
     private static final GameLogger LOGGER = GameLogger.getLogger(Level1Background.class);
 
-    //@formatter:off
-    private static final Vector2D[] TREE_POSITIONS = new Vector2D[]{
-            new Vector2D(17, 133), new Vector2D(50, 136), new Vector2D(16, 189),
-            new Vector2D(24, 224), new Vector2D(50, 254), new Vector2D(21, 276),
-            new Vector2D(20, 320), new Vector2D(43, 323), new Vector2D(18, 357),
-            new Vector2D(46, 394), new Vector2D(19, 452), new Vector2D(49, 484),
-            new Vector2D(13, 520), new Vector2D(47, 543), new Vector2D(20, 581),
-            new Vector2D(38, 600), new Vector2D(17, 588), new Vector2D(22, 611),
-            new Vector2D(48, 627), new Vector2D(16, 640)
-    };
-    //@formatter:on
-
     public static GameObject[] getObjects(final LevelScene scene)
     {
+        final Random random = new Random(12345L);
+        final ArrayList<GameObject> objects = new ArrayList<>();
         final ArrayList<ArrayList<Vector2D>> groupedPositions = new ArrayList<>();
 
         Level1CollisionMask.forEachInnerRect((rectangle) -> {
-            rectangle.shrinkSelf(32, 4, 16, 16);
+            rectangle.shrinkSelf(20, 20);
+            //scene.addDebugRectangle(rectangle, TimeSpan.fromDays(1));
             final int stepX = 24;
             final int stepY = 32;
-            final int offset = 7;
+            final int offset = 13;
 
             ArrayList<Vector2D> rectPositions = new ArrayList<>();
 
@@ -51,13 +42,15 @@ public final class Level1Background
             {
                 for (int y = (int) rectangle.getTop(); y < ((int) rectangle.getBottom()); y += stepY)
                 {
-                    StaticObject grass = RandomGrass.at(x, y);
-                    int offsetX = grass.random().nextInt(-offset, offset + 1);
-                    int offsetY = grass.random().nextInt(-offset, offset + 1);
+                    GameObject grass = StaticObjectFactory.randomStaticAt(x, y, scene.getPlayer(), random);
+                    int offsetX = random.nextInt(-offset, offset + 1);
+                    int offsetY = random.nextInt(-offset, offset + 1);
 
                     grass.getTransform().getPosition().addSelf(offsetX, offsetY);
 
                     rectPositions.add(grass.getTransform().getPosition().copy());
+                    //scene.addDebugPoint(grass.getTransform().getPosition(), TimeSpan.fromDays(1));
+                    objects.add(grass);
                 }
             }
 
@@ -68,7 +61,6 @@ public final class Level1Background
 
         try
         {
-            final ArrayList<GameObject> objects = new ArrayList<>();
             objects.add(backgroundGO());
             return objects.toArray(new GameObject[0]);
         }

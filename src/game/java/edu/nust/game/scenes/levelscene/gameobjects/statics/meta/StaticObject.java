@@ -1,4 +1,4 @@
-package edu.nust.game.scenes.levelscene.gameobjects.statics;
+package edu.nust.game.scenes.levelscene.gameobjects.statics.meta;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
@@ -9,6 +9,14 @@ import java.util.Random;
 
 public abstract class StaticObject extends GameObject
 {
+    private Random random = new Random();
+
+    public StaticObject setRandom(Random random)
+    {
+        this.random = random;
+        return this;
+    }
+
     /* LIFETIME */
 
     @Override
@@ -16,7 +24,7 @@ public abstract class StaticObject extends GameObject
     {
         this.setRenderLayer(2);
 
-        final int i = random().nextInt(numImages()) + 1;
+        final int i = random.nextInt(1, numImages() + 1);
         try
         {
             Image image = Resources.loadImageOrThrow("assets", "scenes", "level_1", folderName(), filename(i));
@@ -27,13 +35,9 @@ public abstract class StaticObject extends GameObject
             logger.error(false, "Failed to load grass image ({})", filename(i));
             logger.logException(e);
         }
-
-        this.getTransform().setAnchorBottomCenter();
     }
 
     /* ABSTRACT */
-
-    public Random random() { return new Random(1); }
 
     protected abstract int numImages();
 
