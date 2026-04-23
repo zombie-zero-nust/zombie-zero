@@ -2,8 +2,9 @@ package edu.nust.game.scenes.levelscene.gameobjects.statics;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.game.scenes.levelscene.components.SeeThroughComponent;
-import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.StaticTag;
+import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
+import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObjectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,6 +12,12 @@ import java.util.Random;
 
 public class StaticObjectFactory
 {
+    private static final int PLANT_WEIGHT = 75;
+    private static final int TREE_WEIGHT = 0;
+    private static final int BUSH_WEIGHT = 10;
+    private static final int GARBAGE_WEIGHT = 10;
+    private static final int FALLEN_TREE_WEIGHT = 5;
+
     public static Bush bushAt(double x, double y)
     {
         return (Bush) new Bush().addTag(StaticTag.class).getTransform().setPosition(x, y).getGameObject();
@@ -66,30 +73,42 @@ public class StaticObjectFactory
         return (Tree) treeAt(x, y, player).setRandom(random);
     }
 
-    public static GameObject randomStaticAt(double x, double y, @Nullable Player player, Random random)
+    public static GameObject staticAt(double x, double y, @NotNull StaticObjectType type, @Nullable Player player)
     {
-        // weights
-        final int plantWeight = 75;
-        final int treeWeight = 0;
-        final int bushWeight = 10;
-        final int garbageWeight = 10;
-        final int fallenTreeWeight = 5;
+        return switch (type)
+        {
+            case BUSH -> bushAt(x, y);
+            case FALLEN_TREE -> fallenTreeAt(x, y);
+            case GARBAGE_ITEM -> garbageItemAt(x, y);
+            case PLANT -> plantAt(x, y);
+            case TREE -> treeAt(x, y, player);
+        };
+    }
 
-        final int totalWeight = bushWeight + fallenTreeWeight + garbageWeight + plantWeight + treeWeight;
+    /* RANDOM */
+
+    public static StaticObjectType randomType(@NotNull Random random)
+    {
+        final int totalWeight = BUSH_WEIGHT + FALLEN_TREE_WEIGHT + GARBAGE_WEIGHT + PLANT_WEIGHT + TREE_WEIGHT;
 
         int roll = random.nextInt(totalWeight);
 
-        if (roll < bushWeight) { return bushAt(x, y, random); }
-        roll -= bushWeight;
+        if (roll < BUSH_WEIGHT) { return StaticObjectType.BUSH; }
+        roll -= BUSH_WEIGHT;
 
-        if (roll < fallenTreeWeight) { return fallenTreeAt(x, y, random); }
-        roll -= fallenTreeWeight;
+        if (roll < FALLEN_TREE_WEIGHT) { return StaticObjectType.FALLEN_TREE; }
+        roll -= FALLEN_TREE_WEIGHT;
 
-        if (roll < garbageWeight) { return garbageItemAt(x, y, random); }
-        roll -= garbageWeight;
+        if (roll < GARBAGE_WEIGHT) { return StaticObjectType.GARBAGE_ITEM; }
+        roll -= GARBAGE_WEIGHT;
 
-        if (roll < plantWeight) { return plantAt(x, y, random); }
+        if (roll < PLANT_WEIGHT) { return StaticObjectType.PLANT; }
 
-        return treeAt(x, y, player, random);
+        return StaticObjectType.TREE;
+    }
+
+    public static GameObject randomStaticAt(double x, double y, @Nullable Player player, Random random)
+    {
+        return staticAt(x, y, randomType(random), player);
     }
 }
