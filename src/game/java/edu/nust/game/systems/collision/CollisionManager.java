@@ -78,7 +78,6 @@ public class CollisionManager
                 if (obj.getHitbox().isTouching(otherObj.getHitbox()))
                 {
                     obj.takeDamage(otherObj.getDamage());
-                    System.out.println("Damaging logic working");
                     // Only queue for destruction if it's actually meant to be destroyed (like a bullet)
                     if (otherObj.isDestroyable()) {
                         destroyQueue.add(otherObj);

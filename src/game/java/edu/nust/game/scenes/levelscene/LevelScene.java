@@ -20,6 +20,7 @@ import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
 import edu.nust.game.systems.Score;
 import edu.nust.game.systems.collision.CollisionManager;
+import edu.nust.game.systems.collision.ConcreteWall;
 import edu.nust.game.systems.collision.HitBox;
 import edu.nust.game.systems.pathfinder.MapNodeSetter;
 import javafx.fxml.FXML;

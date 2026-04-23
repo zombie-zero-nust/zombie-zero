@@ -155,4 +155,16 @@ public class HitBox extends Component
     {
         this.bottomTouching = bottomTouching;
     }
+
+    public Vector2D getPos() {
+        return pos;
+    }
+
+    public double getHalfH() {
+        return halfH;
+    }
+
+    public double getHalfW() {
+        return halfW;
+    }
 }

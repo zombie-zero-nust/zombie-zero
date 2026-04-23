@@ -21,7 +21,9 @@ public class ConcreteWall extends GameObject implements Concrete
         this.width = width;
         this.height = height;
         this.getTransform().setPosition(center);
-
+        setHitbox();
+        if (hitbox != null)
+            this.addComponent(hitbox);
     }
 
     @Override
@@ -33,9 +35,6 @@ public class ConcreteWall extends GameObject implements Concrete
     @Override
     public void onInit()
     {
-        setHitbox();
-        if (hitbox != null)
-            this.addComponent(hitbox);
     }
 
     @Override
