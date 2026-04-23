@@ -56,7 +56,11 @@ public final class Level1Background
             });
             return objects.toArray(new GameObject[0]);
         }
-        catch (Exception e) { LOGGER.logException(e); }
+        catch (Exception e)
+        {
+            LOGGER.error(false, "Failed to create level 1 background objects.");
+            LOGGER.logException(e);
+        }
 
         return new GameObject[]{};
     }
