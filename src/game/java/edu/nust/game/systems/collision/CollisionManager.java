@@ -64,10 +64,13 @@ public class CollisionManager
                     continue;
 
 
-                if (otherObj.notDamageObj() != null) {
+                if (otherObj.notDamageObj() != null)
+                {
                     boolean shouldSkip = false;
-                    for (Class<?> clazz : otherObj.notDamageObj()) {
-                        if (clazz.isInstance(obj)) {
+                    for (Class<?> clazz : otherObj.notDamageObj())
+                    {
+                        if (clazz.isInstance(obj))
+                        {
                             shouldSkip = true;
                             break;
                         }
@@ -79,7 +82,8 @@ public class CollisionManager
                 {
                     obj.takeDamage(otherObj.getDamage());
                     // Only queue for destruction if it's actually meant to be destroyed (like a bullet)
-                    if (otherObj.isDestroyable()) {
+                    if (otherObj.isDestroyable())
+                    {
                         destroyQueue.add(otherObj);
                     }
                 }
@@ -96,10 +100,13 @@ public class CollisionManager
                 if (otherObj == null || otherObj == obj || otherObj.getHitbox() == null)
                     continue;
 
-                if (obj.notInteractWith() != null) {
+                if (obj.notInteractWith() != null)
+                {
                     boolean skip = false;
-                    for (Class<?> ignoredClass : obj.notInteractWith()) {
-                        if (ignoredClass.isInstance(otherObj)) {
+                    for (Class<?> ignoredClass : obj.notInteractWith())
+                    {
+                        if (ignoredClass.isInstance(otherObj))
+                        {
                             skip = true;
                             break;
                         }

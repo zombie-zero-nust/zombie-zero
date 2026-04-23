@@ -2,8 +2,8 @@ package edu.nust.game.scenes.start;
 
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
-import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.scenes.highscores.HighScoresScene;
+import edu.nust.game.scenes.levelscene.LevelScene;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 

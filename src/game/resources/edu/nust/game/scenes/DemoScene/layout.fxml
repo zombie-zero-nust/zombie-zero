@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
-<StackPane styleClass="ui-root" style="-fx-padding: 0;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
+<StackPane styleClass="ui-root" style="-fx-padding: 0;" xmlns:fx="http://javafx.com/fxml/1"
+           xmlns="http://javafx.com/javafx/17.0.12">
 
     <!-- Show help text at top left -->
     <VBox fx:id="helpTextContainer" styleClass="helpTextContainer">
-        <Text styleClass="helpText" text="Press 'Esc' to Pause/Resume" />
-        <Text styleClass="helpText" text="Press 'W' to Zoom In" />
-        <Text styleClass="helpText" text="Press 'S' to Zoom Out" />
-        <Text styleClass="helpText" text="Press 'G' to show Grid" />
-        <Text styleClass="helpText" text="Press 'H' to hide help" />
+        <Text styleClass="helpText" text="Press 'Esc' to Pause/Resume"/>
+        <Text styleClass="helpText" text="Press 'W' to Zoom In"/>
+        <Text styleClass="helpText" text="Press 'S' to Zoom Out"/>
+        <Text styleClass="helpText" text="Press 'G' to show Grid"/>
+        <Text styleClass="helpText" text="Press 'H' to hide help"/>
     </VBox>
 
     <StackPane fx:id="pauseOverlay" managed="false" styleClass="pauseOverlay" visible="false"
                StackPane.alignment="CENTER" maxWidth="Infinity" maxHeight="Infinity" minWidth="0" minHeight="0">
 
         <VBox alignment="CENTER" spacing="20" styleClass="overlay-content-box">
-            <Region styleClass="pause-heading-tile" />
-            <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="pause-button-tile, resume-button-tile" text="" />
-            <Button onAction="#exitToMainMenu" styleClass="pause-button-tile, overlay-exit-button-tile" text="" />
+            <Region styleClass="pause-heading-tile"/>
+            <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="pause-button-tile, resume-button-tile"
+                    text=""/>
+            <Button onAction="#exitToMainMenu" styleClass="pause-button-tile, overlay-exit-button-tile" text=""/>
         </VBox>
 
     </StackPane>

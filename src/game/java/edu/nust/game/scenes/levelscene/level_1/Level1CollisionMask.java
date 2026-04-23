@@ -90,7 +90,8 @@ public final class Level1CollisionMask
         return true;
     }
 
-    public static List<Rectangle> getInnerCollisionRects(){
+    public static List<Rectangle> getInnerCollisionRects()
+    {
         return INNER_COLLISION_RECTS;
     }
 

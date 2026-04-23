@@ -40,8 +40,7 @@
     -fx-padding: 16px 30px;
     -fx-background-radius: 0;
     -fx-border-radius: 0;
-    -fx-background-color:
-            linear-gradient(to bottom, #be6253 0%, #a64d3f 45%, #8d3f32 46%, #793428 100%);
+    -fx-background-color: linear-gradient(to bottom, #be6253 0%, #a64d3f 45%, #8d3f32 46%, #793428 100%);
     -fx-border-color: #4d251f;
     -fx-border-width: 2px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.24), 5, 0.18, 0, 2);
@@ -56,8 +55,7 @@
     -fx-min-width: 280px;
     -fx-background-radius: 0;
     -fx-border-radius: 0;
-    -fx-background-color:
-            linear-gradient(to bottom, #ef6a55 0%, #d64a33 45%, #ba3220 46%, #a92718 100%);
+    -fx-background-color: linear-gradient(to bottom, #ef6a55 0%, #d64a33 45%, #ba3220 46%, #a92718 100%);
     -fx-border-color: #631b12;
     -fx-border-width: 3px;
     -fx-cursor: hand;
@@ -65,14 +63,12 @@
 }
 
 .primary-button:hover {
-    -fx-background-color:
-            linear-gradient(to bottom, #ff7c66 0%, #e45a43 45%, #c93b28 46%, #b7301f 100%);
+    -fx-background-color: linear-gradient(to bottom, #ff7c66 0%, #e45a43 45%, #c93b28 46%, #b7301f 100%);
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.36), 8, 0.25, 0, 4);
 }
 
 .primary-button:pressed {
-    -fx-background-color:
-            linear-gradient(to bottom, #b53f2e 0%, #9b2f22 48%, #842719 49%, #6d2015 100%);
+    -fx-background-color: linear-gradient(to bottom, #b53f2e 0%, #9b2f22 48%, #842719 49%, #6d2015 100%);
     -fx-translate-y: 2px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0.15, 0, 1);
 }

@@ -9,7 +9,8 @@ import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 
-public class BasicEnemy extends Enemy{
+public class BasicEnemy extends Enemy
+{
     private Image downIdleSheet;
     private Image upIdleSheet;
     private Image rightIdleSheet;
@@ -26,13 +27,16 @@ public class BasicEnemy extends Enemy{
     private int width = 12;
     private int height = 16;
     private Facing facing = Facing.DOWN;
-    public BasicEnemy(Vector2D pos){
-        super(pos,30,100,16,12,10,EnemyAsset.ZOMBIE_SMALL);
+
+    public BasicEnemy(Vector2D pos)
+    {
+        super(pos, 30, 100, 16, 12, 10, EnemyAsset.ZOMBIE_SMALL);
         loadSprites(EnemyAsset.ZOMBIE_SMALL);
     }
 
     @Override
-    public void onInit(){
+    public void onInit()
+    {
     }
 
     @Override
@@ -102,7 +106,7 @@ public class BasicEnemy extends Enemy{
             );
 
 
-            spriteRenderer =   new SpriteRenderer(width, height, downIdleSheet, 6, 1);
+            spriteRenderer = new SpriteRenderer(width, height, downIdleSheet, 6, 1);
             spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150)).startAnimation();
 
             this.addComponent(spriteRenderer);
@@ -114,31 +118,36 @@ public class BasicEnemy extends Enemy{
     }
 
     @Override
-    public void updateSprite(double dx,double dy){
+    public void updateSprite(double dx, double dy)
+    {
         Image image;
-        if(dx == 0 && dy == 0){
-            image = switch (facing) {
+        if (dx == 0 && dy == 0)
+        {
+            image = switch (facing)
+            {
                 case UP -> upIdleSheet;
                 case DOWN -> downIdleSheet;
                 case LEFT -> leftIdleSheet;
                 case RIGHT -> rightIdleSheet;
             };
         }
-        else {
+        else
+        {
             if (Math.abs(dx) > Math.abs(dy)) facing = dx > 0 ? Facing.RIGHT : Facing.LEFT;
             else facing = dy > 0 ? Facing.DOWN : Facing.UP;
-            image = switch (facing) {
+            image = switch (facing)
+            {
                 case UP -> upMoveSheet;
                 case DOWN -> downMoveSheet;
                 case LEFT -> leftMoveSheet;
                 case RIGHT -> rightMoveSheet;
             };
         }
-        spriteRenderer.setImage(image,6,1);
+        spriteRenderer.setImage(image, 6, 1);
 
     }
 
     @Override
-    public void attack(){}
+    public void attack() { }
 
 }

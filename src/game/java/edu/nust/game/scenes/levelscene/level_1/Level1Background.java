@@ -57,7 +57,7 @@ public final class Level1Background
             groupedPositions.add(rectPositions);
         });
 
-        generateTreePositionsFile(groupedPositions);
+        //generateTreePositionsFile(groupedPositions);
 
         try
         {
@@ -88,7 +88,7 @@ public final class Level1Background
 
     private static void generateTreePositionsFile(ArrayList<ArrayList<Vector2D>> groupedPositions)
     {
-        LogProgress progress = new LogProgress("TREE", LOGGER);
+        LogProgress progress = new LogProgress("SAVEPOS", LOGGER);
 
         progress.begin("Generating tree positions file...");
 

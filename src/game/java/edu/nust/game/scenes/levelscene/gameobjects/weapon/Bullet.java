@@ -81,7 +81,6 @@ public class Bullet extends GameObject implements Damaging, Concrete
     public void lateUpdate(TimeSpan deltaTime) { if (destroyed) this.destroy(); }
 
 
-
     @Override
     public int getDamage() { return this.damage; }
 

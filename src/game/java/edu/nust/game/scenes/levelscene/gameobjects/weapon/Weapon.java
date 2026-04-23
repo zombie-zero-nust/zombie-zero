@@ -32,7 +32,6 @@ public class Weapon extends GameObject
     private Ammo ammo;
 
 
-
     private Image gunIdleRightSheet;
 
     private Image fireRightSheet;
@@ -114,7 +113,7 @@ public class Weapon extends GameObject
         double sy = muzzleFlashRenderer.getFrameY() * muzzleFlashRenderer.getFrameHeight();
 
         context.save();
-        context.translate(barrelTip.getX() , barrelTip.getY() + 1);
+        context.translate(barrelTip.getX(), barrelTip.getY() + 1);
         context.rotate(this.getTransform().getRotation().getDegrees());
         context.drawImage(
                 muzzleFlashRenderer.getImage(),

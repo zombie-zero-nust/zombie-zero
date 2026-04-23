@@ -80,7 +80,7 @@ public class HitBox extends Component
     public void onInit()
     {
         // Add BoxRenderer component when GameObject is ready
-        if(this.gameObject != null) this.gameObject.addComponent(box).setVisible(visible);
+        if (this.gameObject != null) this.gameObject.addComponent(box).setVisible(visible);
 
     }
 
@@ -93,7 +93,6 @@ public class HitBox extends Component
 
     @Override
     public void onRender(GraphicsContext context) { }
-
 
 
     public void setPos(Vector2D pos)
@@ -156,15 +155,18 @@ public class HitBox extends Component
         this.bottomTouching = bottomTouching;
     }
 
-    public Vector2D getPos() {
+    public Vector2D getPos()
+    {
         return pos;
     }
 
-    public double getHalfH() {
+    public double getHalfH()
+    {
         return halfH;
     }
 
-    public double getHalfW() {
+    public double getHalfW()
+    {
         return halfW;
     }
 }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-
-<StackPane styleClass="ui-root" style="-fx-padding: 0;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12">
+<StackPane styleClass="ui-root" style="-fx-padding: 0;" xmlns:fx="http://javafx.com/fxml/1"
+           xmlns="http://javafx.com/javafx/17.0.12">
 
     <HBox StackPane.alignment="TOP_LEFT" alignment="TOP_LEFT" fillHeight="false" style="-fx-padding: 20;">
-        <VBox fx:id="healthBarContainer" />
-        <Label fx:id="healthLabel" visible="false" managed="false" />
+        <VBox fx:id="healthBarContainer"/>
+        <Label fx:id="healthLabel" visible="false" managed="false"/>
     </HBox>
 
     <HBox StackPane.alignment="TOP_RIGHT" alignment="TOP_RIGHT" fillHeight="false" style="-fx-padding: 20;">
@@ -22,16 +22,20 @@
                      -fx-background-radius: 5;
                      -fx-border-radius: 5;">
             <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="SCORE" style="-fx-text-fill: #00FF00; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
-                <Label fx:id="scoreLabel" text="0" style="-fx-text-fill: #FFFF00; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
+                <Label text="SCORE"
+                       style="-fx-text-fill: #00FF00; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';"/>
+                <Label fx:id="scoreLabel" text="0"
+                       style="-fx-text-fill: #FFFF00; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New';"/>
             </HBox>
-            <Separator />
+            <Separator/>
             <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="BULLETS" style="-fx-text-fill: #00FF00; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
-                <Label fx:id="ammoLabel" text="20 / 20" style="-fx-text-fill: #FFFF00; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New';" />
+                <Label text="BULLETS"
+                       style="-fx-text-fill: #00FF00; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';"/>
+                <Label fx:id="ammoLabel" text="20 / 20"
+                       style="-fx-text-fill: #FFFF00; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New';"/>
             </HBox>
-            <VBox fx:id="ammoBarContainer" />
-            <Label fx:id="reloadLabel" visible="false" managed="false" />
+            <VBox fx:id="ammoBarContainer"/>
+            <Label fx:id="reloadLabel" visible="false" managed="false"/>
         </VBox>
 
     </HBox>
@@ -41,15 +45,22 @@
                StackPane.alignment="CENTER" maxWidth="Infinity" maxHeight="Infinity" minWidth="0" minHeight="0">
 
         <VBox alignment="CENTER" spacing="20" styleClass="overlay-content-box">
-            <Region fx:id="pauseHeadingTile" styleClass="pause-heading-tile" />
-            <Region fx:id="gameOverHeadingTile" managed="false" styleClass="gameover-heading-tile" visible="false" />
-            <Label fx:id="overlayTitleLabel" managed="false" styleClass="overlay-title" text="Game Over" visible="false" />
-            <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="pause-button-tile, resume-button-tile" text="" />
-            <Button fx:id="pauseRetryButton" onAction="#retryLevel" styleClass="pause-button-tile, retry-button-tile" text="" />
-            <Button fx:id="pauseExitButton" onAction="#exitToMainMenu" styleClass="pause-button-tile, overlay-exit-button-tile" text="" />
-            <Button fx:id="gameOverNewGameButton" managed="false" onAction="#startNewGame" styleClass="gameover-button-tile, gameover-newgame-button-tile" text="" visible="false" />
-            <Button fx:id="gameOverMainMenuButton" managed="false" onAction="#exitToMainMenu" styleClass="gameover-button-tile, gameover-mainmenu-button-tile" text="" visible="false" />
-            <Button fx:id="gameOverHighScoresButton" managed="false" onAction="#viewHighScores" styleClass="gameover-button-tile, gameover-highscores-button-tile" text="" visible="false" />
+            <Region fx:id="pauseHeadingTile" styleClass="pause-heading-tile"/>
+            <Region fx:id="gameOverHeadingTile" managed="false" styleClass="gameover-heading-tile" visible="false"/>
+            <Label fx:id="overlayTitleLabel" managed="false" styleClass="overlay-title" text="Game Over"
+                   visible="false"/>
+            <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="pause-button-tile, resume-button-tile"
+                    text=""/>
+            <Button fx:id="pauseRetryButton" onAction="#retryLevel" styleClass="pause-button-tile, retry-button-tile"
+                    text=""/>
+            <Button fx:id="pauseExitButton" onAction="#exitToMainMenu"
+                    styleClass="pause-button-tile, overlay-exit-button-tile" text=""/>
+            <Button fx:id="gameOverNewGameButton" managed="false" onAction="#startNewGame"
+                    styleClass="gameover-button-tile, gameover-newgame-button-tile" text="" visible="false"/>
+            <Button fx:id="gameOverMainMenuButton" managed="false" onAction="#exitToMainMenu"
+                    styleClass="gameover-button-tile, gameover-mainmenu-button-tile" text="" visible="false"/>
+            <Button fx:id="gameOverHighScoresButton" managed="false" onAction="#viewHighScores"
+                    styleClass="gameover-button-tile, gameover-highscores-button-tile" text="" visible="false"/>
         </VBox>
 
     </StackPane>

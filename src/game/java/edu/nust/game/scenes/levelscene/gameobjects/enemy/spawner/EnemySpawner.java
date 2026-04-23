@@ -51,7 +51,7 @@ public class EnemySpawner extends GameObject
             else
             {
                 setEnemies(currEnemies);
-                if(currEnemies <=0) this.destroy();
+                if (currEnemies <= 0) this.destroy();
             }
         }
     }
