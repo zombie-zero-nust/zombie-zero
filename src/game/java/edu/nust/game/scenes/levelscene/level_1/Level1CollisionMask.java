@@ -3,16 +3,22 @@ package edu.nust.game.scenes.levelscene.level_1;
 import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.Vector2D;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 public final class Level1CollisionMask
 {
     private static final Rectangle MAP_BOUNDS = Rectangle.fromCorners(0, 0, 3200, 800);
 
-    private static final Rectangle[] COLLISION_RECTS = new Rectangle[]{
-            /// Boundary
+    private static final List<Rectangle> BOUNDARY_RECTS = List.of(
             Rectangle.fromCorners(-50, -50, 3250, 4), // Top
             Rectangle.fromCorners(-50, 4, 4, 794), // Left
             Rectangle.fromCorners(3196, 4, 3250, 794), // Right
-            Rectangle.fromCorners(-50, 794, 3250, 850), // Bottom
+            Rectangle.fromCorners(-50, 794, 3250, 850) // Bottom
+    );
+
+    private static final List<Rectangle> INNER_COLLISION_RECTS = List.of(
             /// Ground
             // Ground Left-Middle
             Rectangle.fromCorners(4, 108, 68, 661),
@@ -63,12 +69,20 @@ public final class Level1CollisionMask
             Rectangle.fromCorners(2208, 652, 2224, 736), // inner bottom
             Rectangle.fromCorners(2320, 602, 2336, 644), // inner top 1
             Rectangle.fromCorners(2128, 588, 2144, 656), // inner top 2.1
-            Rectangle.fromCorners(2096, 656, 2200, 672), // inner top 2.2
-    };
+            Rectangle.fromCorners(2096, 656, 2200, 672) // inner top 2.2
+    );
+
+    private static final List<Rectangle> ALL_RECTS = new ArrayList<>();
+
+    static
+    {
+        ALL_RECTS.addAll(BOUNDARY_RECTS);
+        ALL_RECTS.addAll(INNER_COLLISION_RECTS);
+    }
 
     public boolean isWalkable(Vector2D pos)
     {
-        for (Rectangle rect : COLLISION_RECTS)
+        for (Rectangle rect : ALL_RECTS)
         {
             if (rect.contains(pos)) return false;
         }
@@ -78,7 +92,9 @@ public final class Level1CollisionMask
 
     public static Rectangle getMapBounds() { return MAP_BOUNDS; }
 
-    public static Rectangle[] getCollisionRects() { return COLLISION_RECTS; }
+    public static void forEachRect(Consumer<Rectangle> action) { ALL_RECTS.forEach(r -> action.accept(r.copy())); }
+
+    public static void forEachBoundaryRect(Consumer<Rectangle> action) { BOUNDARY_RECTS.forEach(r -> action.accept(r.copy())); }
+
+    public static void forEachInnerRect(Consumer<Rectangle> action) { INNER_COLLISION_RECTS.forEach(r -> action.accept(r.copy())); }
 }
-
-

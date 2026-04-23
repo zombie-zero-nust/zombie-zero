@@ -115,7 +115,7 @@ public class LevelScene extends GameScene
 
     private void initLevel1WithBackground()
     {
-        Arrays.stream(Level1Background.getObjects(this.getPlayer())).forEach(this::addGameObject);
+        Arrays.stream(Level1Background.getObjects(this)).forEach(this::addGameObject);
     }
 
     @Override
@@ -401,7 +401,7 @@ public class LevelScene extends GameScene
                 "/showCollisionRects",
                 "Show collision rectangles for the level for 5 seconds.",
                 args -> {
-                    Arrays.stream(Level1CollisionMask.getCollisionRects()).forEach(this::addDebugRectangle);
+                    Level1CollisionMask.forEachRect(this::addDebugRectangle);
                     return "Showing collision rectangles for 5 seconds.";
                 }
         );

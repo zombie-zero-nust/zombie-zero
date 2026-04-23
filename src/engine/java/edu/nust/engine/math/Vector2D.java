@@ -96,6 +96,8 @@ public class Vector2D
 
     /* OPERATORS NON MUTATING (COPY) */
 
+    public Vector2D copy() { return new Vector2D(this.x, this.y); }
+
     public Vector2D add(Vector2D other) { return new Vector2D(this.x + other.x, this.y + other.y); }
 
     public Vector2D add(double x, double y) { return add(new Vector2D(x, y)); }

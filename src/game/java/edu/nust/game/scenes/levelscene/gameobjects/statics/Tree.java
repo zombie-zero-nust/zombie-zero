@@ -6,7 +6,6 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
@@ -26,18 +25,6 @@ public class Tree extends GameObject
     public Tree(Player player)
     {
         this.player = player;
-
-        this.setRenderLayer(2);
-        Image treeImage = null;
-        try
-        {
-            treeImage = Resources.loadImageOrThrow("assets", "scenes", "level_1", "tree.png");
-        }
-        catch (FileNotFoundException e)
-        {
-            logger.error(true, "Failed to load tree image.");
-        }
-        this.addComponent(new SpriteRenderer(treeImage));
     }
 
     public static GameObject at(double x, double y, Player player)
@@ -50,26 +37,46 @@ public class Tree extends GameObject
     /* LIFETIME */
 
     @Override
-    public void onUpdate(TimeSpan deltaTime)
+    public void onInit()
     {
-        if (player != null)
+        this.setRenderLayer(2);
+
+        Image treeImage = null;
+        try
         {
-            isInScreenCenter = this.getTransform()
-                    .getPosition()
-                    .subtract(player.getTransform().getPosition())
-                    .magnitude() < PLAYER_DETECTION_RADIUS;
+            treeImage = Resources.loadImageOrThrow("assets", "scenes", "level_1", "tree.png");
+        }
+        catch (FileNotFoundException e)
+        {
+            logger.error(true, "Failed to load tree image.");
         }
 
-        currentOpacity = lerpOpacity(currentOpacity, isInScreenCenter ? HIDDEN_OPACITY : DEFAULT_OPACITY, deltaTime);
+        this.addComponent(new SpriteRenderer(treeImage));
+
+        this.getTransform().setAnchorBottomCenter();
     }
 
-    @Override
-    public void onRender(GraphicsContext context)
-    {
-        SpriteRenderer sprite = this.getFirstComponent(SpriteRenderer.class);
-        if (sprite == null) return;
-        sprite.setOpacity(this.currentOpacity);
-    }
+    //@Override
+    //public void onUpdate(TimeSpan deltaTime)
+    //{
+    //    if (player != null)
+    //    {
+    //        isInScreenCenter = this.getTransform()
+    //                .getPosition()
+    //                .subtract(player.getTransform().getPosition())
+    //                .magnitude() < PLAYER_DETECTION_RADIUS;
+    //    }
+    //
+    //    currentOpacity = lerpOpacity(currentOpacity, isInScreenCenter ? HIDDEN_OPACITY : DEFAULT_OPACITY, deltaTime);
+    //}
+
+    //@Override
+    //public void onRender(GraphicsContext context)
+    //{
+    //    SpriteRenderer sprite = this.getFirstComponent(SpriteRenderer.class);
+    //    if (sprite == null) return;
+    //    sprite.setOpacity(this.currentOpacity);
+    //}
 
     /* HELPERS */
 

@@ -122,9 +122,29 @@ public class Rectangle
 
     public Rectangle scaleSelf(double scalar) { return scaleSelf(scalar, scalar); }
 
+    public Rectangle shrinkSelf(double top, double bottom, double left, double right)
+    {
+        this.position.addSelf(left, top);
+        this.size.subtractSelf(left + right, top + bottom);
+        return this;
+    }
+
+    public Rectangle shrinkSelf(double x, double y) { return shrinkSelf(y, y, x, x); }
+
+    public Rectangle shrinkSelf(Vector2D amount) { return shrinkSelf(amount.getX(), amount.getY()); }
+
+    public Rectangle growSelf(double top, double bottom, double left, double right)
+    {
+        return shrinkSelf(-top, -bottom, -left, -right);
+    }
+
+    public Rectangle growSelf(double x, double y) { return growSelf(y, y, x, x); }
+
+    public Rectangle growSelf(Vector2D amount) { return growSelf(amount.getX(), amount.getY()); }
+
     /* OPERATIONS NON-MUTATING */
 
-    public Rectangle copy() { return new Rectangle(position, size); }
+    public Rectangle copy() { return new Rectangle(position.copy(), size.copy()); }
 
     public Rectangle translated(Vector2D delta) { return copy().translateSelf(delta); }
 
@@ -133,6 +153,24 @@ public class Rectangle
     public Rectangle scaled(double sx, double sy) { return copy().scaleSelf(sx, sy); }
 
     public Rectangle scaled(double scalar) { return scaled(scalar, scalar); }
+
+    public Rectangle shrunk(double top, double bottom, double left, double right)
+    {
+        return copy().shrinkSelf(top, bottom, left, right);
+    }
+
+    public Rectangle shrunk(double x, double y) { return shrunk(y, y, x, x); }
+
+    public Rectangle shrunk(Vector2D amount) { return shrunk(amount.getX(), amount.getY()); }
+
+    public Rectangle grown(double top, double bottom, double left, double right)
+    {
+        return shrunk(-top, -bottom, -left, -right);
+    }
+
+    public Rectangle grown(double x, double y) { return grown(y, y, x, x); }
+
+    public Rectangle grown(Vector2D amount) { return grown(amount.getX(), amount.getY()); }
 
     /* OPERATIONS STATICS */
 
@@ -144,6 +182,24 @@ public class Rectangle
 
     public static Rectangle scale(Rectangle rect, double sx, double sy) { return rect.scaled(sx, sy); }
 
+    public static Rectangle shrink(Rectangle rect, double top, double bottom, double left, double right)
+    {
+        return rect.shrunk(top, bottom, left, right);
+    }
+
+    public static Rectangle shrink(Rectangle rect, double x, double y) { return rect.shrunk(x, y); }
+
+    public static Rectangle shrink(Rectangle rect, Vector2D amount) { return rect.shrunk(amount); }
+
+    public static Rectangle grow(Rectangle rect, double top, double bottom, double left, double right)
+    {
+        return rect.grown(top, bottom, left, right);
+    }
+
+    public static Rectangle grow(Rectangle rect, double x, double y) { return rect.grown(x, y); }
+
+    public static Rectangle grow(Rectangle rect, Vector2D amount) { return rect.grown(amount); }
+
     /* QUERIES */
 
     public boolean contains(Vector2D point)
@@ -154,10 +210,7 @@ public class Rectangle
                 point.getY() <= getBottom();
     }
 
-    public boolean contains(double x, double y)
-    {
-        return contains(new Vector2D(x, y));
-    }
+    public boolean contains(double x, double y) { return contains(new Vector2D(x, y)); }
 
     public boolean intersects(Rectangle other)
     {
@@ -167,9 +220,14 @@ public class Rectangle
                 this.getBottom() > other.getTop();
     }
 
-    public double area()
+    public double area() { return getWidth() * getHeight(); }
+
+    public Vector2D getRandomPointInside()
     {
-        return getWidth() * getHeight();
+        return new Vector2D(
+                position.getX() + Math.random() * size.getX(), //
+                position.getY() + Math.random() * size.getY()
+        );
     }
 
     /* STATIC QUERIES */
@@ -181,6 +239,8 @@ public class Rectangle
     public static boolean intersects(Rectangle a, Rectangle b) { return a.intersects(b); }
 
     public static double area(Rectangle rect) { return rect.area(); }
+
+    public static Vector2D getRandomPointInside(Rectangle rect) { return rect.getRandomPointInside(); }
 
     /* INTERNAL */
 
