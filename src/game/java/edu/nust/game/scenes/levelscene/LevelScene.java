@@ -10,6 +10,7 @@ import edu.nust.game.scenes.highscores.HighScoresScene;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemySpawner;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
@@ -100,6 +101,7 @@ public class LevelScene extends GameScene
 
         EnemySpawner spawner = new EnemySpawner(5, 3, new Vector2D(100, 200));
         this.addGameObject(spawner);
+        spawner.addBoss(30,1000,25);
 
         if (ammoBarContainer != null)
         {

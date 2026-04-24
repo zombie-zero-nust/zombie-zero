@@ -17,8 +17,8 @@ public abstract sealed class DebugShape permits DebugPoint, DebugRectangle, Debu
 
     private final TimeSpan destroyTime;
 
-    protected Color fillColor = new Color(1, 0, 1, 0.25);
-    protected Color strokeColor = new Color(1, 0, 1, 0.5);
+    protected static final Color FILL_COLOR = new Color(1, 0, 1, 0.25);
+    protected static final Color STROKE_COLOR = new Color(1, 0, 1, 0.5);
 
     public DebugShape(Vector2D start, Vector2D end)
     {
@@ -38,8 +38,8 @@ public abstract sealed class DebugShape permits DebugPoint, DebugRectangle, Debu
 
     public void setColors(GraphicsContext context)
     {
-        context.setFill(fillColor);
-        context.setStroke(strokeColor);
+        context.setFill(FILL_COLOR);
+        context.setStroke(STROKE_COLOR);
     }
 
     public abstract void render(GraphicsContext context);
@@ -56,21 +56,9 @@ public abstract sealed class DebugShape permits DebugPoint, DebugRectangle, Debu
 
     public long getId() { return id; }
 
-    public Color getFillColor() { return fillColor; }
+    public static Color getFillColor() { return FILL_COLOR; }
 
-    public Color getStrokeColor() { return strokeColor; }
-
-    public DebugShape setFillColor(Color fillColor)
-    {
-        this.fillColor = fillColor;
-        return this;
-    }
-
-    public DebugShape setStrokeColor(Color strokeColor)
-    {
-        this.strokeColor = strokeColor;
-        return this;
-    }
+    public static Color getStrokeColor() { return STROKE_COLOR; }
 
     /* HELPERS */
 

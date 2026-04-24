@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DevConsole
@@ -27,6 +28,11 @@ public class DevConsole
     private final TextField input = new TextField();
     private final ScrollPane outputHolder = new ScrollPane();
     private final VBox outputContainer = new VBox(8);
+    private final VBox statsBox = new VBox(2);
+    private final Label fpsLabel = new Label("FPS: --");
+    private final Label objectsInViewLabel = new Label("GOiV: --");
+    private final Label totalObjectsLabel = new Label("TGO: --");
+
 
     private final Map<String, DevCommand> commands = new LinkedHashMap<>();
     private final List<String> suggestions = new ArrayList<>();
@@ -36,6 +42,10 @@ public class DevConsole
     private int suggestionIndex = -1;
 
     private boolean open = false;
+
+    private Supplier<Double> fpsSupplier;
+    private Supplier<Integer> objectsInViewSupplier;
+    private Supplier<Integer> totalObjectsSupplier;
 
     /// <b>{@code INTERNAL}</b>
     DevConsole()
@@ -51,6 +61,23 @@ public class DevConsole
         LogProgress initConsoleLogger = LogProgress.create("CONSOLE", LOGGER);
         initConsoleLogger.begin("Initializing DevConsole UI");
 
+        setupContainer();
+        setupHint();
+        setupInput();
+        setupOutputHolder();
+        setupStatsPanel();
+
+        setupInputListeners(initConsoleLogger);
+
+        container.getChildren().setAll(hint, input, outputHolder, statsBox);
+
+        Platform.runLater(() -> outputHolder.setVvalue(1.0));
+
+        initConsoleLogger.end("DevConsole UI initialized successfully");
+    }
+
+    private void setupContainer()
+    {
         container.setVisible(false);
         container.setManaged(false);
         container.getStyleClass().add("dev-console");
@@ -58,20 +85,30 @@ public class DevConsole
         container.setMaxWidth(520);
         container.setPadding(new Insets(10));
         container.setStyle("-fx-background-color: rgba(15,15,15,0.95);" + "-fx-border-color: rgba(255,255,255,0.15);" + "-fx-border-width: 1;" + "-fx-background-radius: 6;" + "-fx-border-radius: 6;");
+    }
 
+    private void setupHint()
+    {
         hint.setText("Dev Console");
-        hint.setStyle("-fx-text-fill: #9aa4ad;" + "-fx-font-size: 12px;");
+        hint.setStyle("-fx-text-fill: #9aa4ad; -fx-font-size: 12px;");
+    }
 
+    private void setupInput()
+    {
         input.setStyle("-fx-background-color: rgba(30,30,30,0.9);" + "-fx-text-fill: #e6e6e6;" + "-fx-prompt-text-fill: #666666;" + "-fx-border-color: rgba(255,255,255,0.10);" + "-fx-border-radius: 3;" + "-fx-background-radius: 3;");
         input.setPromptText("Type a command");
         input.setFocusTraversable(false);
         input.setText("/");
+    }
 
-        LOGGER.trace("Configuring input field event listeners");
+    private void setupInputListeners(LogProgress progress)
+    {
+        progress.log("Configuring input field event listeners");
+
         input.textProperty().addListener((obs, o, n) -> updateAutocomplete());
         input.setOnKeyPressed(this::handleKey);
 
-        // disable tab navigation
+        // Disable tab navigation; instead, apply suggestions
         input.addEventFilter(
                 KeyEvent.KEY_PRESSED, event -> {
                     if (event.getCode() == KeyCode.TAB)
@@ -82,33 +119,41 @@ public class DevConsole
                 }
         );
 
+        // Restrict allowed characters
         input.addEventFilter(
                 KeyEvent.KEY_TYPED, event -> {
-                    String ch = event.getCharacter();
-
-                    // allow only alphanumeric, slash and space
-                    if (!ch.matches(ALLOWED_REGEX))
+                    if (!event.getCharacter().matches(ALLOWED_REGEX))
                     {
                         event.consume();
                     }
                 }
         );
+    }
 
-        LOGGER.trace("Configuring output holder and constraints");
+    private void setupOutputHolder()
+    {
         outputHolder.setContent(outputContainer);
         outputHolder.setFitToWidth(true);
         outputHolder.setPrefHeight(Integer.MAX_VALUE);
         outputHolder.setPadding(new Insets(8));
         outputHolder.setStyle("-fx-background: transparent;" + "-fx-background-color: transparent;" + "-fx-border-color: rgba(255,255,255,0.10);" + "-fx-border-radius: 4;");
-
         outputHolder.setFitToWidth(true);
         outputHolder.setPannable(true);
+    }
 
-        container.getChildren().setAll(hint, input, outputHolder);
+    private void setupStatsPanel()
+    {
+        statsBox.setStyle("-fx-background: transparent;" + "-fx-background-color: transparent;" + "-fx-border-color: rgba(255,255,255,0.10);" + "-fx-border-radius: 4;");
+        statsBox.setPadding(new Insets(8));
 
-        Platform.runLater(() -> outputHolder.setVvalue(1.0));
+        String labelStyle = "-fx-text-fill: #00ff00; -fx-font-family: monospace; -fx-font-size: 12px;";
+        fpsLabel.setStyle(labelStyle);
+        objectsInViewLabel.setStyle(labelStyle);
+        totalObjectsLabel.setStyle(labelStyle);
 
-        initConsoleLogger.end("DevConsole UI initialized successfully");
+        statsBox.getChildren().addAll(fpsLabel, objectsInViewLabel, totalObjectsLabel);
+        statsBox.setVisible(false);
+        statsBox.setManaged(false);
     }
 
     public StackPane createLayer()
@@ -124,7 +169,7 @@ public class DevConsole
     public void toggle()
     {
         open = !open;
-        LOGGER.debug("DevConsole is now {}", open ? "OPEN" : "CLOSED");
+        LOGGER.debug("DevConsole is now {}", open ? "Open" : "Closed");
         container.setVisible(open);
         container.setManaged(open);
         if (open)
@@ -134,6 +179,8 @@ public class DevConsole
             input.positionCaret(input.getText().length());
             updateAutocomplete();
         }
+
+        updateStatsDisplay();
     }
 
     public boolean isOpen() { return open; }
@@ -170,15 +217,22 @@ public class DevConsole
     private void execute()
     {
         String text = input.getText().trim();
-        if (text.isBlank()) return;
+        if (text.isBlank())
+        {
+            LOGGER.trace("Empty command entered – ignored");
+            return;
+        }
 
         LOGGER.info("DevConsole input: {}", text);
 
         history.add(text);
         historyIndex = history.size();
+        LOGGER.trace("Command added to history (size={})", history.size());
 
         addLine("> " + text);
-        addLine(runCommand(text));
+        String result = runCommand(text);
+        LOGGER.trace("Command result: {}", result);
+        addLine(result);
         input.clear();
         updateAutocomplete();
     }
@@ -202,12 +256,13 @@ public class DevConsole
         }
 
         List<String> args = Arrays.asList(words).subList(1, words.length);
+        LOGGER.trace("Executing command '{}' with {} args: {}", name, args.size(), args);
 
         try
         {
-            LOGGER.trace("Executing command '{}' with args: {}", name, args);
+            LOGGER.trace("Calling executor for command '{}'", name);
             String result = cmd.executor.execute(args);
-            LOGGER.debug("Command '{}' executed successfully", name);
+            LOGGER.debug("Command '{}' executed successfully – result length: {}", name, result.length());
             return result;
         }
         catch (Exception e)
@@ -244,6 +299,7 @@ public class DevConsole
         if (outputContainer.getChildren().size() > maxLines)
         {
             outputContainer.getChildren().removeFirst();
+            LOGGER.trace("Output line limit reached – removed oldest line");
         }
 
         // Auto-scroll to bottom
@@ -262,14 +318,14 @@ public class DevConsole
     public final void registerDevCommand(String commandName, String usage, String description, DevCommandExecutor executor)
     {
         String normalized = normalizeCommandName(commandName);
-        LOGGER.trace("Registering dev command: {}", normalized);
+        LOGGER.info("Registering dev command: {} (usage: {})", normalized, usage);
         commands.put(normalized, new DevCommand(normalized, usage, description, executor));
     }
 
     public final void unregisterDevCommand(String commandName)
     {
         String normalized = normalizeCommandName(commandName);
-        LOGGER.trace("Unregistering dev command: {}", normalized);
+        LOGGER.info("Unregistering dev command: {}", normalized);
         commands.remove(normalized);
     }
 
@@ -289,10 +345,12 @@ public class DevConsole
         if (!text.startsWith("/"))
         {
             hint.setText("Dev Console");
+            LOGGER.trace("No slash prefix – resetting suggestions");
             return;
         }
 
         String token = normalizeCommandName(text.split("\\s+")[0]);
+        LOGGER.trace("Updating autocomplete for token: {}", token);
 
         for (DevCommand cmd : commands.values())
         {
@@ -302,40 +360,57 @@ public class DevConsole
         if (suggestions.isEmpty())
         {
             hint.setText("No matches");
+            LOGGER.trace("No suggestions found for token: {}", token);
         }
         else
         {
             suggestionIndex = 0;
             hint.setText(suggestions.getFirst());
+            LOGGER.trace("{} suggestions available, first: {}", suggestions.size(), suggestions.getFirst());
         }
     }
 
     private void applySuggestion(int dir)
     {
-        if (suggestions.isEmpty()) return;
+        if (suggestions.isEmpty())
+        {
+            LOGGER.trace("applySuggestion called but no suggestions available");
+            return;
+        }
 
         int size = suggestions.size();
+        int oldIndex = suggestionIndex;
         suggestionIndex = (suggestionIndex + dir + size) % size;
 
         String cmd = suggestions.get(suggestionIndex).split("\\s+")[0];
         input.setText(cmd + " ");
         input.positionCaret(input.getText().length());
+
+        LOGGER.trace("Suggestion applied: index {} -> {} / {}, command: {}", oldIndex, suggestionIndex, size, cmd);
     }
 
     private void navigateHistory(int delta)
     {
-        if (history.isEmpty()) return;
+        if (history.isEmpty())
+        {
+            LOGGER.trace("History navigation attempted but history is empty");
+            return;
+        }
 
+        int oldIndex = historyIndex;
         historyIndex = Math.clamp(historyIndex + delta, 0, history.size());
 
         if (historyIndex == history.size())
         {
+            LOGGER.trace("History moved to end – clearing input");
             input.clear();
             return;
         }
 
-        input.setText(history.get(historyIndex));
+        String cmd = history.get(historyIndex);
+        input.setText(cmd);
         input.positionCaret(input.getText().length());
+        LOGGER.trace("History navigated: index {} -> {}, command: {}", oldIndex, historyIndex, cmd);
     }
 
     /* STATIC HELPERS */
@@ -355,6 +430,66 @@ public class DevConsole
         if (s == null || s.isBlank()) return "/";
         s = s.toLowerCase(Locale.ROOT);
         return s.startsWith("/") ? s : "/" + s;
+    }
+
+    /* STATS */
+
+    public void updateStatsDisplay()
+    {
+        if (!open)
+        {
+            statsBox.setVisible(false);
+            statsBox.setManaged(false);
+            return;
+        }
+
+        LOGGER.trace("Updating stats display");
+
+        statsBox.setVisible(true);
+        statsBox.setManaged(true);
+        try
+        {
+            if (fpsSupplier != null)
+            {
+                double fps = fpsSupplier.get();
+                fpsLabel.setText(String.format("FPS: %.0f", fps));
+                LOGGER.trace("FPS updated: {}", fps);
+            }
+            if (objectsInViewSupplier != null)
+            {
+                int oiv = objectsInViewSupplier.get();
+                objectsInViewLabel.setText("GOiV: " + oiv);
+                LOGGER.trace("GOiV updated: {}", oiv);
+            }
+            if (totalObjectsSupplier != null)
+            {
+                int tgo = totalObjectsSupplier.get();
+                totalObjectsLabel.setText("TGO: " + tgo);
+                LOGGER.trace("TGO updated: {}", tgo);
+            }
+        }
+        catch (Exception e)
+        {
+            LOGGER.error(false, "Failed to update stats display", e);
+        }
+    }
+
+    public DevConsole setFpsSupplier(Supplier<Double> fpsSupplier)
+    {
+        this.fpsSupplier = fpsSupplier;
+        return this;
+    }
+
+    public DevConsole setObjectsInViewSupplier(Supplier<Integer> supplier)
+    {
+        this.objectsInViewSupplier = supplier;
+        return this;
+    }
+
+    public DevConsole setTotalObjectsSupplier(Supplier<Integer> supplier)
+    {
+        this.totalObjectsSupplier = supplier;
+        return this;
     }
 
     /* UTILITIES */

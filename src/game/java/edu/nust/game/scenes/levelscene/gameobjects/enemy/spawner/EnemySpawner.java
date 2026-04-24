@@ -6,6 +6,7 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.EnemyTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 
@@ -21,6 +22,7 @@ public class EnemySpawner extends GameObject
     private final double spawnTime;
     private boolean spawnActive = false;
     private TimeSpan elapsed = TimeSpan.zero();
+    private Boss boss;
 
     public EnemySpawner(int totalEnemies, double spawnTime, Vector2D pos)
     {
@@ -51,8 +53,15 @@ public class EnemySpawner extends GameObject
             else
             {
                 setEnemies(currEnemies);
-                if (currEnemies <= 0) this.destroy();
+                if (currEnemies <= 0) {
+                    if(boss != null) {
+                        this.getScene().addGameObject(boss.addTag(EnemyTag.class));
+                        boss = null;
+                    }
+                    this.destroy();
+                }
             }
+
         }
     }
 
@@ -64,6 +73,9 @@ public class EnemySpawner extends GameObject
         }
     }
 
+    public void addBoss(int speed,int health,int damage){
+        this.boss = new Boss(this.pos,30,1000,20);
+    }
 
     public boolean isSpawnActive()
     {

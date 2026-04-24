@@ -8,6 +8,7 @@ import edu.nust.engine.core.gameobjects.Tag;
 import edu.nust.engine.core.interfaces.Initiable;
 import edu.nust.engine.core.interfaces.InputHandler;
 import edu.nust.engine.core.interfaces.Updatable;
+import edu.nust.engine.core.interfaces.WorldBoundsProvider;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.Rectangle;
@@ -87,6 +88,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     protected Vector2D mousePosition = Vector2D.zero();
 
     private final DevConsole devConsole = new DevConsole();
+    private int objectsInViewCount = 0;
 
     public GameScene(GameWorld gameWorld)
     {
@@ -168,6 +170,10 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
             this.mousePosition = new Vector2D(mEv.getX(), mEv.getY());
         });
 
+        this.devConsole.setFpsSupplier(() -> gameWorld.getFPS());  // assuming getFPS() exists
+        this.devConsole.setObjectsInViewSupplier(() -> objectsInViewCount);
+        this.devConsole.setTotalObjectsSupplier(gameObjects::size);
+
         initSceneLogger.end("Scene initialized successfully");
     }
 
@@ -193,17 +199,24 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
         this.clearCanvas();
 
+        Rectangle visibleBounds = getVisibleWorldBounds();
         fetchWorldContextAndRun((ctx) -> {
-            // Create a copy of the list to iterate over to avoid ConcurrentModificationException
-            this.gameObjects.stream()
+            List<GameObject> visibleObjects = this.gameObjects.stream()
                     .sorted(Comparator.comparingInt(GameObject::getRenderLayer))
-                    .forEach(obj -> obj.invokeRender(ctx));
+                    .filter(obj -> shouldRenderInCamera(obj, visibleBounds))
+                    .toList();
 
+            visibleObjects.forEach(obj -> obj.invokeRender(ctx));
             this.renderDebug(ctx);
+            this.objectsInViewCount = visibleObjects.size();
         });
+
 
         // remove debug shapes if times up
         this.debugShapes.removeIf(shape -> shape.isPastDestroyTime(TimeSpan.fromMilliseconds(System.currentTimeMillis())));
+
+        // update dev console stats
+        this.devConsole.updateStatsDisplay();
     }
 
     /* GAME OBJECT */
@@ -808,6 +821,47 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
                 worldPos.getX() + 5,
                 worldPos.getY() - 5
         );
+    }
+
+    /* CULLING */
+
+    private Rectangle getVisibleWorldBounds()
+    {
+        double zoom = worldCamera.getZoom();
+        double canvasW = worldCanvas.getWidth();
+        double canvasH = worldCanvas.getHeight();
+
+        double camX = worldCamera.getPosition().getX();
+        double camY = worldCamera.getPosition().getY();
+
+        double halfW = canvasW / 2.0 / zoom;
+        double halfH = canvasH / 2.0 / zoom;
+
+        return Rectangle.fromCorners(camX - halfW, camY - halfH, camX + halfW, camY + halfH);
+    }
+
+    private boolean shouldRenderInCamera(GameObject obj, Rectangle visibleBounds)
+    {
+        if (!obj.isVisible()) return false;
+
+        Rectangle renderBounds = getRenderableBounds(obj);
+        if (renderBounds == null) return true;
+
+        return renderBounds.intersects(visibleBounds);
+    }
+
+    private @Nullable Rectangle getRenderableBounds(GameObject obj)
+    {
+        for (Component component : obj.getAllComponents())
+        {
+            if (!component.isVisible()) continue;
+            if (component instanceof WorldBoundsProvider provider)
+            {
+                Rectangle bounds = provider.getWorldBounds();
+                if (bounds != null) return bounds;
+            }
+        }
+        return null;
     }
 
     /* ACTIVE */
