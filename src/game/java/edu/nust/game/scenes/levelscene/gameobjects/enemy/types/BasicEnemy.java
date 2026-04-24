@@ -192,7 +192,7 @@ public class BasicEnemy extends Enemy
                 case RIGHT -> rightMoveSheet;
             };
         }
-        spriteRenderer.setImage(image, 6, 1);
+        spriteRenderer.setImage(image, 6, 1).setSize(this.getWidth(),this.getHeight());
     }
 
     @Override
@@ -200,13 +200,11 @@ public class BasicEnemy extends Enemy
 
         Player player = (Player) this.getScene().getFirstOfType(Player.class);
         if (player == null) return;
-        System.out.println(isAttacking());
         // If attacking -> update attack timer only
         if (isAttacking()) {
             attackTimeElapsed += deltaTime.asMilliseconds();
 
             if (attackTimeElapsed >= attack1Time) {
-                spriteRenderer.stopAnimation();
                 setAttacking(false);
                 canAttack = false;
                 attackCooldownElapsed = 0;
@@ -253,11 +251,11 @@ public class BasicEnemy extends Enemy
             spriteRenderer.setImage(image, 4, 1)
                     .startAnimation()
                     .setAnimationTime(TimeSpan.fromMilliseconds(attack1Time / 4));
+            spriteRenderer.setSize(11,14);
 
             attackTimeElapsed = 0;
             setAttacking(true);
         }
-        System.out.println(isAttacking());
     }
 
 
