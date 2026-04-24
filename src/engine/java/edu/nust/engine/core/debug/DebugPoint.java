@@ -22,7 +22,7 @@ public final class DebugPoint extends DebugShape
     @Override
     public void setColors(GraphicsContext context)
     {
-        context.setFill(strokeColor);
+        context.setFill(STROKE_COLOR);
     }
 
     @Override

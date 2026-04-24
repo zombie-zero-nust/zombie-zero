@@ -1,10 +1,12 @@
 package edu.nust.engine.core.components.renderers;
 
 import edu.nust.engine.core.components.Transform;
+import edu.nust.engine.core.interfaces.WorldBoundsProvider;
+import edu.nust.engine.math.Rectangle;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class CircleRenderer extends ShapeRenderer
+public class CircleRenderer extends ShapeRenderer implements WorldBoundsProvider
 {
     private double radius;
 
@@ -61,5 +63,25 @@ public class CircleRenderer extends ShapeRenderer
     {
         this.radius = radius;
         return this;
+    }
+
+    @Override
+    public Rectangle getWorldBounds()
+    {
+        Transform transform = this.gameObject.getTransform();
+        double x = transform.getPosition().getX();
+        double y = transform.getPosition().getY();
+
+        double anchorX = transform.getAnchor().getX();
+        double anchorY = transform.getAnchor().getY();
+
+        double diameter = this.radius * 2.0;
+
+        double localLeft = Math.min(-diameter * anchorX, -diameter * anchorX + diameter);
+        double localRight = Math.max(-diameter * anchorX, -diameter * anchorX + diameter);
+        double localTop = Math.min(-diameter * anchorY, -diameter * anchorY + diameter);
+        double localBottom = Math.max(-diameter * anchorY, -diameter * anchorY + diameter);
+
+        return Rectangle.fromCorners(x + localLeft, y + localTop, x + localRight, y + localBottom);
     }
 }

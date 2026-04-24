@@ -2,6 +2,8 @@ package edu.nust.engine.core.components.renderers;
 
 import edu.nust.engine.core.Component;
 import edu.nust.engine.core.components.Transform;
+import edu.nust.engine.core.interfaces.WorldBoundsProvider;
+import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.TimeSpan;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.Effect;
@@ -10,7 +12,7 @@ import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-public class SpriteRenderer extends Component
+public class SpriteRenderer extends Component implements WorldBoundsProvider
 {
     private double width;
     private double height;
@@ -270,5 +272,39 @@ public class SpriteRenderer extends Component
     {
         this.opacity = Math.clamp(opacity, 0.0, 1.0);
         return this;
+    }
+
+    @Override
+    public Rectangle getWorldBounds()
+    {
+        Transform transform = this.gameObject.getTransform();
+        double x = transform.getPosition().getX();
+        double y = transform.getPosition().getY();
+
+        double anchorX = transform.getAnchor().getX();
+        double anchorY = transform.getAnchor().getY();
+
+        double maxCornerDistance = getMaxCornerDistance(anchorX, anchorY);
+
+        return Rectangle.fromCorners(
+                x - maxCornerDistance,
+                y - maxCornerDistance,
+                x + maxCornerDistance,
+                y + maxCornerDistance
+        );
+    }
+
+    private double getMaxCornerDistance(double anchorX, double anchorY)
+    {
+        double localLeft = Math.min(-this.width * anchorX, -this.width * anchorX + this.width);
+        double localRight = Math.max(-this.width * anchorX, -this.width * anchorX + this.width);
+        double localTop = Math.min(-this.height * anchorY, -this.height * anchorY + this.height);
+        double localBottom = Math.max(-this.height * anchorY, -this.height * anchorY + this.height);
+
+        // Conservative bound around anchor point that remains safe for any rotation.
+        return Math.max(
+                Math.max(Math.hypot(localLeft, localTop), Math.hypot(localRight, localTop)),
+                Math.max(Math.hypot(localLeft, localBottom), Math.hypot(localRight, localBottom))
+        );
     }
 }
