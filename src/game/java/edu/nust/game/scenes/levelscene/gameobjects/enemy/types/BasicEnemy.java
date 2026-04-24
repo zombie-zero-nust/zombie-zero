@@ -8,6 +8,7 @@ import edu.nust.game.systems.assets.EnemyAsset;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
+import java.sql.Time;
 
 public class BasicEnemy extends Enemy
 {
@@ -23,10 +24,16 @@ public class BasicEnemy extends Enemy
     private Image attackDownSheet;
     private Image attackRightSheet;
     private Image attackLeftSheet;
+    private Image deathRightSheet;
+    private Image deathLeftSheet;
     private SpriteRenderer spriteRenderer;
+    private boolean animationStarted = false;
+    private boolean animationFinsihed = false;
     private int width = 12;
     private int height = 16;
     private Facing facing = Facing.DOWN;
+    private TimeSpan deathAnimationTime = TimeSpan.fromMilliseconds(300);
+    private double elapsed = 0;
 
     public BasicEnemy(Vector2D pos)
     {
@@ -104,7 +111,16 @@ public class BasicEnemy extends Enemy
                     enemyType.getPath(),
                     "Zombie_Small_Up_First-Attack-Sheet4.png"
             );
-
+            deathLeftSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Side-left_First-Death-Sheet6.png"
+            );
+            deathRightSheet = Resources.loadImageOrThrow(
+                    "assets",
+                    enemyType.getPath(),
+                    "Zombie_Small_Side_First-Death-Sheet6.png"
+            );
 
             spriteRenderer = new SpriteRenderer(width, height, downIdleSheet, 6, 1);
             spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150)).startAnimation();
@@ -144,10 +160,47 @@ public class BasicEnemy extends Enemy
             };
         }
         spriteRenderer.setImage(image, 6, 1);
-
     }
 
     @Override
     public void attack() { }
 
+    @Override
+    public void playDeathAnimation(TimeSpan deltaTime) {
+
+        elapsed += deltaTime.asMilliseconds();
+
+        Image image;
+
+        if (facing == Facing.UP || facing == Facing.RIGHT) {
+            image = deathRightSheet;
+        } else {
+            image = deathLeftSheet;
+        }
+
+        // Play animation only once
+        if (!animationStarted) {
+            spriteRenderer.setSize(16,14);
+            spriteRenderer.setImage(image, 6, 1)
+                    .startAnimation()
+                    .setAnimationTime(deathAnimationTime);
+            animationStarted = true;
+        }
+        if(! animationFinsihed) {
+            if (elapsed >= deathAnimationTime.asMilliseconds()) {
+                spriteRenderer.stopAnimation();
+                spriteRenderer.setFrame(6, 1);
+                elapsed = 0;
+                animationFinsihed = true;
+            }
+        }
+        else {
+            double opacity = spriteRenderer.getOpacity();
+            if (opacity > 0) {
+                spriteRenderer.setOpacity(opacity - 0.05);
+            } else {
+                this.destroy();
+            }
+        }
+    }
 }

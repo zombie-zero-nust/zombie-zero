@@ -1,6 +1,7 @@
 package edu.nust.game.scenes.levelscene.gameobjects.enemy.types;
 
 
+import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.systems.assets.EnemyAsset;
 
@@ -26,6 +27,10 @@ public class Boss extends Enemy
     @Override
     public void attack()
     {
+
+    }
+    @Override
+    public void playDeathAnimation(TimeSpan deltaTime){
 
     }
 

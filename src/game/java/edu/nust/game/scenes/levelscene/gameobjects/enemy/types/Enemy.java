@@ -47,7 +47,6 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
     private TimeSpan pathTimer = TimeSpan.zero();
     private final TimeSpan pathUpdateInterval = TimeSpan.fromMilliseconds(300);
 
-    // ✅ SINGLE SOURCE OF TRUTH (MUST MATCH MapNodeSetter)
     private static final int NODE_SIZE = 2;
 
     public Enemy(Vector2D startPosition, double speed, int health)
@@ -85,7 +84,6 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
         setHitbox();
         pathFinder = new PathFinder((LevelScene) this.getScene());
 
-        // initial path
         movement = pathFinder.getPath(this);
     }
 
@@ -95,7 +93,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
 
         if (!health.isAlive())
         {
-            this.destroy();
+            playDeathAnimation(deltaTime);
             return;
         }
         if (pathFinder == null) pathFinder = new PathFinder((LevelScene) this.getScene());
@@ -127,7 +125,6 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
         Vector2D currentPos = this.getTransform().getPosition();
         Node targetNode = movement.get(currentPathIndex);
 
-        // ✅ Convert grid → world (CENTERED IN NODE)
         Vector2D targetPos = pathFinder.getMapTopLeftPos().add(
                 new Vector2D(
                         targetNode.getCol() * NODE_SIZE + NODE_SIZE / 2.0,
@@ -162,7 +159,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
     {
         if (hitbox == null)
         {
-            hitbox = new HitBox(this.getTransform().getPosition(), 16, 16);
+            hitbox = new HitBox(this.getTransform().getPosition(), height/2, width/2);
             this.addComponent(hitbox);
         }
     }
@@ -230,6 +227,8 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
     {
         return !health.isAlive();
     }
+
+    public abstract void playDeathAnimation(TimeSpan deltaTime);
 
     public abstract void updateSprite(double dx, double dy);
 
