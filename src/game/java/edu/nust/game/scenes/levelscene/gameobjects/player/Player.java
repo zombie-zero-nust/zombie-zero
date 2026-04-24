@@ -218,7 +218,10 @@ public class Player extends Character implements Damageable, Concrete
     public void setHealth(Health health) { this.health = health; }
 
     @Override
-    public boolean isDead() { return false; }
+    public boolean isDead()
+    {
+        return health != null && !health.isAlive();
+    }
 
     public Health getHealthSystem() { return health; }
 

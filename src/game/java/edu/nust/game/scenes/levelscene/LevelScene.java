@@ -145,6 +145,13 @@ public class LevelScene extends GameScene
             collisionManager.manageCollisions();
             playerPos = player.getTransform().getPosition();
         }
+
+        if (!gameOverState && player.isDead())
+        {
+            gameOver();
+            return;
+        }
+
         updateWeaponTracking(playerPos);
         updateCameraPosition(playerPos, canvasW, canvasH, zoom);
     }
@@ -430,3 +437,4 @@ public class LevelScene extends GameScene
         );
     }
 }
+
