@@ -9,9 +9,7 @@ import edu.nust.game.systems.assets.EnemyAsset;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
-import java.sql.Time;
 import java.util.List;
-import java.util.Objects;
 
 public class BasicEnemy extends Enemy
 {
@@ -23,16 +21,12 @@ public class BasicEnemy extends Enemy
     private Image leftMoveSheet;
     private Image upMoveSheet;
     private Image downMoveSheet;
-    private Image attackUpSheet;
-    private Image attackDownSheet;
-    private Image attackRightSheet;
-    private Image attackLeftSheet;
+    private Image upAttackSheet;
+    private Image downAttackSheet;
+    private Image rightAttackSheet;
+    private Image leftAttackSheet;
     private Image deathRightSheet;
     private Image deathLeftSheet;
-    private Image leftAttackSheet;
-    private Image rightAttackSheet;
-    private Image downAttackSheet;
-    private Image upAttackSheet;
     private SpriteRenderer spriteRenderer;
     private boolean animationStarted = false;
     private boolean animationFinished = false;
@@ -104,22 +98,22 @@ public class BasicEnemy extends Enemy
                     enemyType.getPath(),
                     "Zombie_Small_Up_Walk-Sheet6.png"
             );
-            attackDownSheet = Resources.loadImageOrThrow(
+            downAttackSheet = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
                     "Zombie_Small_Down_First-Attack-Sheet4.png"
             );
-            attackLeftSheet = Resources.loadImageOrThrow(
+            leftAttackSheet = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
                     "Zombie_Small_Side-left_First-Attack-Sheet4.png"
             );
-            attackRightSheet = Resources.loadImageOrThrow(
+            rightAttackSheet = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
                     "Zombie_Small_Side_First-Attack-Sheet4.png"
             );
-            attackUpSheet = Resources.loadImageOrThrow(
+            upAttackSheet = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
                     "Zombie_Small_Up_First-Attack-Sheet4.png"
@@ -134,27 +128,6 @@ public class BasicEnemy extends Enemy
                     enemyType.getPath(),
                     "Zombie_Small_Side_First-Death-Sheet6.png"
             );
-            downAttackSheet = Resources.loadImageOrThrow(
-                    "assets",
-                    enemyType.getPath(),
-                    "Zombie_Small_Down_First-Attack-Sheet4.png"
-            );
-            upAttackSheet = Resources.loadImageOrThrow(
-                    "assets",
-                    enemyType.getPath(),
-                    "Zombie_Small_Up_First-Attack-Sheet4.png"
-            );
-            rightAttackSheet = Resources.loadImageOrThrow(
-                    "assets",
-                    enemyType.getPath(),
-                    "Zombie_Small_Side_First-Attack-Sheet4.png"
-            );
-            leftAttackSheet = Resources.loadImageOrThrow(
-                    "assets",
-                    enemyType.getPath(),
-                    "Zombie_Small_Side-left_First-Attack-Sheet4.png"
-            );
-
             spriteRenderer = new SpriteRenderer(width, height, downIdleSheet, 6, 1);
             spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150)).startAnimation();
 
