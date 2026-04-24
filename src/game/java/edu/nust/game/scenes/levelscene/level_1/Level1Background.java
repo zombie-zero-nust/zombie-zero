@@ -30,9 +30,9 @@ public final class Level1Background
     public static GameObject[] getObjects(final LevelScene scene)
     {
         final ArrayList<GameObject> objects = new ArrayList<>(loadPlacements(scene));
-        //final ArrayList<GameObject> objects = new ArrayList<>();
-        //placementFilePreBuilder(scene, objects);
-        //objects.addAll(loadPlacements(scene));
+        // final ArrayList<GameObject> objects = new ArrayList<>();
+        // placementFilePreBuilder(scene, objects);
+        // objects.addAll(loadPlacements(scene));
 
         try
         {
@@ -177,11 +177,11 @@ public final class Level1Background
 
     private static void placementFilePreBuilder(LevelScene scene, ArrayList<GameObject> objectsRef)
     {
-        final Random random = new Random(1);
+        final Random random = new Random(3);
         final List<StoredPlacement> placements = new ArrayList<>();
         Level1CollisionMask.forEachInnerRect((rectangle) -> {
             rectangle.growSelf(20, 20);
-            //scene.addDebugRectangle(rectangle, TimeSpan.fromDays(1));
+            // scene.addDebugRectangle(rectangle, TimeSpan.fromDays(1));
             final int stepX = 18;
             final int stepY = 24;
             final int offset = 13;
