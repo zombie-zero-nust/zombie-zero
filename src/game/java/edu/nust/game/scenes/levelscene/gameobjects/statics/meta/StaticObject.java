@@ -9,12 +9,16 @@ import java.util.Random;
 
 public abstract class StaticObject extends GameObject
 {
-    private Random random = new Random();
+    protected final int variant;
 
-    public StaticObject setRandom(Random random)
+    public StaticObject(int variant)
     {
-        this.random = random;
-        return this;
+        this.variant = variant;
+    }
+
+    public StaticObject(Random random)
+    {
+        this.variant = random.nextInt(1, numImages() + 1);
     }
 
     /* LIFETIME */
@@ -24,22 +28,31 @@ public abstract class StaticObject extends GameObject
     {
         this.setRenderLayer(renderLayer());
 
-        final int i = random.nextInt(1, numImages() + 1);
         try
         {
-            Image image = Resources.loadImageOrThrow("assets", "scenes", "level_1", folderName(), filename(i));
+            Image image = Resources.loadImageOrThrow("assets", "scenes", "level_1", folderName(), filename(variant));
             this.addComponent(new SpriteRenderer(image));
         }
         catch (Exception e)
         {
-            logger.error(false, "Failed to load grass image ({})", filename(i));
+            logger.error(false, "Failed to load grass image ({})", filename(variant));
             logger.logException(e);
         }
+
+        // rotate based on current position
+        if (rotateRandom())
+            this.getTransform().setRotationDegrees(((getTransform().getPosition().getX() * variant) % 4) * 90);
     }
+
+    /* GETTERS & SETTERS */
+
+    public int getVariant() { return variant; }
 
     /* ABSTRACT */
 
     protected int renderLayer() { return -1; }
+
+    protected boolean rotateRandom() { return false; }
 
     protected abstract int numImages();
 

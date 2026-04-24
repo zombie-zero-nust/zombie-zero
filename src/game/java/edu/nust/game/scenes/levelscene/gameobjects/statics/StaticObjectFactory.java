@@ -1,11 +1,9 @@
 package edu.nust.game.scenes.levelscene.gameobjects.statics;
 
-import edu.nust.engine.core.GameObject;
-import edu.nust.game.scenes.levelscene.components.SeeThroughComponent;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.StaticTag;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
+import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObject;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObjectType;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -18,76 +16,88 @@ public class StaticObjectFactory
     private static final int GARBAGE_WEIGHT = 10;
     private static final int FALLEN_TREE_WEIGHT = 5;
 
-    public static Bush bushAt(double x, double y)
+    // BUSH
+
+    public static Bush bushAt(double x, double y, int variant) { return applyPosAndTag(new Bush(variant), x, y); }
+
+    public static Bush bushAt(double x, double y, Random random) { return applyPosAndTag(new Bush(random), x, y); }
+
+    // FALLEN TREE
+
+    public static FallenTree fallenTreeAt(double x, double y, int variant)
     {
-        return (Bush) new Bush().addTag(StaticTag.class).getTransform().setPosition(x, y).getGameObject();
+        return applyPosAndTag(new FallenTree(variant), x, y);
     }
 
-    public static Bush bushAt(double x, double y, @NotNull Random random)
+    public static FallenTree fallenTreeAt(double x, double y, Random random)
     {
-        return (Bush) bushAt(x, y).setRandom(random);
+        return applyPosAndTag(new FallenTree(random), x, y);
     }
 
-    public static FallenTree fallenTreeAt(double x, double y)
+    // GARBAGE ITEM
+
+    public static GarbageItem garbageItemAt(double x, double y, int variant)
     {
-        return (FallenTree) new FallenTree().addTag(StaticTag.class).getTransform().setPosition(x, y).getGameObject();
+        return applyPosAndTag(new GarbageItem(variant), x, y);
     }
 
-    public static FallenTree fallenTreeAt(double x, double y, @NotNull Random random)
+    public static GarbageItem garbageItemAt(double x, double y, Random random)
     {
-        return (FallenTree) fallenTreeAt(x, y).setRandom(random);
+        return applyPosAndTag(new GarbageItem(random), x, y);
     }
 
-    public static GarbageItem garbageItemAt(double x, double y)
+    // PLANT
+
+    public static Plant plantAt(double x, double y, int variant) { return applyPosAndTag(new Plant(variant), x, y); }
+
+    public static Plant plantAt(double x, double y, Random random)
     {
-        return (GarbageItem) new GarbageItem().addTag(StaticTag.class).getTransform().setPosition(x, y).getGameObject();
+        return applyPosAndTag(new Plant(random), x, y);
     }
 
-    public static GarbageItem garbageItemAt(double x, double y, @NotNull Random random)
+    // TREE
+
+    public static Tree treeAt(double x, double y, int variant, @Nullable Player player)
     {
-        return (GarbageItem) garbageItemAt(x, y).setRandom(random);
+        return applyPosAndTag(new Tree(variant, player), x, y);
     }
 
-    public static Plant plantAt(double x, double y)
+    public static Tree treeAt(double x, double y, Random random, @Nullable Player player)
     {
-        return (Plant) new Plant().addTag(StaticTag.class).getTransform().setPosition(x, y).getGameObject();
+        return applyPosAndTag(new Tree(random, player), x, y);
     }
 
-    public static Plant plantAt(double x, double y, @NotNull Random random)
-    {
-        return (Plant) plantAt(x, y).setRandom(random);
-    }
-
-    public static Tree treeAt(double x, double y, @Nullable Player player)
-    {
-        return (Tree) new Tree().addTag(StaticTag.class)
-                .getTransform()
-                .setPosition(x, y)
-                .getGameObject()
-                .getFirstOrAddComponent(new SeeThroughComponent().setPlayer(player))
-                .getGameObject();
-    }
-
-    public static Tree treeAt(double x, double y, @Nullable Player player, @NotNull Random random)
-    {
-        return (Tree) treeAt(x, y, player).setRandom(random);
-    }
-
-    public static GameObject staticAt(double x, double y, @NotNull StaticObjectType type, @Nullable Player player)
+    public static StaticObject staticAt(double x, double y, int variant, StaticObjectType type, @Nullable Player player)
     {
         return switch (type)
         {
-            case BUSH -> bushAt(x, y);
-            case FALLEN_TREE -> fallenTreeAt(x, y);
-            case GARBAGE_ITEM -> garbageItemAt(x, y);
-            case PLANT -> plantAt(x, y);
-            case TREE -> treeAt(x, y, player);
+            //@formatter:off
+            case BUSH         -> bushAt        (x, y, variant);
+            case FALLEN_TREE  -> fallenTreeAt  (x, y, variant);
+            case GARBAGE_ITEM -> garbageItemAt (x, y, variant);
+            case PLANT        -> plantAt       (x, y, variant);
+            case TREE         -> treeAt        (x, y, variant, player);
+            //@formatter:on
+        };
+    }
+
+    public static StaticObject staticAt(double x, double y, Random random, StaticObjectType type, @Nullable Player player)
+    {
+        return switch (type)
+        {
+            //@formatter:off
+            case BUSH         -> bushAt        (x, y, random);
+            case FALLEN_TREE  -> fallenTreeAt  (x, y, random);
+            case GARBAGE_ITEM -> garbageItemAt (x, y, random);
+            case PLANT        -> plantAt       (x, y, random);
+            case TREE         -> treeAt        (x, y, random, player);
+            //@formatter:on
         };
     }
 
     /* RANDOM */
 
-    public static StaticObjectType randomType(@NotNull Random random)
+    public static StaticObjectType randomType(Random random)
     {
         final int totalWeight = BUSH_WEIGHT + FALLEN_TREE_WEIGHT + GARBAGE_WEIGHT + PLANT_WEIGHT + TREE_WEIGHT;
 
@@ -107,8 +117,16 @@ public class StaticObjectFactory
         return StaticObjectType.TREE;
     }
 
-    public static GameObject randomStaticAt(double x, double y, @Nullable Player player, Random random)
+    public static StaticObject randomStaticAt(double x, double y, @Nullable Player player, Random random)
     {
-        return staticAt(x, y, randomType(random), player);
+        return staticAt(x, y, random, randomType(random), player);
+    }
+
+    /* HELPERS */
+
+    @SuppressWarnings("unchecked")
+    private static <T extends StaticObject> T applyPosAndTag(T instance, double x, double y)
+    {
+        return (T) instance.addTag(StaticTag.class).getTransform().setPosition(x, y).getGameObject();
     }
 }
