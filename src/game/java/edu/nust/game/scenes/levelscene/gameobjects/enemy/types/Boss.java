@@ -25,7 +25,7 @@ public class Boss extends Enemy
     }
 
     @Override
-    public void attack()
+    public void attack(TimeSpan deltaTime)
     {
 
     }

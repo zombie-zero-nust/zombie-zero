@@ -11,11 +11,10 @@ import java.util.*;
 // TODO: Add Logging
 public class PathFinder
 {
-
     private Node[][] nodes;
     private Node start, current, goal;
     private final GameScene scene;
-    private Vector2D mapTopLeftPos;
+    private final Vector2D mapTopLeftPos;
     private final MapNodeSetter nodeSetter;
 
     private final PriorityQueue<Node> openList = new PriorityQueue<>(Comparator.comparingInt(Node::getfCost));

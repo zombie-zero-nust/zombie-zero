@@ -267,4 +267,12 @@ public class Player extends Character implements Damageable, Concrete
         if (walkabilityChecker == null) return true;
         return walkabilityChecker.apply(position, COLLISION_RADIUS);
     }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public double getWidth() {
+        return width;
+    }
 }

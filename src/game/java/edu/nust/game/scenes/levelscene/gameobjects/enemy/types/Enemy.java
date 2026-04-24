@@ -16,7 +16,7 @@ import edu.nust.game.systems.pathfinder.PathFinder;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Enemy extends GameObject implements Concrete, Damageable, Damaging
+public abstract class Enemy extends GameObject implements Concrete, Damageable
 {
 
     protected enum Facing
@@ -46,6 +46,8 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
 
     private TimeSpan pathTimer = TimeSpan.zero();
     private final TimeSpan pathUpdateInterval = TimeSpan.fromMilliseconds(300);
+
+    private boolean attacking = false;
 
     private static final int NODE_SIZE = 2;
 
@@ -90,7 +92,6 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
-
         if (!health.isAlive())
         {
             playDeathAnimation(deltaTime);
@@ -114,7 +115,11 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
             pathTimer = TimeSpan.zero();
         }
 
-        moveAlongPath(deltaTime);
+        if(!attacking) {
+            moveAlongPath(deltaTime);
+        }
+        attack(deltaTime);
+
     }
 
     private void moveAlongPath(TimeSpan deltaTime)
@@ -135,10 +140,8 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
         Vector2D direction = targetPos.subtract(currentPos);
         double distance = direction.magnitude();
 
-        if (distance > 0.01)
-        {
-            updateSprite(direction.getX(), direction.getY());
-        }
+
+        updateSprite(direction.getX(), direction.getY());
 
         double moveDist = movementSpeed * deltaTime.asSeconds();
 
@@ -175,31 +178,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
     public void triggerCollisionEffect(Concrete collidedObj) { }
 
     @Override
-    public int getDamage()
-    {
-        return this.damage;
-    }
-
-    @Override
-    public boolean isDestroyable()
-    {
-        return destroyable;
-    }
-
-    @Override
-    public void destroyThis()
-    {
-        if (isDestroyable()) this.destroy();
-    }
-
-    @Override
     public List<Class<? extends Concrete>> notInteractWith()
-    {
-        return List.of(Enemy.class);
-    }
-
-    @Override
-    public List<Class<? extends Damageable>> notDamageObj()
     {
         return List.of(Enemy.class);
     }
@@ -234,5 +213,21 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable, 
 
     public abstract void loadSprites(EnemyAsset enemyType);
 
-    public abstract void attack();
+    public abstract void attack(TimeSpan deltaTime);
+
+    public double getWidth(){
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public boolean isAttacking() {
+        return attacking;
+    }
+
+    public void setAttacking(boolean attacking) {
+        this.attacking = attacking;
+    }
 }
