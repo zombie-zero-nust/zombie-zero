@@ -92,7 +92,7 @@ public class PathFinder
         openList.add(start);
 
         int iterations = 0;
-        while (!openList.isEmpty() && iterations < 10000)
+        while (!openList.isEmpty() && iterations < 3000)
         {
             current = openList.poll();
 
