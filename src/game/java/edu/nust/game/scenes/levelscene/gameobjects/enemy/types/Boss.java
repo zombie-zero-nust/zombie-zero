@@ -5,10 +5,13 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
+import edu.nust.game.systems.Score;
 import edu.nust.game.systems.assets.EnemyAsset;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 public class Boss extends Enemy
 {
@@ -32,19 +35,22 @@ public class Boss extends Enemy
     private int width = 24;
     private int height = 36;
     private Facing facing = Facing.DOWN;
-    private TimeSpan deathAnimationTime = TimeSpan.fromMilliseconds(300);
+    private TimeSpan deathAnimationTime = TimeSpan.fromMilliseconds(500);
     private double elapsed = 0;
-    private double attack1Range = 3;
-    private double attack1Time = 400;
+    private double attack1Range = 10;
+    private double attack1Time = 600;
     private double attackTimeElapsed;
     private double attackCooldownElapsed = 0;
     private double attackCooldownTime = 800; // ms (adjust)
     private boolean canAttack = true;
+    private int attackingFrame;
+    private AttackObj attack1;
 
 
-    Boss(Vector2D pos, double speed, int health, double height, double width, double damage)
+    public Boss(Vector2D pos, double speed, int health, double damage)
     {
-        super(pos, speed, health, height, width, damage, EnemyAsset.ZOMBIE_BIG);
+        super(pos, speed, health, 36, 24, damage, EnemyAsset.ZOMBIE_BIG);
+        loadSprites(EnemyAsset.ZOMBIE_BIG);
     }
 
     @Override
@@ -72,6 +78,7 @@ public class Boss extends Enemy
                     enemyType.getPath(),
                     "Zombie_Big_Side-left_Idle-Sheet6.png"
             );
+
             downMoveSheet = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
@@ -105,22 +112,22 @@ public class Boss extends Enemy
             downAttackSheet = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
-                    "Zombie_Small_Down_First-Attack-Sheet4.png"
+                    "Zombie_Big_Down_First-Attack-Sheet8.png"
             );
             upAttackSheet = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
-                    "Zombie_Small_Up_First-Attack-Sheet4.png"
+                    "Zombie_Big_Up_First-Attack-Sheet8.png"
             );
             rightAttackSheet = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
-                    "Zombie_Small_Side_First-Attack-Sheet4.png"
+                    "Zombie_Big_Side_First-Attack-Sheet8.png"
             );
             leftAttackSheet = Resources.loadImageOrThrow(
                     "assets",
                     enemyType.getPath(),
-                    "Zombie_Small_Side-left_First-Attack-Sheet4.png"
+                    "Zombie_Big_Side-left_First-Attack-Sheet8.png"
             );
 
             spriteRenderer = new SpriteRenderer(width, height, downIdleSheet, 6, 1);
@@ -167,6 +174,64 @@ public class Boss extends Enemy
     @Override
     public void attack(TimeSpan deltaTime)
     {
+        Player player = (Player) this.getScene().getFirstOfType(Player.class);
+        if (player == null) return;
+        // If attacking -> update attack timer only
+        if (isAttacking()) {
+            attackTimeElapsed += deltaTime.asMilliseconds();
+            if(attackTimeElapsed >= 250&& attack1 == null) {
+                attack1 = new AttackObj(
+                        10, this, 3,
+                        (double) height / 2,
+                        attack1Range,
+                        List.of(Enemy.class),
+                        TimeSpan.fromMilliseconds(attack1Time-250)
+                );
+
+                this.getScene().addGameObject(attack1);
+            }
+
+            if (attackTimeElapsed >= attack1Time) {
+                setAttacking(false);
+                canAttack = false;
+                attackCooldownElapsed = 0;
+            }
+            return;
+        }
+
+        // If cooldown active -> update cooldown timer only
+        if (!canAttack) {
+            attackCooldownElapsed += deltaTime.asMilliseconds();
+
+            if (attackCooldownElapsed >= attackCooldownTime) {
+                canAttack = true;
+                attackCooldownElapsed = 0;
+            }
+            return;
+        }
+
+        double dist = player.getTransform().getPosition()
+                .subtract(this.getTransform().getPosition())
+                .magnitude();
+
+        double minDist = attack1Range + (this.getWidth() / 2);
+
+        if (dist <= minDist) {
+            Image image = switch (facing) {
+                case UP -> upAttackSheet;
+                case DOWN -> downAttackSheet;
+                case RIGHT -> rightAttackSheet;
+                case LEFT -> leftAttackSheet;
+            };
+
+            spriteRenderer.setImage(image, 8, 1)
+                    .startAnimation()
+                    .setAnimationTime(TimeSpan.fromMilliseconds(attack1Time/4));
+
+            spriteRenderer.setSize(30,36);
+            attackTimeElapsed = 0;
+            setAttacking(true);
+        }
 
     }
 

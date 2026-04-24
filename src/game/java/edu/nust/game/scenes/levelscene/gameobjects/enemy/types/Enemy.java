@@ -85,7 +85,6 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     {
         setHitbox();
         pathFinder = new PathFinder((LevelScene) this.getScene());
-
         movement = pathFinder.getPath(this);
     }
 
