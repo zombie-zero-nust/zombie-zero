@@ -2,12 +2,22 @@
 
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <StackPane styleClass="ui-root" style="-fx-padding: 0;" xmlns:fx="http://javafx.com/fxml/1"
            xmlns="http://javafx.com/javafx/17.0.12">
 
     <HBox StackPane.alignment="TOP_LEFT" alignment="TOP_LEFT" fillHeight="false" style="-fx-padding: 20;">
-        <VBox fx:id="healthBarContainer"/>
+        <VBox spacing="6" alignment="TOP_LEFT">
+            <VBox fx:id="healthBarContainer"/>
+            <HBox alignment="CENTER_LEFT" spacing="8" fx:id="bulletIndicatorRow">
+                <ImageView fx:id="gunIconView" fitHeight="75" fitWidth="75" preserveRatio="true" smooth="false"/>
+                <VBox fx:id="ammoBarContainer"/>
+                <Label fx:id="ammoLabel" text="5 / 5"
+                       style="-fx-text-fill: #FFFF00; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-alignment: CENTER;"/>
+            </HBox>
+            <Label fx:id="reloadLabel" visible="false" managed="false"/>
+        </VBox>
         <Label fx:id="healthLabel" visible="false" managed="false"/>
     </HBox>
 
@@ -28,14 +38,6 @@
                        style="-fx-text-fill: #FFFF00; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New';"/>
             </HBox>
             <Separator/>
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="BULLETS"
-                       style="-fx-text-fill: #00FF00; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';"/>
-                <Label fx:id="ammoLabel" text="20 / 20"
-                       style="-fx-text-fill: #FFFF00; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New';"/>
-            </HBox>
-            <VBox fx:id="ammoBarContainer"/>
-            <Label fx:id="reloadLabel" visible="false" managed="false"/>
         </VBox>
 
     </HBox>

@@ -5,6 +5,7 @@ import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.highscores.HighScoresScene;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
@@ -24,6 +25,8 @@ import edu.nust.game.systems.pathfinder.MapNodeSetter;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -31,6 +34,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
@@ -44,6 +48,7 @@ public class LevelScene extends GameScene
     @FXML private Label healthLabel;
     @FXML private VBox ammoBarContainer;
     @FXML private VBox healthBarContainer;
+    @FXML private ImageView gunIconView;
     @FXML private Button resumeButton;
     @FXML private Button pauseRetryButton;
     @FXML private Button pauseExitButton;
@@ -100,6 +105,11 @@ public class LevelScene extends GameScene
         {
             ammoBar = new AmmoBar();
             ammoBarContainer.getChildren().add(ammoBar);
+        }
+
+        if (gunIconView != null)
+        {
+            loadGunIcon();
         }
 
         if (healthBarContainer != null)
@@ -325,6 +335,23 @@ public class LevelScene extends GameScene
 
         scoreSaved = true;
         HighScoreStorage.append(PlayerSession.getPlayerName(), getCurrentScore(), LocalDateTime.now());
+    }
+
+    private void loadGunIcon()
+    {
+        try
+        {
+            URL gunIconUrl = Resources.tryGetResource("assets", "raw", "PostApocalypse", "Objects", "Pickable", "PistolIcon.png");
+            if (gunIconUrl != null)
+            {
+                Image gunIcon = new Image(gunIconUrl.toExternalForm());
+                gunIconView.setImage(gunIcon);
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println("[WARN] Failed to load gun icon: " + e.getMessage());
+        }
     }
 
     @FXML
