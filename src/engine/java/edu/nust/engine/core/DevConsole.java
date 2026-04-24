@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DevConsole
@@ -27,6 +28,11 @@ public class DevConsole
     private final TextField input = new TextField();
     private final ScrollPane outputHolder = new ScrollPane();
     private final VBox outputContainer = new VBox(8);
+    private final VBox statsBox = new VBox(2);
+    private final Label fpsLabel = new Label("FPS: --");
+    private final Label objectsInViewLabel = new Label("GOiV: --");
+    private final Label totalObjectsLabel = new Label("TGO: --");
+
 
     private final Map<String, DevCommand> commands = new LinkedHashMap<>();
     private final List<String> suggestions = new ArrayList<>();
@@ -36,6 +42,10 @@ public class DevConsole
     private int suggestionIndex = -1;
 
     private boolean open = false;
+
+    private Supplier<Double> fpsSupplier;
+    private Supplier<Integer> objectsInViewSupplier;
+    private Supplier<Integer> totalObjectsSupplier;
 
     /// <b>{@code INTERNAL}</b>
     DevConsole()
@@ -104,7 +114,20 @@ public class DevConsole
         outputHolder.setFitToWidth(true);
         outputHolder.setPannable(true);
 
-        container.getChildren().setAll(hint, input, outputHolder);
+        // Stats panel
+        statsBox.setStyle("-fx-background: transparent;" + "-fx-background-color: transparent;" + "-fx-border-color: rgba(255,255,255,0.10);" + "-fx-border-radius: 4;");
+        statsBox.setPadding(new Insets(8));
+
+        String labelStyle = "-fx-text-fill: #00ff00; -fx-font-family: monospace; -fx-font-size: 12px;";
+        fpsLabel.setStyle(labelStyle);
+        objectsInViewLabel.setStyle(labelStyle);
+        totalObjectsLabel.setStyle(labelStyle);
+
+        statsBox.getChildren().addAll(fpsLabel, objectsInViewLabel, totalObjectsLabel);
+        statsBox.setVisible(false);
+        statsBox.setManaged(false);
+
+        container.getChildren().setAll(hint, input, outputHolder, statsBox);
 
         Platform.runLater(() -> outputHolder.setVvalue(1.0));
 
@@ -134,6 +157,8 @@ public class DevConsole
             input.positionCaret(input.getText().length());
             updateAutocomplete();
         }
+
+        updateStatsDisplay();
     }
 
     public boolean isOpen() { return open; }
@@ -355,6 +380,51 @@ public class DevConsole
         if (s == null || s.isBlank()) return "/";
         s = s.toLowerCase(Locale.ROOT);
         return s.startsWith("/") ? s : "/" + s;
+    }
+
+    /* STATS */
+
+    public void updateStatsDisplay()
+    {
+        if (!open)
+        {
+            statsBox.setVisible(false);
+            statsBox.setManaged(false);
+            return;
+        }
+
+        statsBox.setVisible(true);
+        statsBox.setManaged(true);
+        if (fpsSupplier != null)
+        {
+            fpsLabel.setText(String.format("FPS: %.0f", fpsSupplier.get()));
+        }
+        if (objectsInViewSupplier != null)
+        {
+            objectsInViewLabel.setText("GOiV: " + objectsInViewSupplier.get());
+        }
+        if (totalObjectsSupplier != null)
+        {
+            totalObjectsLabel.setText("TGO: " + totalObjectsSupplier.get());
+        }
+    }
+
+    public DevConsole setFpsSupplier(Supplier<Double> fpsSupplier)
+    {
+        this.fpsSupplier = fpsSupplier;
+        return this;
+    }
+
+    public DevConsole setObjectsInViewSupplier(Supplier<Integer> supplier)
+    {
+        this.objectsInViewSupplier = supplier;
+        return this;
+    }
+
+    public DevConsole setTotalObjectsSupplier(Supplier<Integer> supplier)
+    {
+        this.totalObjectsSupplier = supplier;
+        return this;
     }
 
     /* UTILITIES */

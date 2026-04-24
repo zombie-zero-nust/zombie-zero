@@ -45,6 +45,8 @@ public abstract class GameWorld
 
     private final GameAudioManager audioManager;
 
+    private double fps = 0.0;
+
     /**
      * Use this to set up window ({@link GameWorld#stage}) properties
      * <br>
@@ -116,6 +118,10 @@ public abstract class GameWorld
                 // calculate time between this frame and last frame
                 long deltaTimeNs = now - lastTime;
                 lastTime = now; // update lastTime for next frame
+
+                // compute instant FPS and smooth it
+                double instantFPS = 1_000_000_000.0 / deltaTimeNs;
+                fps = fps * 0.9 + instantFPS * 0.1;
 
                 if (currentGameScene != null)
                     currentGameScene.invokeGameLoopFrame(TimeSpan.fromNanoseconds(deltaTimeNs));
@@ -286,6 +292,8 @@ public abstract class GameWorld
     }
 
     /* UTILITIES */
+
+    public double getFPS() { return fps; }
 
     /// Gets the size of the window as a Vector2D (width, height)
     public Vector2D getSize() { return new Vector2D(stage.getWidth(), stage.getHeight()); }

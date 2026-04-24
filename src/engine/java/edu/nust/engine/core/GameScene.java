@@ -88,6 +88,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
     protected Vector2D mousePosition = Vector2D.zero();
 
     private final DevConsole devConsole = new DevConsole();
+    private int objectsInViewCount = 0;
 
     public GameScene(GameWorld gameWorld)
     {
@@ -169,6 +170,10 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
             this.mousePosition = new Vector2D(mEv.getX(), mEv.getY());
         });
 
+        this.devConsole.setFpsSupplier(() -> gameWorld.getFPS());  // assuming getFPS() exists
+        this.devConsole.setObjectsInViewSupplier(() -> objectsInViewCount);
+        this.devConsole.setTotalObjectsSupplier(gameObjects::size);
+
         initSceneLogger.end("Scene initialized successfully");
     }
 
@@ -196,18 +201,22 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
         Rectangle visibleBounds = getVisibleWorldBounds();
         fetchWorldContextAndRun((ctx) -> {
-            // Create a copy of the list to iterate over to avoid ConcurrentModificationException
-            this.gameObjects.stream()
+            List<GameObject> visibleObjects = this.gameObjects.stream()
                     .sorted(Comparator.comparingInt(GameObject::getRenderLayer))
                     .filter(obj -> shouldRenderInCamera(obj, visibleBounds))
-                    .forEach(obj -> obj.invokeRender(ctx));
+                    .toList();
 
+            visibleObjects.forEach(obj -> obj.invokeRender(ctx));
             this.renderDebug(ctx);
+            this.objectsInViewCount = visibleObjects.size();
         });
 
 
         // remove debug shapes if times up
         this.debugShapes.removeIf(shape -> shape.isPastDestroyTime(TimeSpan.fromMilliseconds(System.currentTimeMillis())));
+
+        // update dev console stats
+        this.devConsole.updateStatsDisplay();
     }
 
     /* GAME OBJECT */
