@@ -10,12 +10,6 @@ import java.util.Random;
 
 public class StaticObjectFactory
 {
-    private static final int PLANT_WEIGHT = 75;
-    private static final int TREE_WEIGHT = 0;
-    private static final int BUSH_WEIGHT = 10;
-    private static final int GARBAGE_WEIGHT = 10;
-    private static final int FALLEN_TREE_WEIGHT = 5;
-
     // BUSH
 
     public static Bush bushAt(double x, double y, int variant) { return applyPosAndTag(new Bush(variant), x, y); }
@@ -99,20 +93,26 @@ public class StaticObjectFactory
 
     public static StaticObjectType randomType(Random random)
     {
-        final int totalWeight = BUSH_WEIGHT + FALLEN_TREE_WEIGHT + GARBAGE_WEIGHT + PLANT_WEIGHT + TREE_WEIGHT;
+        final int _plantWeight = 75;
+        final int _treeWeight = 0;
+        final int _bushWeight = 5;
+        final int _garbageWeight = 15;
+        final int _fallenTreeWeight = 0;
+
+        final int totalWeight = _bushWeight + _fallenTreeWeight + _garbageWeight + _plantWeight + _treeWeight;
 
         int roll = random.nextInt(totalWeight);
 
-        if (roll < BUSH_WEIGHT) { return StaticObjectType.BUSH; }
-        roll -= BUSH_WEIGHT;
+        if (roll < _bushWeight) { return StaticObjectType.BUSH; }
+        roll -= _bushWeight;
 
-        if (roll < FALLEN_TREE_WEIGHT) { return StaticObjectType.FALLEN_TREE; }
-        roll -= FALLEN_TREE_WEIGHT;
+        if (roll < _fallenTreeWeight) { return StaticObjectType.FALLEN_TREE; }
+        roll -= _fallenTreeWeight;
 
-        if (roll < GARBAGE_WEIGHT) { return StaticObjectType.GARBAGE_ITEM; }
-        roll -= GARBAGE_WEIGHT;
+        if (roll < _garbageWeight) { return StaticObjectType.GARBAGE_ITEM; }
+        roll -= _garbageWeight;
 
-        if (roll < PLANT_WEIGHT) { return StaticObjectType.PLANT; }
+        if (roll < _plantWeight) { return StaticObjectType.PLANT; }
 
         return StaticObjectType.TREE;
     }
