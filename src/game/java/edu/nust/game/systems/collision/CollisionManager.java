@@ -2,12 +2,16 @@ package edu.nust.game.systems.collision;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
+import edu.nust.game.scenes.levelscene.LevelScene;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class CollisionManager
 {
+    private static final int POINTS_PER_ZOMBIE_KILL = 3;
+
     private final GameScene scene;
 
     private final Set<Concrete> concreteObjs = new HashSet<>();
@@ -64,13 +68,10 @@ public class CollisionManager
                     continue;
 
 
-                if (otherObj.notDamageObj() != null)
-                {
+                if (otherObj.notDamageObj() != null) {
                     boolean shouldSkip = false;
-                    for (Class<?> clazz : otherObj.notDamageObj())
-                    {
-                        if (clazz.isInstance(obj))
-                        {
+                    for (Class<?> clazz : otherObj.notDamageObj()) {
+                        if (clazz.isInstance(obj)) {
                             shouldSkip = true;
                             break;
                         }
@@ -80,10 +81,19 @@ public class CollisionManager
 
                 if (obj.getHitbox().isTouching(otherObj.getHitbox()))
                 {
+                    boolean wasAlive = !obj.isDead();
                     obj.takeDamage(otherObj.getDamage());
-                    // Only queue for destruction if it's actually meant to be destroyed (like a bullet)
-                    if (otherObj.isDestroyable())
+                    System.out.println("Damaging logic working");
+
+                    // Award kill score exactly when an enemy transitions from alive to dead.
+                    if (wasAlive && obj.isDead() && obj instanceof Enemy)
                     {
+                        awardKillPoints();
+                        break;
+                    }
+
+                    // Only queue for destruction if it's actually meant to be destroyed (like a bullet)
+                    if (otherObj.isDestroyable()) {
                         destroyQueue.add(otherObj);
                     }
                 }
@@ -100,13 +110,10 @@ public class CollisionManager
                 if (otherObj == null || otherObj == obj || otherObj.getHitbox() == null)
                     continue;
 
-                if (obj.notInteractWith() != null)
-                {
+                if (obj.notInteractWith() != null) {
                     boolean skip = false;
-                    for (Class<?> ignoredClass : obj.notInteractWith())
-                    {
-                        if (ignoredClass.isInstance(otherObj))
-                        {
+                    for (Class<?> ignoredClass : obj.notInteractWith()) {
+                        if (ignoredClass.isInstance(otherObj)) {
                             skip = true;
                             break;
                         }
@@ -130,5 +137,13 @@ public class CollisionManager
             obj.destroyThis();
         }
         destroyQueue.clear();
+    }
+
+    private void awardKillPoints()
+    {
+        if (scene instanceof LevelScene levelScene)
+        {
+            levelScene.addScorePoints(POINTS_PER_ZOMBIE_KILL);
+        }
     }
 }

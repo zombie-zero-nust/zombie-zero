@@ -81,6 +81,13 @@ public class Score
         this.score = newScore;
     }
 
+
+    public void addPoints(int points)
+    {
+        if (points <= 0) return;
+        this.score += points;
+    }
+
     /**
      * Reset score to 0 (when player collides with enemy) Also resets elapsed time counter
      */

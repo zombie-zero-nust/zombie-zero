@@ -346,6 +346,12 @@ public class LevelScene extends GameScene
 
     public int getCurrentScore() { return score != null ? score.getScore() : 0; }
 
+    public void addScorePoints(int points)
+    {
+        if (score == null) return;
+        score.addPoints(points);
+    }
+
     public double getWorldWidth() { return worldWidth; }
 
     public double getWorldHeight() { return worldHeight; }
@@ -437,4 +443,3 @@ public class LevelScene extends GameScene
         );
     }
 }
-
