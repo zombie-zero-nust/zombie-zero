@@ -62,63 +62,7 @@ public final class Level1Background
         return object;
     }
 
-    /* BUILDER */
-
-    private static void generateTreePositionsFile(List<SerializablePlacement> placements)
-    {
-        LogProgress progress = new LogProgress("SAVEPOS", LOGGER);
-        progress.begin("Generating formatted placement file...");
-
-        StringBuilder sb = new StringBuilder();
-
-        Rectangle lastRect = null;
-        int rectIndex = 1;
-
-        for (SerializablePlacement p : placements)
-        {
-            if (!p.rect().equals(lastRect))
-            {
-                Rectangle r = p.rect();
-
-                sb.append("// Rectangle ")
-                        .append(rectIndex++)
-                        .append(" [")
-                        .append((int) r.getLeft())
-                        .append(",")
-                        .append((int) r.getTop())
-                        .append(",")
-                        .append((int) r.getRight())
-                        .append(",")
-                        .append((int) r.getBottom())
-                        .append("]\n");
-
-                lastRect = r;
-            }
-
-            int x = (int) p.position().getX();
-            int y = (int) p.position().getY();
-
-            String type = p.type().name();
-
-            sb.append(String.format("{ %4d, %4d } = %s (%d)\n", x, y, type, p.variant()));
-
-        }
-
-        progress.log("{} placements saved.", placements.size());
-
-        try
-        {
-            Path path = Paths.get("src/game/resources/edu/nust/game/scenes/LevelScene/objects_placements.txt");
-            Files.createDirectories(path.getParent());
-            Files.writeString(path, sb.toString());
-            progress.end("File generated.");
-        }
-        catch (Exception e)
-        {
-            progress.end("Failed.");
-            LOGGER.logException(e);
-        }
-    }
+    /* LOADER */
 
     public static List<GameObject> loadPlacements(LevelScene scene)
     {
@@ -176,6 +120,64 @@ public final class Level1Background
         }
 
         return objects;
+    }
+
+    /* BUILDER */
+
+    private static void generateTreePositionsFile(List<SerializablePlacement> placements)
+    {
+        LogProgress progress = new LogProgress("SAVEPOS", LOGGER);
+        progress.begin("Generating formatted placement file...");
+
+        StringBuilder sb = new StringBuilder();
+
+        Rectangle lastRect = null;
+        int rectIndex = 1;
+
+        for (SerializablePlacement p : placements)
+        {
+            if (!p.rect().equals(lastRect))
+            {
+                Rectangle r = p.rect();
+
+                sb.append("// Rectangle ")
+                        .append(rectIndex++)
+                        .append(" [")
+                        .append((int) r.getLeft())
+                        .append(",")
+                        .append((int) r.getTop())
+                        .append(",")
+                        .append((int) r.getRight())
+                        .append(",")
+                        .append((int) r.getBottom())
+                        .append("]\n");
+
+                lastRect = r;
+            }
+
+            int x = (int) p.position().getX();
+            int y = (int) p.position().getY();
+
+            String type = p.type().name();
+
+            sb.append(String.format("{ %4d, %4d } = %s (%d)\n", x, y, type, p.variant()));
+
+        }
+
+        progress.log("{} placements saved.", placements.size());
+
+        try
+        {
+            Path path = Paths.get("src/game/resources/edu/nust/game/scenes/LevelScene/objects_placements.txt");
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, sb.toString());
+            progress.end("File generated.");
+        }
+        catch (Exception e)
+        {
+            progress.end("Failed.");
+            LOGGER.logException(e);
+        }
     }
 
     private static void placementFilePreBuilder(LevelScene scene, ArrayList<GameObject> objectsRef)
