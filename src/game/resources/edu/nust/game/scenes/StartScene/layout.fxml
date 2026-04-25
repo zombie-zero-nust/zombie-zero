@@ -11,9 +11,6 @@
         <StackPane styleClass="start-button-tile, game-button-tile"
                    onMouseClicked="#switchToGameScene"/>
 
-        <StackPane styleClass="start-button-tile, levels-button-tile"
-                   onMouseClicked="#switchToLevelScene"/>
-
         <StackPane styleClass="start-button-tile, highscores-button-tile"
                    onMouseClicked="#switchToHighScoresScene"/>
 
