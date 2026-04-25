@@ -39,6 +39,7 @@ public class Boss extends Enemy
     private double ability1cooldown;
     private boolean performingAbility= false;
     private TimeSpan bossAbilityCooldown = TimeSpan.fromSeconds(10);
+    private boolean isDead = false;
 
     private int damage = 20;
     private SpriteRenderer spriteRenderer;
@@ -303,13 +304,15 @@ public class Boss extends Enemy
 
     public void resetBoss() {
         Health health = new Health();
-        health.setCurrentHealth(10000);
+        health.setCurrentHealth(5000);
         this.setHealth(health);
         this.setMovementSpeed(this.getMovementSpeed()*2);
         this.attackTimeElapsed = 0;
         this.attackCooldownElapsed = 0;
         this.ability1cooldown = 0;
         this.elapsed = 0;
+        this.animationFinished = false;
+        this.animationStarted = false;
         bossAbilityCooldown = bossAbilityCooldown.multiply(0.2);
         this.damage = damage * 2;
         this.setAttacking(false);
@@ -392,6 +395,7 @@ public class Boss extends Enemy
         }
         // --- PHASE 3: FINAL FADE ---
         else {
+            isDead = true;
             double opacity = spriteRenderer.getOpacity();
             if (opacity > 0) {
                 spriteRenderer.setOpacity(opacity - 0.05);
@@ -404,7 +408,7 @@ public class Boss extends Enemy
     public boolean isResurrected(){
         return resurrected;
     }
-    public boolean isAnimationFinished(){
-        return animationFinished;
+    public boolean getIsDead(){
+        return isDead;
     }
 }
