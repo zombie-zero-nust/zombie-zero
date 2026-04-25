@@ -105,7 +105,7 @@ public final class Level1Background
 
         try
         {
-            Path path = Paths.get("src/generated/level_1/placements.txt");
+            Path path = Paths.get("src/game/resources/edu/nust/game/scenes/LevelScene/objects_placements.txt");
             Files.createDirectories(path.getParent());
             Files.writeString(path, sb.toString());
             progress.end("File generated.");
@@ -125,7 +125,7 @@ public final class Level1Background
 
         try
         {
-            Path path = Paths.get("src/generated/level_1/placements.txt");
+            Path path = Paths.get("src/game/resources/edu/nust/game/scenes/LevelScene/objects_placements.txt");
             List<String> lines = Files.readAllLines(path);
 
             progress.log("Total lines to process: {}", lines.size());
