@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 public class Weapon extends GameObject
 {
     private static final double WEAPON_OFFSET = 12;
+    private static final double AIM_EPSILON = 0.0001;
     private final double fireRate = 10; // more -> more bullets
     private static final double MUZZLE_FRAME_DURATION = 0.04;
     private static final int MUZZLE_FRAMES = 3;
@@ -130,15 +131,19 @@ public class Weapon extends GameObject
         context.restore();
     }
 
-    public void updatePosition(Vector2D mousePos, Vector2D playerPos)
+    public void updatePosition(Vector2D mousePos, Vector2D playerPos, Vector2D nonFollowAreaSize)
     {
         Vector2D delta = mousePos.subtract(playerPos);
-        if (delta.isZeroEpsilon(0.0001)) delta = Vector2D.right();
+        double rotation = this.getTransform().getRotation().getRadians();
 
-        double dx = delta.getX();
-        double dy = delta.getY();
-        double rotation = Math.atan2(dy, dx);
-        Vector2D orbitingDistance = delta.normalize().multiply(WEAPON_OFFSET);
+        boolean isInsideNonFollowArea = isInsideNonFollowArea(delta, nonFollowAreaSize);
+        if (!isInsideNonFollowArea && !delta.isZeroEpsilon(AIM_EPSILON))
+        {
+            rotation = Math.atan2(delta.getY(), delta.getX());
+        }
+
+        Vector2D aimDirection = Vector2D.fromAngleRadians(rotation);
+        Vector2D orbitingDistance = aimDirection.multiply(WEAPON_OFFSET);
 
         if (weaponRenderer != null)
         {
@@ -166,10 +171,23 @@ public class Weapon extends GameObject
 
     }
 
-    public Bullet fireWeapon(Vector2D targetPos, TimeSpan deltaTime)
+    private static boolean isInsideNonFollowArea(Vector2D delta, Vector2D nonFollowAreaSize)
+    {
+        if (nonFollowAreaSize == null) return false;
+
+        double halfWidth = Math.abs(nonFollowAreaSize.getX()) / 2.0;
+        double halfHeight = Math.abs(nonFollowAreaSize.getY()) / 2.0;
+
+        return Math.abs(delta.getX()) <= halfWidth && Math.abs(delta.getY()) <= halfHeight;
+    }
+
+    public Bullet fireWeapon(Vector2D playerCenterPos, TimeSpan deltaTime)
     {
         Vector2D weaponPos = this.getTransform().getPosition();
-        Vector2D bulletPos = weaponPos.add(targetPos.subtract(weaponPos).normalize().multiply(width));
+        Vector2D shotDirection = Vector2D.fromAngleRadians(this.getTransform().getRotation().getRadians());
+        if (shotDirection.isZeroEpsilon(AIM_EPSILON)) shotDirection = Vector2D.right();
+
+        Vector2D shotTarget = playerCenterPos.add(shotDirection);
         ammo.update(deltaTime);
         if (ammo.isReloading() || !ammo.hasAmmo()) return null;
 
@@ -182,8 +200,8 @@ public class Weapon extends GameObject
         {
             setFiring(false);
             ammo.decreaseAmmo();
-            triggerMuzzleFlash(bulletPos, targetPos);
-            return new Bullet(200, bulletPos, 1000, targetPos, damage);
+            triggerMuzzleFlash();
+            return new Bullet(200, playerCenterPos, 1000, shotTarget, damage);
         }
 
         fireCooldown -= deltaTime.asSeconds();
@@ -191,8 +209,8 @@ public class Weapon extends GameObject
         {
             fireCooldown = 1.0 / fireRate;
             ammo.decreaseAmmo();
-            triggerMuzzleFlash(weaponPos, targetPos);
-            return new Bullet(200, bulletPos, 1000, targetPos, damage);
+            triggerMuzzleFlash();
+            return new Bullet(200, playerCenterPos, 1000, shotTarget, damage);
         }
 
         return null;
@@ -247,11 +265,10 @@ public class Weapon extends GameObject
         }
     }
 
-    private void triggerMuzzleFlash(Vector2D weaponPos, Vector2D targetPos)
+    private void triggerMuzzleFlash()
     {
         if (muzzleFlashRenderer == null) return;
 
-        Vector2D direction = targetPos.subtract(weaponPos);
         Image directionalSheet = getDirectionalFireSheet();
         if (directionalSheet == null) return;
 

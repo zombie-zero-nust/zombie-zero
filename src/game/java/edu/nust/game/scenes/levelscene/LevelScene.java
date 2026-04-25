@@ -43,6 +43,8 @@ import java.util.Arrays;
 
 public class LevelScene extends GameScene
 {
+    private static final Vector2D WEAPON_NON_FOLLOW_AREA_SIZE = new Vector2D(8, 12);
+
     @FXML private StackPane pauseOverlay;
     @FXML private Label overlayTitleLabel;
     @FXML private Label scoreLabel;
@@ -156,11 +158,14 @@ public class LevelScene extends GameScene
         double zoom = this.getWorldCamera().getZoom();
 
         updateMouseWorldPosition(canvasW, canvasH, cameraPos, zoom);
-        handleWeaponFiring(deltaTime);
+        if (player == null) return;
+
+        Vector2D playerPos = clampPlayerToPlayArea(player.getTransform().getPosition());
+
+        updateWeaponTracking(playerPos);
+        handleWeaponFiring(playerPos, deltaTime);
         refreshHud(deltaTime);
 
-        if (player == null) return;
-        Vector2D playerPos = clampPlayerToPlayArea(player.getTransform().getPosition());
         if (collisionManager != null)
         {
             collisionManager.manageCollisions();
@@ -173,7 +178,6 @@ public class LevelScene extends GameScene
             return;
         }
 
-        updateWeaponTracking(playerPos);
         updateCameraPosition(playerPos, canvasW, canvasH, zoom);
         renderCollisionDebugOverlays();
     }
@@ -199,11 +203,11 @@ public class LevelScene extends GameScene
         this.mousePosition = new Vector2D(worldX, worldY);
     }
 
-    private void handleWeaponFiring(TimeSpan deltaTime)
+    private void handleWeaponFiring(Vector2D playerPos, TimeSpan deltaTime)
     {
         if (weapon == null) return;
 
-        Bullet bullet = weapon.fireWeapon(mousePosition, deltaTime);
+        Bullet bullet = weapon.fireWeapon(playerPos, deltaTime);
         if (bullet != null) this.addGameObject(bullet);
     }
 
@@ -227,7 +231,7 @@ public class LevelScene extends GameScene
 
     private void updateWeaponTracking(Vector2D playerPos)
     {
-        if (weapon != null) weapon.updatePosition(mousePosition, playerPos);
+        if (weapon != null) weapon.updatePosition(mousePosition, playerPos, WEAPON_NON_FOLLOW_AREA_SIZE);
     }
 
 
@@ -551,6 +555,7 @@ public class LevelScene extends GameScene
                 }
         );
 
+        // toggle all hitboxes
         registerDevCommand(
                 "/toggleAllHitboxes",
                 "/toggleAllHitboxes true|false|empty",
@@ -571,6 +576,23 @@ public class LevelScene extends GameScene
                     }
 
                     return "toggleAllHitboxes = " + allHitboxesVisible;
+                }
+        );
+
+        // show no aim follow area
+        registerDevCommand(
+                "/showNoAimFollowArea",
+                "/showNoAimFollowArea",
+                "Show the area around the player where the weapon does not follow the mouse.",
+                args -> {
+                    if (player == null) return "Player not initialized";
+                    Vector2D playerPos = player.getTransform().getPosition();
+                    Rectangle nonFollowArea = new Rectangle(
+                            playerPos.subtract(WEAPON_NON_FOLLOW_AREA_SIZE.multiply(0.5)),
+                            WEAPON_NON_FOLLOW_AREA_SIZE
+                    );
+                    addTimedDebugRectangle(nonFollowArea);
+                    return "Showing weapon non-follow area for 5 seconds.";
                 }
         );
 
