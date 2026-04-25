@@ -94,7 +94,7 @@ public class LevelScene extends GameScene
         player.setMovePos(clampPlayerToPlayArea(player.getTransform().getPosition()));
 
         // Set up collision checking for the player
-        player.setWalkabilityChecker((pos, radius) -> level1CollisionMask.isWalkable(pos));
+        player.setWalkabilityChecker((hitbox) -> level1CollisionMask.isWalkable(hitbox));
 
         weapon = new Weapon();
         this.addGameObject(weapon);
