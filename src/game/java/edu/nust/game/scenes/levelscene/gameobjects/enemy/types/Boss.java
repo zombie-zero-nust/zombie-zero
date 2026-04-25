@@ -14,7 +14,6 @@ import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Objects;
 
 public class Boss extends Enemy
 {
@@ -171,11 +170,22 @@ public class Boss extends Enemy
             spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150)).startAnimation();
 
             this.addComponent(spriteRenderer);
+            onHealthChanged();
         }
         catch (FileNotFoundException e)
         {
             System.err.println("Failed to load enemy sprite: " + e.getMessage());
         }
+    }
+
+    @Override
+    protected void onHealthChanged()
+    {
+        if (spriteRenderer == null) return;
+
+        javafx.scene.paint.Color tintColor = getHealthTintColor();
+        if (tintColor == null) spriteRenderer.clearTint();
+        else spriteRenderer.tintSelf(tintColor);
     }
 
     @Override
@@ -303,7 +313,7 @@ public class Boss extends Enemy
 
 
     public void resetBoss() {
-        Health health = new Health();
+        Health health = new Health(10000);
         health.setCurrentHealth(5000);
         this.setHealth(health);
         this.setMovementSpeed(this.getMovementSpeed()*2);

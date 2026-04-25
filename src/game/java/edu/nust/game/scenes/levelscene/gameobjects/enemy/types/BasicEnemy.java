@@ -133,11 +133,22 @@ public class BasicEnemy extends Enemy
             spriteRenderer.setAnimationTime(TimeSpan.fromMilliseconds(150)).startAnimation();
 
             this.addComponent(spriteRenderer);
+            onHealthChanged();
         }
         catch (FileNotFoundException e)
         {
             System.err.println("Failed to load enemy sprite: " + e.getMessage());
         }
+    }
+
+    @Override
+    protected void onHealthChanged()
+    {
+        if (spriteRenderer == null) return;
+
+        javafx.scene.paint.Color tintColor = getHealthTintColor();
+        if (tintColor == null) spriteRenderer.clearTint();
+        else spriteRenderer.tintSelf(tintColor);
     }
 
     @Override

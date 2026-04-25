@@ -60,6 +60,7 @@ public class Player extends Character implements Damageable, Concrete
     private static final double MOVEMENT_COLLISION_HALF_HEIGHT = 6.0;
 
     private boolean invincible = false;
+    private static final double MAX_RED_TINT_STRENGTH = 0.5;
 
     public Player(Vector2D pos, int initialHealth, int mSpeed, boolean moveable)
     {
@@ -212,14 +213,22 @@ public class Player extends Character implements Damageable, Concrete
 
     public void takeDamage(int damage)
     {
-        if (health != null) health.takeDamage(damage);
+        if (health != null)
+        {
+            health.takeDamage(damage);
+            updateHealthTint();
+        }
     }
 
     @Override
     public Health getHealth() { return health; }
 
     @Override
-    public void setHealth(Health health) { this.health = health; }
+    public void setHealth(Health health)
+    {
+        this.health = health;
+        updateHealthTint();
+    }
 
     @Override
     public boolean isDead()
@@ -310,5 +319,33 @@ public class Player extends Character implements Damageable, Concrete
             health.setCurrentHealth(health.getMaxHealth());
             setMovementSpeed(50);
         }
+
+        updateHealthTint();
+    }
+
+    private void updateHealthTint()
+    {
+        if (health == null)
+        {
+            clearTintOnRenderers();
+            return;
+        }
+
+        double tintStrength = (1.0 - health.getHealthRatio()) * MAX_RED_TINT_STRENGTH;
+        if (tintStrength <= 0.0)
+        {
+            clearTintOnRenderers();
+            return;
+        }
+
+        javafx.scene.paint.Color tintColor = javafx.scene.paint.Color.color(1.0, 1.0 - tintStrength, 1.0 - tintStrength);
+        if (spriteRenderer != null) spriteRenderer.tintSelf(tintColor);
+        if (handsRenderer != null) handsRenderer.tintSelf(tintColor);
+    }
+
+    private void clearTintOnRenderers()
+    {
+        if (spriteRenderer != null) spriteRenderer.clearTint();
+        if (handsRenderer != null) handsRenderer.clearTint();
     }
 }

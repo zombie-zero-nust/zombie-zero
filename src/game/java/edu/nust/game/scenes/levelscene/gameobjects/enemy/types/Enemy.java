@@ -8,10 +8,10 @@ import edu.nust.game.scenes.levelscene.gameobjects.player.Health;
 import edu.nust.game.systems.assets.EnemyAsset;
 import edu.nust.game.systems.collision.Concrete;
 import edu.nust.game.systems.collision.Damageable;
-import edu.nust.game.systems.collision.Damaging;
 import edu.nust.game.systems.collision.HitBox;
 import edu.nust.game.systems.pathfinder.Node;
 import edu.nust.game.systems.pathfinder.PathFinder;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +51,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     private boolean attacking = false;
 
     private static final int NODE_SIZE = 2;
+    private static final double MAX_RED_TINT_STRENGTH = 0.5;
 
     public Enemy(Vector2D startPosition, double speed, int health)
     {
@@ -186,6 +187,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     @Override
     public void takeDamage(int damage) {
         health.takeDamage(damage);
+        onHealthChanged();
         if (!health.isAlive() && !isDying) {
             isDying = true;
             freezeEnemy();
@@ -211,7 +213,20 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     public void setHealth(Health health)
     {
         this.health = health;
+        onHealthChanged();
     }
+
+    protected Color getHealthTintColor()
+    {
+        if (health == null) return null;
+
+        double tintStrength = (1.0 - health.getHealthRatio()) * MAX_RED_TINT_STRENGTH;
+        if (tintStrength <= 0.0) return null;
+
+        return Color.color(1.0, 1.0 - tintStrength, 1.0 - tintStrength);
+    }
+
+    protected void onHealthChanged() { }
 
     @Override
     public Health getHealth()

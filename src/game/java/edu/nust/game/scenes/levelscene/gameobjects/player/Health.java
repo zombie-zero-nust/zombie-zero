@@ -9,15 +9,18 @@ public class Health
     private static final int DEFAULT_HEALTH = 100;
 
     private int currentHealth;
+    private final int maxHealth;
 
     public Health()
     {
+        this.maxHealth = DEFAULT_HEALTH;
         this.currentHealth = DEFAULT_HEALTH;
         logger.debug("Health initialized: {} HP", DEFAULT_HEALTH);
     }
 
     public Health(int health)
     {
+        this.maxHealth = Math.max(1, health);
         this.currentHealth = health;
         logger.debug("Health initialized: {} HP", health);
     }
@@ -30,7 +33,7 @@ public class Health
 
     public void heal(int amount)
     {
-        currentHealth = Math.min(currentHealth + amount, DEFAULT_HEALTH);
+        currentHealth = Math.min(currentHealth + amount, maxHealth);
         logger.debug("Healed: {} HP. Health: {}", amount, currentHealth);
     }
 
@@ -46,7 +49,12 @@ public class Health
 
     public int getMaxHealth()
     {
-        return DEFAULT_HEALTH;
+        return maxHealth;
+    }
+
+    public double getHealthRatio()
+    {
+        return Math.clamp((double) currentHealth / maxHealth, 0.0, 1.0);
     }
 
     public Health setCurrentHealth(int currentHealth)
@@ -55,5 +63,3 @@ public class Health
         return this;
     }
 }
-
-
