@@ -11,7 +11,7 @@ public class GroundGrass extends StaticObject
     public GroundGrass(Random random) { super(random); }
 
     @Override
-    protected int numImages() { return 13; }
+    protected int numImages() { return 2; }
 
     @Override
     protected String folderName() { return "ground_grass"; }

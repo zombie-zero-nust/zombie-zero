@@ -18,7 +18,4 @@ public class Bush extends StaticObject
 
     @Override
     protected String filename(int index) { return "bush_" + index + ".png"; }
-
-    @Override
-    protected boolean rotateRandom() { return true; }
 }

@@ -11,7 +11,7 @@ public class Grass extends StaticObject
     public Grass(Random random) { super(random); }
 
     @Override
-    protected int numImages() { return 15; }
+    protected int numImages() { return 26; }
 
     @Override
     protected String folderName() { return "grass"; }
