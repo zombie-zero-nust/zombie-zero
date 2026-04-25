@@ -10,7 +10,6 @@ import edu.nust.game.scenes.highscores.HighScoresScene;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemySpawner;
-import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
@@ -105,7 +104,7 @@ public class LevelScene extends GameScene
 
         EnemySpawner spawner = new EnemySpawner(5, 3, new Vector2D(100, 200));
         this.addGameObject(spawner);
-        spawner.addBoss(30,1000,25);
+        spawner.addBoss(30, 1000, 25);
 
         if (ammoBarContainer != null)
         {
@@ -335,22 +334,22 @@ public class LevelScene extends GameScene
     private void gameOver()
     {
         gameOverState = true;
-        
+
         // Show score display controller on game over
         if (scoreDisplayControllerContainer != null && scoreDisplayController != null)
         {
             // Clear previous content and add the controller
             scoreDisplayControllerContainer.getChildren().clear();
             scoreDisplayControllerContainer.getChildren().add(scoreDisplayController);
-            
+
             // Update score display with final score
             scoreDisplayController.updateScoreDisplay(getCurrentScore());
-            
+
             // Show the container
             scoreDisplayControllerContainer.setVisible(true);
             scoreDisplayControllerContainer.setManaged(true);
         }
-        
+
         saveScoreIfNeeded();
         setPaused(true);
     }
@@ -381,7 +380,14 @@ public class LevelScene extends GameScene
     {
         try
         {
-            URL gunIconUrl = Resources.tryGetResource("assets", "raw", "PostApocalypse", "Objects", "Pickable", "PistolIcon.png");
+            URL gunIconUrl = Resources.tryGetResource(
+                    "assets",
+                    "raw",
+                    "PostApocalypse",
+                    "Objects",
+                    "Pickable",
+                    "PistolIcon.png"
+            );
             if (gunIconUrl != null)
             {
                 Image gunIcon = new Image(gunIconUrl.toExternalForm());

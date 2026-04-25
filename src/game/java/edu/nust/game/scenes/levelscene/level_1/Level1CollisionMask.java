@@ -9,12 +9,14 @@ import java.util.function.Consumer;
 
 public final class Level1CollisionMask
 {
-    private static final Rectangle MAP_BOUNDS = Rectangle.fromCorners(0, 0, 3200, 800);
+    // private static final Rectangle MAP_BOUNDS = Rectangle.fromCorners(0, 0, 3200, 800);
+    private static final Rectangle MAP_BOUNDS = Rectangle.fromCorners(0, 0, 2800, 800);
 
     private static final List<Rectangle> BOUNDARY_RECTS = List.of(
             Rectangle.fromCorners(-50, -50, 3250, 4), // Top
             Rectangle.fromCorners(-50, 4, 4, 794), // Left
-            Rectangle.fromCorners(3196, 4, 3250, 794), // Right
+            // Rectangle.fromCorners(3196, 4, 3250, 794), // Right
+            Rectangle.fromCorners(2796, 4, 2850, 794), // Right
             Rectangle.fromCorners(-50, 794, 3250, 850) // Bottom
     );
 
