@@ -48,6 +48,12 @@ public class Health
     {
         return DEFAULT_HEALTH;
     }
+
+    public Health setCurrentHealth(int currentHealth)
+    {
+        this.currentHealth = currentHealth;
+        return this;
+    }
 }
 
 

@@ -438,6 +438,33 @@ public class LevelScene extends GameScene
     @Override
     protected void registerDevCommands()
     {
+        // invincible mode (sets speed to 500 and health to 9999)
+        registerDevCommand(
+                "/invincible", "/invincible", "Toggle invincibility mode for the player.", args -> {
+                    if (player == null) return "Player not initialized";
+                    player.toggleInvincibility();
+                    if (player.isInvincible())
+                    {
+                        return "Invincibility ON: Speed set to 500, Health set to 9999.";
+                    }
+                    else
+                    {
+                        return "Invincibility OFF: Speed reset to 50, Health reset to 100.";
+                    }
+                }
+        );
+
+        // dev mode (set camera zoom to 0.9; show mouse coordinates)
+        registerDevCommand(
+                "/devmode", "/devmode", "Toggle developer mode (camera zoom 0.9, show mouse coordinates).", args -> {
+                    if (this.getWorldCamera() == null) return "Camera not initialized";
+                    boolean devMode = this.getWorldCamera().getZoom() != 0.9;
+                    this.getWorldCamera().setZoom(devMode ? 0.9 : 4);
+                    this.toggleDebugMouseLocation();
+                    return "Developer mode " + (devMode ? "ON" : "OFF");
+                }
+        );
+
         // speed
         registerDevCommand(
                 "/setPlayerSpeed", "/setPlayerSpeed <speed>", "Set player's movement speed directly.", args -> {

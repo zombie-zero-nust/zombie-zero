@@ -6,6 +6,7 @@ import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObject;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObjectType;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Random;
 
 public class StaticObjectFactory
@@ -91,35 +92,14 @@ public class StaticObjectFactory
 
     /* RANDOM */
 
-    public static StaticObjectType randomType(Random random)
-    {
-        final int _plantWeight = 75;
-        final int _treeWeight = 0;
-        final int _bushWeight = 5;
-        final int _garbageWeight = 15;
-        final int _fallenTreeWeight = 0;
-
-        final int totalWeight = _bushWeight + _fallenTreeWeight + _garbageWeight + _plantWeight + _treeWeight;
-
-        int roll = random.nextInt(totalWeight);
-
-        if (roll < _bushWeight) { return StaticObjectType.BUSH; }
-        roll -= _bushWeight;
-
-        if (roll < _fallenTreeWeight) { return StaticObjectType.FALLEN_TREE; }
-        roll -= _fallenTreeWeight;
-
-        if (roll < _garbageWeight) { return StaticObjectType.GARBAGE_ITEM; }
-        roll -= _garbageWeight;
-
-        if (roll < _plantWeight) { return StaticObjectType.PLANT; }
-
-        return StaticObjectType.TREE;
-    }
-
     public static StaticObject randomStaticAt(double x, double y, @Nullable Player player, Random random)
     {
-        return staticAt(x, y, random, randomType(random), player);
+        return staticAt(x, y, random, StaticObjectType.random(random), player);
+    }
+
+    public static StaticObject randomStaticAt(double x, double y, List<StaticObjectType> options, @Nullable Player player, Random random)
+    {
+        return staticAt(x, y, random, StaticObjectType.random(random, options), player);
     }
 
     /* HELPERS */

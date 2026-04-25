@@ -57,6 +57,8 @@ public class Player extends Character implements Damageable, Concrete
     private BiFunction<Vector2D, Double, Boolean> walkabilityChecker;
     private static final double COLLISION_RADIUS = 25.0;
 
+    private boolean invincible = false;
+
     public Player(Vector2D pos, int initialHealth, int mSpeed, boolean moveable)
     {
         super(pos, initialHealth, mSpeed, moveable);
@@ -271,11 +273,31 @@ public class Player extends Character implements Damageable, Concrete
         return walkabilityChecker.apply(position, COLLISION_RADIUS);
     }
 
-    public double getHeight() {
+    public double getHeight()
+    {
         return height;
     }
 
-    public double getWidth() {
+    public double getWidth()
+    {
         return width;
+    }
+
+    public boolean isInvincible() { return invincible; }
+
+    public void toggleInvincibility()
+    {
+        invincible = !invincible;
+
+        if (invincible)
+        {
+            health.setCurrentHealth(10000);
+            setMovementSpeed(500);
+        }
+        else
+        {
+            health.setCurrentHealth(health.getMaxHealth());
+            setMovementSpeed(50);
+        }
     }
 }
