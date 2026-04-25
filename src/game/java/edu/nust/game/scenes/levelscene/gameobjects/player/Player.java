@@ -1,6 +1,7 @@
 package edu.nust.game.scenes.levelscene.gameobjects.player;
 
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
+import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
@@ -17,7 +18,7 @@ import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class Player extends Character implements Damageable, Concrete
 {
@@ -54,8 +55,9 @@ public class Player extends Character implements Damageable, Concrete
     private Image handsRunLeft;
     private Image handsRunRight;
     private Facing facing = Facing.DOWN;
-    private BiFunction<Vector2D, Double, Boolean> walkabilityChecker;
-    private static final double COLLISION_RADIUS = 25.0;
+    private Function<Rectangle, Boolean> walkabilityChecker;
+    private static final double MOVEMENT_COLLISION_HALF_WIDTH = 4.0;
+    private static final double MOVEMENT_COLLISION_HALF_HEIGHT = 6.0;
 
     private boolean invincible = false;
 
@@ -265,12 +267,21 @@ public class Player extends Character implements Damageable, Concrete
         return List.of(Enemy.class);
     }
 
-    public void setWalkabilityChecker(BiFunction<Vector2D, Double, Boolean> checker) { this.walkabilityChecker = checker; }
+    public void setWalkabilityChecker(Function<Rectangle, Boolean> checker) { this.walkabilityChecker = checker; }
 
     private boolean isWalkable(Vector2D position)
     {
         if (walkabilityChecker == null) return true;
-        return walkabilityChecker.apply(position, COLLISION_RADIUS);
+
+        return walkabilityChecker.apply(getMovementCollisionRect(position));
+    }
+
+    public Rectangle getMovementCollisionRect(Vector2D center)
+    {
+        return Rectangle.fromCenter(
+                center,
+                new Vector2D(MOVEMENT_COLLISION_HALF_WIDTH * 2, MOVEMENT_COLLISION_HALF_HEIGHT * 2)
+        );
     }
 
     public double getHeight()

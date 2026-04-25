@@ -647,7 +647,9 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
 
     /* DEBUG */
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugPoint(Vector2D position, double radius, TimeSpan lifespan)
     {
         if (debugShapes.add(new DebugPoint(position, radius, lifespan)))
@@ -656,25 +658,33 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         else logger.trace("WARNING: Duplicate debug point at {} with radius {}", position, radius);
     }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugPoint(Vector2D position, double radius)
     {
         addDebugPoint(position, radius, DebugPoint.DEFAULT_LIFESPAN);
     }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugPoint(Vector2D position, TimeSpan lifespan)
     {
         addDebugPoint(position, DebugPoint.DEFAULT_RADIUS, lifespan);
     }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugPoint(Vector2D position)
     {
         addDebugPoint(position, DebugPoint.DEFAULT_RADIUS, DebugPoint.DEFAULT_LIFESPAN);
     }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} i.e {@code (5 seconds)}
     public void addDebugRectangle(Rectangle rect, TimeSpan lifespan)
     {
         if (debugShapes.add(new DebugRectangle(rect.getTopLeft(), rect.getBottomRight(), lifespan)))
@@ -683,25 +693,33 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         else logger.trace("WARNING: Duplicate debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
     }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugRectangle(Rectangle rect)
     {
         addDebugRectangle(rect, DebugShape.DEFAULT_LIFESPAN);
     }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugRectangle(double sx, double sy, double ex, double ey, TimeSpan lifespan)
     {
         addDebugRectangle(Rectangle.fromCorners(sx, sy, ex, ey), lifespan);
     }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugRectangle(double sx, double sy, double ex, double ey)
     {
         addDebugRectangle(Rectangle.fromCorners(sx, sy, ex, ey), DebugShape.DEFAULT_LIFESPAN);
     }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugEllipse(Rectangle rect, TimeSpan lifespan)
     {
         if (debugShapes.add(new DebugEllipse(rect.getTopLeft(), rect.getBottomRight(), lifespan)))
@@ -710,16 +728,22 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         else logger.trace("WARNING: Duplicate debug ellipse at {} with size {}", rect.getTopLeft(), rect.getSize());
     }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugEllipse(Rectangle rect) { addDebugEllipse(rect, DebugShape.DEFAULT_LIFESPAN); }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugEllipse(double sx, double sy, double ex, double ey, TimeSpan lifespan)
     {
         addDebugEllipse(Rectangle.fromCorners(sx, sy, ex, ey), lifespan);
     }
 
-    /// Must be called <b>{@code EACH FRAME}</b>
+    /// Must be called <b>{@code ONCE ONLY}</b>
+    ///
+    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
     public void addDebugEllipse(double sx, double sy, double ex, double ey)
     {
         addDebugEllipse(Rectangle.fromCorners(sx, sy, ex, ey), DebugShape.DEFAULT_LIFESPAN);

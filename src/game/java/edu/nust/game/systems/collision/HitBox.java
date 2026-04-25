@@ -2,6 +2,7 @@ package edu.nust.game.systems.collision;
 
 import edu.nust.engine.core.Component;
 import edu.nust.engine.core.components.renderers.BoxRenderer;
+import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -168,5 +169,16 @@ public class HitBox extends Component
     public double getHalfW()
     {
         return halfW;
+    }
+
+    public Rectangle asRect()
+    {
+        Vector2D center = this.getPos();
+        return Rectangle.fromCorners(
+                center.getX() - this.getHalfW(),
+                center.getY() - this.getHalfH(),
+                center.getX() + this.getHalfW(),
+                center.getY() + this.getHalfH()
+        );
     }
 }

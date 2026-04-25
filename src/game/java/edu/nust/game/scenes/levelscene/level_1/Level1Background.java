@@ -197,11 +197,8 @@ public final class Level1Background
                 for (int y = (int) rectangle.getTop(); y < ((int) rectangle.getBottom()); y += stepY)
                 {
                     StaticObject item = StaticObjectFactory.randomStaticAt(
-                            x,
-                            y,
-                            zone.options,
-                            scene.getPlayer(),
-                            random
+                            x, y, zone.options, //
+                            scene.getPlayer(), random
                     );
                     int offsetX = random.nextInt(-offset, offset + 1);
                     int offsetY = random.nextInt(-offset, offset + 1);

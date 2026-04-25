@@ -1,7 +1,6 @@
 package edu.nust.game.scenes.levelscene.level_1;
 
 import edu.nust.engine.math.Rectangle;
-import edu.nust.engine.math.Vector2D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,11 +106,11 @@ public final class Level1CollisionMask
         ALL_RECTS.addAll(INNER_COLLISION_RECTS);
     }
 
-    public boolean isWalkable(Vector2D pos)
+    public boolean isWalkable(Rectangle playerHitbox)
     {
         for (Rectangle rect : ALL_RECTS)
         {
-            if (rect.contains(pos)) return false;
+            if (rect.intersects(playerHitbox)) return false;
         }
 
         return true;
