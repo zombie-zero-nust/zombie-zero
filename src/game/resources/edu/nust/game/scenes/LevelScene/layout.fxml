@@ -34,27 +34,14 @@
             <Label fx:id="overlayTitleLabel" managed="false" styleClass="overlay-title" text="Game Over"
                    visible="false"/>
             
-            <!-- Score Display Box - shown on game over -->
-            <VBox fx:id="scoreDisplayContainer"
-                  alignment="CENTER"
-                  managed="false"
-                  visible="false"
-                  maxWidth="400"
-                  prefWidth="350"
-                  style="-fx-background-color: rgba(0, 0, 0, 0.7);
-                         -fx-border-color: #00FF00;
-                         -fx-border-width: 2;
-                         -fx-padding: 12;
-                         -fx-spacing: 8;
-                         -fx-background-radius: 5;
-                         -fx-border-radius: 5;">
-                <HBox alignment="CENTER" spacing="10">
-                    <Label text="SCORE"
-                           style="-fx-text-fill: #00FF00; -fx-font-size: 24; -fx-font-weight: bold; -fx-font-family: 'Courier New';"/>
-                    <Label fx:id="scoreLabel" text="0"
-                           style="-fx-text-fill: #FFFF00; -fx-font-size: 28; -fx-font-weight: bold; -fx-font-family: 'Courier New';"/>
-                </HBox>
-            </VBox>
+            <!-- Score Display Controller - Pixel art 3-digit counter -->
+            <StackPane fx:id="scoreDisplayControllerContainer"
+                       alignment="CENTER"
+                       managed="false"
+                       visible="false"
+                       maxWidth="400"
+                       prefWidth="350"/>
+            
             
             <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="pause-button-tile, resume-button-tile"
                     text=""/>

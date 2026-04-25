@@ -16,6 +16,7 @@ import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Weapon;
 import edu.nust.game.scenes.levelscene.hud.HealthBar;
+import edu.nust.game.scenes.levelscene.hud.ScoreDisplayController;
 import edu.nust.game.scenes.levelscene.level_1.Level1Background;
 import edu.nust.game.scenes.levelscene.level_1.Level1CollisionMask;
 import edu.nust.game.scenes.start.StartScene;
@@ -44,7 +45,7 @@ public class LevelScene extends GameScene
     @FXML private StackPane pauseOverlay;
     @FXML private Label overlayTitleLabel;
     @FXML private Label scoreLabel;
-    @FXML private VBox scoreDisplayContainer;
+    @FXML private StackPane scoreDisplayControllerContainer;
     @FXML private Label ammoLabel;
     @FXML private Label reloadLabel;
     @FXML private Label healthLabel;
@@ -63,6 +64,7 @@ public class LevelScene extends GameScene
     private Weapon weapon;
     private CollisionManager collisionManager;
     private Score score;
+    private ScoreDisplayController scoreDisplayController;
     private AmmoBar ammoBar;
     private HealthBar healthBar;
     private Level1CollisionMask level1CollisionMask;
@@ -121,6 +123,9 @@ public class LevelScene extends GameScene
             healthBar = new HealthBar();
             healthBarContainer.getChildren().add(healthBar);
         }
+
+        // Initialize ScoreDisplayController for game over screen
+        scoreDisplayController = new ScoreDisplayController();
 
         Rectangle bounds = Level1CollisionMask.getMapBounds();
         worldWidth = bounds.getWidth();
@@ -331,17 +336,19 @@ public class LevelScene extends GameScene
     {
         gameOverState = true;
         
-        // Show score display container on game over
-        if (scoreDisplayContainer != null)
+        // Show score display controller on game over
+        if (scoreDisplayControllerContainer != null && scoreDisplayController != null)
         {
-            scoreDisplayContainer.setVisible(true);
-            scoreDisplayContainer.setManaged(true);
-        }
-        
-        // Update score label with final score
-        if (scoreLabel != null)
-        {
-            scoreLabel.setText(String.valueOf(score.getScore()));
+            // Clear previous content and add the controller
+            scoreDisplayControllerContainer.getChildren().clear();
+            scoreDisplayControllerContainer.getChildren().add(scoreDisplayController);
+            
+            // Update score display with final score
+            scoreDisplayController.updateScoreDisplay(getCurrentScore());
+            
+            // Show the container
+            scoreDisplayControllerContainer.setVisible(true);
+            scoreDisplayControllerContainer.setManaged(true);
         }
         
         saveScoreIfNeeded();
