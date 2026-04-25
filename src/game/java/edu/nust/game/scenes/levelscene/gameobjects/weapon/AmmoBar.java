@@ -10,7 +10,7 @@ import java.net.URL;
 
 public class AmmoBar extends HBox
 {
-    private static final int BULLET_SLOTS = 5;
+    private static final int BULLET_SLOTS = 10;
     private static final String BULLET_UI_BASE = "raw/PostApocalypse/UI/BulletIndicators";
     private static final double BULLET_ICON_HEIGHT = 42;
 
@@ -68,7 +68,8 @@ public class AmmoBar extends HBox
     public void updateAmmo(int currentAmmo)
     {
         // Math.clamp is not available on all Java versions; use explicit clamp
-        int filledSlots = Math.max(0, Math.min(currentAmmo, BULLET_SLOTS));
+        int filledSlots = (int) Math.ceil(currentAmmo / 3.0);
+        filledSlots = Math.max(0, Math.min(filledSlots, BULLET_SLOTS));;
         for (int i = 0; i < BULLET_SLOTS; i++)
         {
             if (spritesReady)

@@ -29,7 +29,7 @@ public class AmmoCounterHUD extends StackPane
     private static final String BULLET_UI_BASE = "raw/PostApocalypse/UI/BulletIndicators";
     private static final double BULLET_ICON_HEIGHT = 42;
     private static final double BULLET_SPACING = 2;
-    private static final int MAX_BULLET_SLOTS = 5;
+    private static final int MAX_BULLET_SLOTS = 8;
 
     private final ImageView backgroundPanel = new ImageView();
     private final ImageView weaponSilhouette = new ImageView();

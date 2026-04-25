@@ -8,7 +8,7 @@ public class Ammo
     private final GameLogger logger = GameLogger.getLogger(this.getClass());
 
     // Magazine size used by HUD bullet indicators.
-    private static final int MAX_AMMO = 5;
+    private static final int MAX_AMMO = 30;
     private static final double RELOAD_TIME = 2.0;
 
     private int currentAmmo;
