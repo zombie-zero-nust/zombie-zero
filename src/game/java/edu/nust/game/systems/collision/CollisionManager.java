@@ -5,6 +5,7 @@ import edu.nust.engine.core.GameScene;
 import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
+import edu.nust.game.scenes.levelscene.level_1.Level1CollisionMask;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -123,6 +124,13 @@ public class CollisionManager
                     if (skip) continue;
                 }
                 obj.getHitbox().setMin(otherObj.getHitbox());
+
+                boolean intersectsWithLevelCollision = false;
+                Level1CollisionMask.forEachRect((levelRect) -> {
+                    if (obj.getHitbox().asRect().intersects(levelRect)) {
+                        obj.triggerCollisionEffect(null);
+                    }
+                });
 
                 if (obj.getHitbox().isTouching(otherObj.getHitbox()))
                 {

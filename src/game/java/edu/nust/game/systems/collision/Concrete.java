@@ -1,5 +1,7 @@
 package edu.nust.game.systems.collision;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 public interface Concrete
@@ -10,5 +12,5 @@ public interface Concrete
 
     HitBox getHitbox();
 
-    void triggerCollisionEffect(Concrete collidedObj);
+    void triggerCollisionEffect(@Nullable Concrete collidedObj);
 }

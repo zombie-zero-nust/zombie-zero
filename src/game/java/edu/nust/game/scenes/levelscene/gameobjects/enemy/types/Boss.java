@@ -313,7 +313,7 @@ public class Boss extends Enemy
 
 
     public void resetBoss() {
-        Health health = new Health(10000);
+        Health health = new Health(5000);
         health.setCurrentHealth(5000);
         this.setHealth(health);
         this.setMovementSpeed(this.getMovementSpeed()*2);
