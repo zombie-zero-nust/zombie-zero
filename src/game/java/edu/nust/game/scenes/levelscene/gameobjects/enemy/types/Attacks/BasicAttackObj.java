@@ -1,21 +1,19 @@
-package edu.nust.game.scenes.levelscene.gameobjects.enemy.types;
+package edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Attacks;
 
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
-import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.systems.collision.Damageable;
 import edu.nust.game.systems.collision.Damaging;
 import edu.nust.game.systems.collision.HitBox;
-import javafx.scene.image.Image;
 
 import java.util.List;
-import java.util.Vector;
 
 
-public class AttackObj extends GameObject implements Damaging {
+public class BasicAttackObj extends GameObject implements Damaging {
 
     private int damage;
     private Enemy enemy;
@@ -31,10 +29,9 @@ public class AttackObj extends GameObject implements Damaging {
     private double movementSpeed;
     private Vector2D direction;
     private double elapsed;
-    private SpriteRenderer spriteRenderer;
 
-    public AttackObj(int damage,Enemy enemy, double width, double height,double range,
-                     List<Class<? extends Damageable>> notDamageObj,TimeSpan lastsFor){
+    public BasicAttackObj(int damage, Enemy enemy, double width, double height, double range,
+                          List<Class<? extends Damageable>> notDamageObj, TimeSpan lastsFor,boolean isMoving){
         this.damage = damage;
         this.enemy = enemy;
         this.width = width;
@@ -43,22 +40,9 @@ public class AttackObj extends GameObject implements Damaging {
         this.range = range;
         this.lastsFor = lastsFor;
         this.isMoving = false;
+        this.isMoving = isMoving;
     }
 
-    public AttackObj(int damage, double range, Enemy enemy, double width, double height,
-                     List<Class<? extends Damageable>> notDamageObj, boolean isMoving,
-                     double movementSpeed, Image image){
-        this.damage = damage;
-        this.range = range;
-        this.enemy = enemy;
-        this.width = width;
-        this.height = height;
-        this.notDamageObj = notDamageObj;
-        this.isMoving = isMoving;
-        this.movementSpeed = movementSpeed;
-        spriteRenderer.setImage(image,1,1);
-        this.addComponent(spriteRenderer);
-    }
 
     @Override
     public void onInit(){

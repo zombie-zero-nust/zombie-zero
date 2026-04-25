@@ -4,6 +4,7 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Attacks.BasicAttackObj;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.systems.assets.EnemyAsset;
 import javafx.scene.image.Image;
@@ -204,12 +205,13 @@ public class BasicEnemy extends Enemy
 
         if (dist <= minDist) {
 
-            AttackObj attack1 = new AttackObj(
+            BasicAttackObj attack1 = new BasicAttackObj(
                     10, this, 3,
                     (double) height / 2,
                     attack1Range,
                     List.of(Enemy.class),
-                    TimeSpan.fromMilliseconds(attack1Time)
+                    TimeSpan.fromMilliseconds(attack1Time),
+                    false
             );
 
             this.getScene().addGameObject(attack1);

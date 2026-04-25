@@ -5,8 +5,8 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Attacks.BasicAttackObj;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
-import edu.nust.game.systems.Score;
 import edu.nust.game.systems.assets.EnemyAsset;
 import javafx.scene.image.Image;
 
@@ -44,7 +44,7 @@ public class Boss extends Enemy
     private double attackCooldownTime = 800; // ms (adjust)
     private boolean canAttack = true;
     private int attackingFrame;
-    private AttackObj attack1;
+    private BasicAttackObj attack1;
 
 
     public Boss(Vector2D pos, double speed, int health, double damage)
@@ -180,12 +180,13 @@ public class Boss extends Enemy
         if (isAttacking()) {
             attackTimeElapsed += deltaTime.asMilliseconds();
             if(attackTimeElapsed >= 250&& attack1 == null) {
-                attack1 = new AttackObj(
+                attack1 = new BasicAttackObj(
                         10, this, 3,
                         (double) height / 2,
                         attack1Range,
                         List.of(Enemy.class),
-                        TimeSpan.fromMilliseconds(attack1Time-250)
+                        TimeSpan.fromMilliseconds(attack1Time-250),
+                        false
                 );
 
                 this.getScene().addGameObject(attack1);

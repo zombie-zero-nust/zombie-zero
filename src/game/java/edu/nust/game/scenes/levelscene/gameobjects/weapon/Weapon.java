@@ -37,6 +37,7 @@ public class Weapon extends GameObject
     private Image fireRightSheet;
 
 
+
     public Weapon()
     {
         loadWeaponAimAssets();
@@ -113,7 +114,7 @@ public class Weapon extends GameObject
         double sy = muzzleFlashRenderer.getFrameY() * muzzleFlashRenderer.getFrameHeight();
 
         context.save();
-        context.translate(barrelTip.getX(), barrelTip.getY() + 1);
+        context.translate(barrelTip.getX(), barrelTip.getY() );
         context.rotate(this.getTransform().getRotation().getDegrees());
         context.drawImage(
                 muzzleFlashRenderer.getImage(),
@@ -121,8 +122,8 @@ public class Weapon extends GameObject
                 sy,
                 muzzleFlashRenderer.getFrameWidth(),
                 muzzleFlashRenderer.getFrameHeight(),
-                -w / 2 - 2,
-                -h / 2 - 2,
+                -w / 2 ,
+                -h / 2 ,
                 w,
                 h
         );
@@ -170,11 +171,12 @@ public class Weapon extends GameObject
         Vector2D weaponPos = this.getTransform().getPosition();
         Vector2D bulletPos = weaponPos.add(targetPos.subtract(weaponPos).normalize().multiply(width));
         ammo.update(deltaTime);
-
-
         if (ammo.isReloading() || !ammo.hasAmmo()) return null;
 
-        if (!isFiring) return null;
+        if (!isFiring){
+
+            return null;
+        }
 
         if (!autoFire)
         {
