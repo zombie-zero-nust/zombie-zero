@@ -1,5 +1,6 @@
 package edu.nust.game.scenes.levelscene;
 
+import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.math.Rectangle;
@@ -22,6 +23,7 @@ import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
 import edu.nust.game.systems.Score;
 import edu.nust.game.systems.collision.CollisionManager;
+import edu.nust.game.systems.collision.HitBox;
 import edu.nust.game.systems.pathfinder.MapNodeSetter;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -76,6 +78,7 @@ public class LevelScene extends GameScene
     private boolean scoreSaved = false;
     private boolean gameOverState = false;
     private boolean playerWon = false;
+    private boolean allHitboxesVisible = false;
     private MapNodeSetter nodeSetter;
 
     public LevelScene(GameWorld world) { super(world); }
@@ -172,6 +175,21 @@ public class LevelScene extends GameScene
 
         updateWeaponTracking(playerPos);
         updateCameraPosition(playerPos, canvasW, canvasH, zoom);
+        renderCollisionDebugOverlays();
+    }
+
+    private void renderCollisionDebugOverlays()
+    {
+        if (allHitboxesVisible)
+        {
+            for (GameObject object : getAllGameObjects())
+            {
+                HitBox hitBox = object.getFirstComponent(HitBox.class);
+                if (hitBox == null) continue;
+
+                addFrameDebugRectangle(hitBox.asRect());
+            }
+        }
     }
 
     private void updateMouseWorldPosition(double canvasW, double canvasH, Vector2D cameraPos, double zoom)
@@ -522,14 +540,37 @@ public class LevelScene extends GameScene
                 }
         );
 
-        // show collision rects
+        // show level collision mask rects
         registerDevCommand(
-                "/showCollisionRects",
-                "/showCollisionRects",
-                "Show collision rectangles for the level for 5 seconds.",
+                "/showLevelCollisionMask",
+                "/showLevelCollisionMask",
+                "Show level collision mask rectangles for 5 seconds.",
                 args -> {
-                    Level1CollisionMask.forEachRect(this::addDebugRectangle);
-                    return "Showing collision rectangles for 5 seconds.";
+                    Level1CollisionMask.forEachRect(rect -> addTimedDebugRectangle(rect, TimeSpan.fromSeconds(5)));
+                    return "Showing level collision mask rectangles for 5 seconds.";
+                }
+        );
+
+        registerDevCommand(
+                "/toggleAllHitboxes",
+                "/toggleAllHitboxes true|false|empty",
+                "Toggle hitbox visualization for all game objects that have a HitBox component.",
+                args -> {
+                    if (args.isEmpty())
+                    {
+                        allHitboxesVisible = !allHitboxesVisible;
+                    }
+                    else
+                    {
+                        String value = args.getFirst().toLowerCase();
+                        if (value.equals("true") || value.equals("1") || value.equals("on") || value.equals("yes"))
+                            allHitboxesVisible = true;
+                        else if (value.equals("false") || value.equals("0") || value.equals("off") || value.equals("no"))
+                            allHitboxesVisible = false;
+                        else return "Usage: /debugAllHitboxes true|false";
+                    }
+
+                    return "toggleAllHitboxes = " + allHitboxesVisible;
                 }
         );
 

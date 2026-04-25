@@ -645,12 +645,14 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         ctx.restore();
     }
 
-    /* DEBUG */
+    /* DEBUG TIMED */
 
+    /// Adds a Debug Point visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugPoint(Vector2D position, double radius, TimeSpan lifespan)
+    /// <br><br>
+    /// Default lifespan is {@link DebugPoint#DEFAULT_LIFESPAN}
+    public void addTimedDebugPoint(Vector2D position, double radius, TimeSpan lifespan)
     {
         if (debugShapes.add(new DebugPoint(position, radius, lifespan)))
             // logs only on distinct addition
@@ -658,34 +660,44 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         else logger.trace("WARNING: Duplicate debug point at {} with radius {}", position, radius);
     }
 
+    /// Adds a Debug Point visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugPoint(Vector2D position, double radius)
+    /// <br><br>
+    /// Default lifespan is {@link DebugPoint#DEFAULT_LIFESPAN}
+    public void addTimedDebugPoint(Vector2D position, double radius)
     {
-        addDebugPoint(position, radius, DebugPoint.DEFAULT_LIFESPAN);
+        addTimedDebugPoint(position, radius, DebugPoint.DEFAULT_LIFESPAN);
     }
 
+    /// Adds a Debug Point visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugPoint(Vector2D position, TimeSpan lifespan)
+    /// <br><br>
+    /// Default lifespan is {@link DebugPoint#DEFAULT_LIFESPAN}
+    public void addTimedDebugPoint(Vector2D position, TimeSpan lifespan)
     {
-        addDebugPoint(position, DebugPoint.DEFAULT_RADIUS, lifespan);
+        addTimedDebugPoint(position, DebugPoint.DEFAULT_RADIUS, lifespan);
     }
 
+    /// Adds a Debug Point visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugPoint(Vector2D position)
+    /// <br><br>
+    /// Default lifespan is {@link DebugPoint#DEFAULT_LIFESPAN}
+    public void addTimedDebugPoint(Vector2D position)
     {
-        addDebugPoint(position, DebugPoint.DEFAULT_RADIUS, DebugPoint.DEFAULT_LIFESPAN);
+        addTimedDebugPoint(position, DebugPoint.DEFAULT_RADIUS, DebugPoint.DEFAULT_LIFESPAN);
     }
 
+    // RECTANGLE
+
+    /// Adds a Debug Rectangle visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} i.e {@code (5 seconds)}
-    public void addDebugRectangle(Rectangle rect, TimeSpan lifespan)
+    /// <br><br>
+    /// Default lifespan is {@link DebugRectangle#DEFAULT_LIFESPAN}
+    public void addTimedDebugRectangle(Rectangle rect, TimeSpan lifespan)
     {
         if (debugShapes.add(new DebugRectangle(rect.getTopLeft(), rect.getBottomRight(), lifespan)))
             // logs only on distinct addition
@@ -693,34 +705,44 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         else logger.trace("WARNING: Duplicate debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
     }
 
+    /// Adds a Debug Rectangle visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugRectangle(Rectangle rect)
+    /// <br><br>
+    /// Default lifespan is {@link DebugRectangle#DEFAULT_LIFESPAN}
+    public void addTimedDebugRectangle(Rectangle rect)
     {
-        addDebugRectangle(rect, DebugShape.DEFAULT_LIFESPAN);
+        addTimedDebugRectangle(rect, DebugShape.DEFAULT_LIFESPAN);
     }
 
+    /// Adds a Debug Rectangle visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugRectangle(double sx, double sy, double ex, double ey, TimeSpan lifespan)
+    /// <br><br>
+    /// Default lifespan is {@link DebugRectangle#DEFAULT_LIFESPAN}
+    public void addTimedDebugRectangle(double sx, double sy, double ex, double ey, TimeSpan lifespan)
     {
-        addDebugRectangle(Rectangle.fromCorners(sx, sy, ex, ey), lifespan);
+        addTimedDebugRectangle(Rectangle.fromCorners(sx, sy, ex, ey), lifespan);
     }
 
+    /// Adds a Debug Rectangle visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugRectangle(double sx, double sy, double ex, double ey)
+    /// <br><br>
+    /// Default lifespan is {@link DebugRectangle#DEFAULT_LIFESPAN}
+    public void addTimedDebugRectangle(double sx, double sy, double ex, double ey)
     {
-        addDebugRectangle(Rectangle.fromCorners(sx, sy, ex, ey), DebugShape.DEFAULT_LIFESPAN);
+        addTimedDebugRectangle(Rectangle.fromCorners(sx, sy, ex, ey), DebugShape.DEFAULT_LIFESPAN);
     }
 
+    // ELLIPSE
+
+    /// Adds a Debug Ellipse visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugEllipse(Rectangle rect, TimeSpan lifespan)
+    /// <br><br>
+    /// Default lifespan is {@link DebugEllipse#DEFAULT_LIFESPAN}
+    public void addTimedDebugEllipse(Rectangle rect, TimeSpan lifespan)
     {
         if (debugShapes.add(new DebugEllipse(rect.getTopLeft(), rect.getBottomRight(), lifespan)))
             // logs only on distinct addition
@@ -728,26 +750,96 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         else logger.trace("WARNING: Duplicate debug ellipse at {} with size {}", rect.getTopLeft(), rect.getSize());
     }
 
+    /// Adds a Debug Ellipse visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugEllipse(Rectangle rect) { addDebugEllipse(rect, DebugShape.DEFAULT_LIFESPAN); }
+    /// <br><br>
+    /// Default lifespan is {@link DebugEllipse#DEFAULT_LIFESPAN}
+    public void addTimedDebugEllipse(Rectangle rect) { addTimedDebugEllipse(rect, DebugShape.DEFAULT_LIFESPAN); }
 
+    /// Adds a Debug Ellipse visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugEllipse(double sx, double sy, double ex, double ey, TimeSpan lifespan)
+    /// <br><br>
+    /// Default lifespan is {@link DebugEllipse#DEFAULT_LIFESPAN}
+    public void addTimedDebugEllipse(double sx, double sy, double ex, double ey, TimeSpan lifespan)
     {
-        addDebugEllipse(Rectangle.fromCorners(sx, sy, ex, ey), lifespan);
+        addTimedDebugEllipse(Rectangle.fromCorners(sx, sy, ex, ey), lifespan);
     }
 
+    /// Adds a Debug Ellipse visible for this the given {@link TimeSpan}
+    /// <br><br>
     /// Must be called <b>{@code ONCE ONLY}</b>
-    ///
-    /// Default {@code lifespan} is {@link DebugPoint#DEFAULT_LIFESPAN} {@code (5 seconds)}
-    public void addDebugEllipse(double sx, double sy, double ex, double ey)
+    /// <br><br>
+    /// Default lifespan is {@link DebugEllipse#DEFAULT_LIFESPAN}
+    public void addTimedDebugEllipse(double sx, double sy, double ex, double ey)
     {
-        addDebugEllipse(Rectangle.fromCorners(sx, sy, ex, ey), DebugShape.DEFAULT_LIFESPAN);
+        addTimedDebugEllipse(Rectangle.fromCorners(sx, sy, ex, ey), DebugShape.DEFAULT_LIFESPAN);
     }
+
+    /* DEBUG FRAME */
+
+    // POINT
+
+    /// Adds a Debug Point visible for this frame only
+    /// <br><br>
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addFrameDebugPoint(Vector2D position, double radius)
+    {
+        if (debugShapes.add(new DebugPoint(position, radius, true)))
+            // logs only on distinct addition
+            logger.trace("Added debug point at {} with radius {}", position, radius);
+        else logger.trace("WARNING: Duplicate debug point at {} with radius {}", position, radius);
+    }
+
+    /// Adds a Debug Point visible for this frame only
+    /// <br><br>
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addFrameDebugPoint(Vector2D position) { addFrameDebugPoint(position, DebugPoint.DEFAULT_RADIUS); }
+
+    // RECTANGLE
+
+    /// Adds a Debug Rectangle visible for this frame only
+    /// <br><br>
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addFrameDebugRectangle(Rectangle rect)
+    {
+        if (debugShapes.add(new DebugRectangle(rect.getTopLeft(), rect.getBottomRight(), true)))
+            // logs only on distinct addition
+            logger.trace("Added debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
+        else logger.trace("WARNING: Duplicate debug rectangle at {} with size {}", rect.getTopLeft(), rect.getSize());
+    }
+
+    /// Adds a Debug Rectangle visible for this frame only
+    /// <br><br>
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addFrameDebugRectangle(double sx, double sy, double ex, double ey)
+    {
+        addFrameDebugRectangle(Rectangle.fromCorners(sx, sy, ex, ey));
+    }
+
+    // ELLIPSE
+
+    /// Adds a Debug Ellipse visible for this frame only
+    /// <br><br>
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addFrameDebugEllipse(Rectangle rect)
+    {
+        if (debugShapes.add(new DebugEllipse(rect.getTopLeft(), rect.getBottomRight(), true)))
+            // logs only on distinct addition
+            logger.trace("Added debug ellipse at {} with size {}", rect.getTopLeft(), rect.getSize());
+        else logger.trace("WARNING: Duplicate debug ellipse at {} with size {}", rect.getTopLeft(), rect.getSize());
+    }
+
+    /// Adds a Debug Ellipse visible for this frame only
+    /// <br><br>
+    /// Must be called <b>{@code EACH FRAME}</b>
+    public void addFrameDebugEllipse(double sx, double sy, double ex, double ey)
+    {
+        addFrameDebugEllipse(Rectangle.fromCorners(sx, sy, ex, ey));
+    }
+
+    /* DEBUG DRAW */
 
     private void renderDebug(GraphicsContext ctx)
     {

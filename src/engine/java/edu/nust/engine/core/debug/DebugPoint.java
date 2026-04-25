@@ -17,17 +17,23 @@ public final class DebugPoint extends DebugShape
         );
     }
 
+    public DebugPoint(Vector2D position, double radius, boolean singleFrame)
+    {
+        super(
+                position.subtract(Vector2D.one().multiply(radius / 2)),
+                position.add(Vector2D.one().multiply(radius / 2)),
+                singleFrame
+        );
+    }
+
     /* RENDER */
 
     @Override
-    public void setColors(GraphicsContext context)
-    {
-        context.setFill(STROKE_COLOR);
-    }
+    public void setColors(GraphicsContext context) { context.setFill(STROKE_COLOR); }
 
     @Override
     public void render(GraphicsContext context)
     {
-        context.fillOval(start.getX(), start.getY(), getSize().getX(), getSize().getY());
+        context.fillOval(startPos.getX(), startPos.getY(), getSize().getX(), getSize().getY());
     }
 }

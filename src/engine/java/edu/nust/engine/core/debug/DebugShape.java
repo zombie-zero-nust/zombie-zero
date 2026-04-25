@@ -12,26 +12,32 @@ public abstract sealed class DebugShape permits DebugPoint, DebugRectangle, Debu
     private static long lastID = 0;
     private final long id = lastID++;
 
-    protected final Vector2D start;
-    protected final Vector2D end;
+    protected final Vector2D startPos;
+    protected final Vector2D endPos;
 
+    /// Ignored with {@code singleFrame} is true
     private final TimeSpan destroyTime;
+    private final boolean singleFrame;
 
     protected static final Color FILL_COLOR = new Color(1, 0, 1, 0.25);
     protected static final Color STROKE_COLOR = new Color(1, 0, 1, 0.5);
 
-    public DebugShape(Vector2D start, Vector2D end)
+    public DebugShape(Vector2D startPos, Vector2D endPos, TimeSpan lifespan)
     {
-        this.start = start;
-        this.end = end;
-        this.destroyTime = TimeSpan.fromMilliseconds(System.currentTimeMillis()).add(DEFAULT_LIFESPAN);
+        this.startPos = startPos;
+        this.endPos = endPos;
+        this.destroyTime = TimeSpan.fromMilliseconds(System.currentTimeMillis()).add(lifespan);
+        this.singleFrame = false;
     }
 
-    public DebugShape(Vector2D start, Vector2D end, TimeSpan lifespan)
+    public DebugShape(Vector2D startPos, Vector2D endPos) { this(startPos, endPos, DEFAULT_LIFESPAN); }
+
+    public DebugShape(Vector2D startPos, Vector2D endPos, boolean singleFrame)
     {
-        this.start = start;
-        this.end = end;
-        this.destroyTime = TimeSpan.fromMilliseconds(System.currentTimeMillis()).add(lifespan);
+        this.startPos = startPos;
+        this.endPos = endPos;
+        this.singleFrame = singleFrame;
+        this.destroyTime = TimeSpan.fromNanoseconds(1); // ignored
     }
 
     /* RENDER */
@@ -46,11 +52,11 @@ public abstract sealed class DebugShape permits DebugPoint, DebugRectangle, Debu
 
     /* SIZE */
 
-    public Vector2D getStart() { return start; }
+    public Vector2D getStartPosition() { return startPos; }
 
-    public Vector2D getEnd() { return end; }
+    public Vector2D getEndPosition() { return endPos; }
 
-    public Vector2D getSize() { return end.subtract(start); }
+    public Vector2D getSize() { return endPos.subtract(startPos); }
 
     /* GETTERS & SETTERS */
 
@@ -62,7 +68,11 @@ public abstract sealed class DebugShape permits DebugPoint, DebugRectangle, Debu
 
     /* HELPERS */
 
-    public boolean isPastDestroyTime(TimeSpan time) { return time.asNanoseconds() >= destroyTime.asNanoseconds(); }
+    public boolean isPastDestroyTime(TimeSpan time)
+    {
+        if (singleFrame) return true;
+        return time.asNanoseconds() >= destroyTime.asNanoseconds();
+    }
 
     /* ID */
     // use id for equality and hashing
