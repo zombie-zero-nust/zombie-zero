@@ -10,7 +10,7 @@ import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.highscores.HighScoresScene;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
-import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemySpawner;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.StaticEnemySpawnPoint;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
@@ -19,6 +19,7 @@ import edu.nust.game.scenes.levelscene.hud.HealthBar;
 import edu.nust.game.scenes.levelscene.hud.ScoreDisplayController;
 import edu.nust.game.scenes.levelscene.level_1.Level1Background;
 import edu.nust.game.scenes.levelscene.level_1.Level1CollisionMask;
+import edu.nust.game.scenes.levelscene.level_1.Level1EnemySpawnPoints;
 import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
 import edu.nust.game.systems.Score;
@@ -44,6 +45,7 @@ import java.util.Arrays;
 public class LevelScene extends GameScene
 {
     private static final Vector2D WEAPON_NON_FOLLOW_AREA_SIZE = new Vector2D(8, 12);
+    private static final Vector2D SPAWN_VIEW_GROWTH = new Vector2D(160, 120);
 
     @FXML private StackPane pauseOverlay;
     @FXML private Label overlayTitleLabel;
@@ -106,10 +108,7 @@ public class LevelScene extends GameScene
 
         initLevel1WithBackground();
         nodeSetter = new MapNodeSetter(new Vector2D(1600, 400), 3200, 800, this);
-
-        EnemySpawner spawner = new EnemySpawner(5, 3, new Vector2D(100, 200));
-        this.addGameObject(spawner);
-        spawner.addBoss(30, 1000, 25);
+        initStaticEnemySpawnPoints();
 
         if (ammoBarContainer != null)
         {
@@ -139,6 +138,19 @@ public class LevelScene extends GameScene
     private void initLevel1WithBackground()
     {
         Arrays.stream(Level1Background.getObjects(this)).forEach(this::addGameObject);
+    }
+
+    private void initStaticEnemySpawnPoints()
+    {
+        Level1EnemySpawnPoints.forEachSpawnPoint(definition -> {
+            StaticEnemySpawnPoint spawnPoint = new StaticEnemySpawnPoint(
+                    definition.position(),
+                    definition.enemyType(),
+                    SPAWN_VIEW_GROWTH
+            );
+            spawnPoint.setSpawnEnabled(definition.enabled());
+            this.addGameObject(spawnPoint);
+        });
     }
 
     @Override
