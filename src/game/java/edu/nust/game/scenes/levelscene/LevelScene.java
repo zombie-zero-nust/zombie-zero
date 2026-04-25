@@ -44,6 +44,7 @@ public class LevelScene extends GameScene
     @FXML private StackPane pauseOverlay;
     @FXML private Label overlayTitleLabel;
     @FXML private Label scoreLabel;
+    @FXML private VBox scoreDisplayContainer;
     @FXML private Label ammoLabel;
     @FXML private Label reloadLabel;
     @FXML private Label healthLabel;
@@ -73,6 +74,7 @@ public class LevelScene extends GameScene
     private boolean cameraZoomInitialized = false;
     private boolean scoreSaved = false;
     private boolean gameOverState = false;
+    private boolean playerWon = false;
     private MapNodeSetter nodeSetter;
 
     public LevelScene(GameWorld world) { super(world); }
@@ -186,7 +188,8 @@ public class LevelScene extends GameScene
     private void refreshHud(TimeSpan deltaTime)
     {
         score.update(deltaTime);
-        if (scoreLabel != null) scoreLabel.setText(String.valueOf(score.getScore()));
+        // Score is only displayed on game over, not during gameplay
+        // if (scoreLabel != null) scoreLabel.setText(String.valueOf(score.getScore()));
 
         if (ammoBar != null && weapon != null) ammoBar.updateUI(weapon.getAmmo(), ammoLabel, reloadLabel);
 
@@ -327,8 +330,36 @@ public class LevelScene extends GameScene
     private void gameOver()
     {
         gameOverState = true;
+        
+        // Show score display container on game over
+        if (scoreDisplayContainer != null)
+        {
+            scoreDisplayContainer.setVisible(true);
+            scoreDisplayContainer.setManaged(true);
+        }
+        
+        // Update score label with final score
+        if (scoreLabel != null)
+        {
+            scoreLabel.setText(String.valueOf(score.getScore()));
+        }
+        
         saveScoreIfNeeded();
         setPaused(true);
+    }
+
+    /**
+     * Called when boss is defeated - triggers win condition
+     */
+    public void onBossDefeated()
+    {
+        if (score != null)
+        {
+            score.addBossKill();
+        }
+        playerWon = true;
+        // Trigger game over after a brief delay to show the kill
+        gameOver();
     }
 
     private void saveScoreIfNeeded()

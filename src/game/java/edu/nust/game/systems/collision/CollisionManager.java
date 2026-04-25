@@ -3,6 +3,7 @@ package edu.nust.game.systems.collision;
 import edu.nust.engine.core.GameObject;
 import edu.nust.engine.core.GameScene;
 import edu.nust.game.scenes.levelscene.LevelScene;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Set;
 public class CollisionManager
 {
     private static final int POINTS_PER_ZOMBIE_KILL = 3;
+    private static final int POINTS_PER_BOSS_KILL = 15;
 
     private final GameScene scene;
 
@@ -88,7 +90,7 @@ public class CollisionManager
                     // Award kill score exactly when an enemy transitions from alive to dead.
                     if (wasAlive && obj.isDead() && obj instanceof Enemy)
                     {
-                        awardKillPoints();
+                        awardKillPoints((Enemy) obj);
                         break;
                     }
 
@@ -139,11 +141,19 @@ public class CollisionManager
         destroyQueue.clear();
     }
 
-    private void awardKillPoints()
+    private void awardKillPoints(Enemy enemy)
     {
         if (scene instanceof LevelScene levelScene)
         {
-            levelScene.addScorePoints(POINTS_PER_ZOMBIE_KILL);
+            if (enemy instanceof Boss)
+            {
+                levelScene.addScorePoints(POINTS_PER_BOSS_KILL);
+                levelScene.onBossDefeated();
+            }
+            else
+            {
+                levelScene.addScorePoints(POINTS_PER_ZOMBIE_KILL);
+            }
         }
     }
 }
