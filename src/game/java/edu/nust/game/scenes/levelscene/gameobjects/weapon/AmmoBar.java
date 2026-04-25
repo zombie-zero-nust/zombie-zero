@@ -87,7 +87,7 @@ public class AmmoBar extends HBox
         // If reloading, show all bullets as filled during the reload animation
         if (ammoSystem.isReloading())
         {
-            updateAmmo(BULLET_SLOTS);
+            updateAmmo(ammoSystem.getMaxAmmo());
         }
 
         else
