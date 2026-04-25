@@ -208,10 +208,9 @@ public class BasicEnemy extends Enemy
             BasicAttackObj attack1 = new BasicAttackObj(
                     10, this, 3,
                     (double) height / 2,
-                    attack1Range,
                     List.of(Enemy.class),
                     TimeSpan.fromMilliseconds(attack1Time),
-                    false
+                    attack1Range
             );
 
             this.getScene().addGameObject(attack1);
