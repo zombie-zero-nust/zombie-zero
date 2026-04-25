@@ -29,10 +29,10 @@ public final class Level1Background
 
     public static GameObject[] getObjects(final LevelScene scene)
     {
-        final ArrayList<GameObject> objects = new ArrayList<>(loadPlacements(scene));
-        // final ArrayList<GameObject> objects = new ArrayList<>();
-        // placementFilePreBuilder(scene, objects);
-        // objects.addAll(loadPlacements(scene));
+        // final ArrayList<GameObject> objects = new ArrayList<>(loadPlacements(scene));
+        final ArrayList<GameObject> objects = new ArrayList<>();
+        placementFilePreBuilder(scene, objects);
+        objects.addAll(loadPlacements(scene));
 
         try
         {
@@ -177,10 +177,33 @@ public final class Level1Background
 
     private static void placementFilePreBuilder(LevelScene scene, ArrayList<GameObject> objectsRef)
     {
+        final List<SpawnZone> zones = new ArrayList<>();
+
+        // Ground Left-Middle
+        zones.add(SpawnZone.organicZone(4, 108, 68, 661));
+        // Ground Top Left 1
+        zones.add(SpawnZone.organicZone(108, 4, 852, 308));
+        // Ground Top Left 2
+        zones.add(SpawnZone.organicZone(892, 4, 1444, 308));
+        // Ground Right-Middle
+        zones.add(SpawnZone.organicZone(1484, 76, 1600, 724));
+        // Ground Bottom Left 1
+        zones.add(SpawnZone.organicZone(108, 364, 204, 660));
+        zones.add(SpawnZone.organicZone(204, 364, 612, 794));
+        zones.add(SpawnZone.organicZone(612, 364, 660, 644));
+        // Ground Bottom Left 2
+        zones.add(SpawnZone.organicZone(700, 364, 876, 644));
+        zones.add(SpawnZone.organicZone(876, 364, 1060, 794));
+        zones.add(SpawnZone.organicZone(1060, 364, 1444, 564));
+        zones.add(SpawnZone.organicZone(1060, 604, 1444, 794));
+        // City Ground
+        zones.add(SpawnZone.organicZone(1648, 304, 2000, 752));
+
         final Random random = new Random(3);
         final List<StoredPlacement> placements = new ArrayList<>();
-        Level1CollisionMask.forEachInnerRect((rectangle) -> {
-            rectangle.growSelf(20, 20);
+        zones.forEach((zone) -> {
+            List<StaticObjectType> options = zone.options();
+            Rectangle rectangle = zone.zone();
             // scene.addDebugRectangle(rectangle, TimeSpan.fromDays(1));
             final int stepX = 18;
             final int stepY = 24;
@@ -190,7 +213,7 @@ public final class Level1Background
             {
                 for (int y = (int) rectangle.getTop(); y < ((int) rectangle.getBottom()); y += stepY)
                 {
-                    StaticObject grass = StaticObjectFactory.randomStaticAt(x, y, scene.getPlayer(), random);
+                    StaticObject grass = StaticObjectFactory.randomStaticAt(x, y, options, scene.getPlayer(), random);
                     int offsetX = random.nextInt(-offset, offset + 1);
                     int offsetY = random.nextInt(-offset, offset + 1);
 
@@ -210,5 +233,15 @@ public final class Level1Background
         });
 
         generateTreePositionsFile(placements);
+    }
+
+    /* UTILITIES */
+
+    private record SpawnZone(List<StaticObjectType> options, Rectangle zone)
+    {
+        public static SpawnZone organicZone(double sx, double sy, double ex, double ey)
+        {
+            return new SpawnZone(StaticObjectType.organics(), Rectangle.fromCorners(sx, sy, ex, ey));
+        }
     }
 }
