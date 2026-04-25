@@ -11,16 +11,17 @@ import java.util.Random;
 public enum StaticObjectType
 {
     //@formatter:off
-    BUSH         (0),
-    FALLEN_TREE  (0),
-    FLOWER       (0),
-    GARBAGE      (0),
-    GRASS        (0),
-    GROUND_GRASS (0),
-    ROCK         (0),
-    STICK        (0),
-    TREE         (0),
-    TREE_STUMP   (0);
+    // weight out of 100
+    BUSH         (5),
+    FALLEN_TREE  (5),
+    FLOWER       (5),
+    GARBAGE      (5),
+    GRASS        (25),
+    GROUND_GRASS (45),
+    ROCK         (5),
+    STICK        (5),
+    TREE         (5),
+    TREE_STUMP   (5);
     //@formatter:on
 
     private final double weight;

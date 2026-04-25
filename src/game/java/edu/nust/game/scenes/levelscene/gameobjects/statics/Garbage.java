@@ -11,7 +11,7 @@ public class Garbage extends StaticObject
     public Garbage(Random random) { super(random); }
 
     @Override
-    protected int numImages() { return 17; }
+    protected int numImages() { return 16; }
 
     @Override
     protected String folderName() { return "garbage"; }

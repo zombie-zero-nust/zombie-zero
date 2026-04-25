@@ -5,12 +5,13 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.Rectangle;
+import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.LevelScene;
+import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.SerializablePlacement;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObject;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObjectFactory;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObjectType;
-import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StoredPlacement;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,11 +31,11 @@ public final class Level1Background
 
     public static GameObject[] getObjects(final LevelScene scene)
     {
-        // TODO: Load ONLY after completion
-        // final ArrayList<GameObject> objects = new ArrayList<>(loadPlacements(scene));
-        final ArrayList<GameObject> objects = new ArrayList<>();
-        placementFilePreBuilder(scene, objects);
-        objects.addAll(loadPlacements(scene));
+        final ArrayList<GameObject> objects = new ArrayList<>(loadPlacements(scene));
+        // MARK: To regenerate objects_placement.txt
+        // final ArrayList<GameObject> objects = new ArrayList<>();
+        // placementFilePreBuilder(scene, objects);
+        // objects.addAll(loadPlacements(scene));
 
         try
         {
@@ -63,7 +64,7 @@ public final class Level1Background
 
     /* BUILDER */
 
-    private static void generateTreePositionsFile(List<StoredPlacement> placements)
+    private static void generateTreePositionsFile(List<SerializablePlacement> placements)
     {
         LogProgress progress = new LogProgress("SAVEPOS", LOGGER);
         progress.begin("Generating formatted placement file...");
@@ -73,7 +74,7 @@ public final class Level1Background
         Rectangle lastRect = null;
         int rectIndex = 1;
 
-        for (StoredPlacement p : placements)
+        for (SerializablePlacement p : placements)
         {
             if (!p.rect().equals(lastRect))
             {
@@ -182,12 +183,12 @@ public final class Level1Background
         final List<SpawnZone> zones = getSpawnZones();
 
         final Random random = new Random(3);
-        final List<StoredPlacement> placements = new ArrayList<>();
+        final List<SerializablePlacement> placements = new ArrayList<>();
         zones.forEach((zone) -> {
             Rectangle rectangle = zone.rectangle();
-            final int stepX = 18;
-            final int stepY = 24;
-            final int offset = 13;
+            final int stepX = (int) zone.spacing().getX();
+            final int stepY = (int) zone.spacing().getX();
+            final int offset = (int) zone.offset();
 
             for (int x = (int) rectangle.getLeft(); x < ((int) rectangle.getRight()); x += stepX)
             {
@@ -205,7 +206,7 @@ public final class Level1Background
 
                     item.getTransform().getPosition().addSelf(offsetX, offsetY);
 
-                    placements.add(new StoredPlacement(
+                    placements.add(new SerializablePlacement(
                             rectangle,
                             item.getTransform().getPosition(),
                             StaticObjectType.getType(item)
@@ -225,7 +226,10 @@ public final class Level1Background
     {
         final List<SpawnZone> zones = new ArrayList<>();
         // Full Map
-        zones.add(new SpawnZone(List.of(StaticObjectType.GROUND_GRASS), Level1CollisionMask.getMapBounds()));
+        zones.add(new SpawnZone(
+                List.of(StaticObjectType.GROUND_GRASS), Level1CollisionMask.getMapBounds(), //
+                new Vector2D(24, 24), 13
+        ));
         // Ground Left-Middle
         zones.addAll(SpawnZone.groundZones(4, 108, 68, 661));
         // Ground Top Left 1
@@ -250,16 +254,19 @@ public final class Level1Background
 
     /* UTILITIES */
 
-    private record SpawnZone(List<StaticObjectType> options, Rectangle rectangle)
+    private record SpawnZone(List<StaticObjectType> options, Rectangle rectangle, Vector2D spacing, double offset)
     {
-        public static SpawnZone create(List<StaticObjectType> types, double sx, double sy, double ex, double ey)
+        public static SpawnZone create(List<StaticObjectType> types, double sx, double sy, double ex, double ey, double spaceX, double spaceY, double offset)
         {
-            return new SpawnZone(types, Rectangle.fromCorners(sx, sy, ex, ey).shrunk(8, 8));
+            return new SpawnZone(
+                    types, Rectangle.fromCorners(sx, sy, ex, ey).shrunk(8, 8), //
+                    new Vector2D(spaceX, spaceY), offset
+            );
         }
 
-        public static SpawnZone create(StaticObjectType type, double sx, double sy, double ex, double ey)
+        public static SpawnZone create(StaticObjectType type, double sx, double sy, double ex, double ey, double spaceX, double spaceY, double offset)
         {
-            return create(List.of(type), sx, sy, ex, ey);
+            return create(List.of(type), sx, sy, ex, ey, spaceX, spaceY, offset);
         }
 
         /* PREDEFINED */
@@ -267,26 +274,39 @@ public final class Level1Background
         public static List<SpawnZone> groundZones(double sx, double sy, double ex, double ey)
         {
             Rectangle area = Rectangle.fromCorners(sx, sy, ex, ey);
-            Rectangle treesArea = area.shrunk(24, 24);
-            Rectangle grassArea = area.shrunk(16, 16);
-            Rectangle garbageArea = area.grown(16, 16);
 
+            // tree
+            Rectangle treesArea = area.shrunk(24, 24);
+            Vector2D treeSpacing = new Vector2D(64, 64);
+            double treeOffset = 23;
             SpawnZone trees = new SpawnZone(
                     List.of(StaticObjectType.TREE, StaticObjectType.TREE_STUMP, StaticObjectType.FALLEN_TREE), //
-                    treesArea
+                    treesArea, treeSpacing, treeOffset
             );
+
+            // grass and stuff
+            Rectangle grassArea = area.shrunk(8, 8);
+            Vector2D grassSpacing = new Vector2D(24, 16);
+            double grassOffset = 13;
             SpawnZone grass = new SpawnZone(
                     List.of(
                             StaticObjectType.GRASS,
-                            StaticObjectType.BUSH,
                             StaticObjectType.FLOWER,
                             StaticObjectType.ROCK,
                             StaticObjectType.STICK
-                    ), grassArea
+                    ), grassArea, grassSpacing, grassOffset
             );
-            SpawnZone garbage = new SpawnZone(List.of(StaticObjectType.GARBAGE), garbageArea);
 
-            return List.of(grass);
+            // garbage
+            Rectangle garbageArea = area.grown(4, 4);
+            Vector2D garbageSpacing = new Vector2D(64, 64);
+            double garbageOffset = 24;
+            SpawnZone garbage = new SpawnZone(
+                    List.of(StaticObjectType.GARBAGE), garbageArea, //
+                    garbageSpacing, garbageOffset
+            );
+
+            return List.of(trees, grass, garbage);
         }
     }
 }

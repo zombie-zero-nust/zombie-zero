@@ -10,14 +10,39 @@ import java.util.function.Consumer;
 public final class Level1CollisionMask
 {
     // private static final Rectangle MAP_BOUNDS = Rectangle.fromCorners(0, 0, 3200, 800);
-    private static final Rectangle MAP_BOUNDS = Rectangle.fromCorners(0, 0, 2800, 800);
+    private static final Rectangle MAP_BOUNDS = Rectangle.fromCorners(0, 0, 2424, 800);
 
+    private static final double BOUNDARY_OUTER_THICKNESS = 50;
+    private static final double BOUNDARY_INNER_THICKNESS = 4;
     private static final List<Rectangle> BOUNDARY_RECTS = List.of(
-            Rectangle.fromCorners(-50, -50, 3250, 4), // Top
-            Rectangle.fromCorners(-50, 4, 4, 794), // Left
-            // Rectangle.fromCorners(3196, 4, 3250, 794), // Right
-            Rectangle.fromCorners(2796, 4, 2850, 794), // Right
-            Rectangle.fromCorners(-50, 794, 3250, 850) // Bottom
+            // Top
+            Rectangle.fromCorners(
+                    MAP_BOUNDS.getLeft(),
+                    MAP_BOUNDS.getTop() - BOUNDARY_OUTER_THICKNESS,
+                    MAP_BOUNDS.getRight() + BOUNDARY_OUTER_THICKNESS,
+                    MAP_BOUNDS.getTop() + BOUNDARY_INNER_THICKNESS
+            ),
+            // Right
+            Rectangle.fromCorners(
+                    MAP_BOUNDS.getRight() - BOUNDARY_INNER_THICKNESS,
+                    MAP_BOUNDS.getTop(),
+                    MAP_BOUNDS.getRight() + BOUNDARY_OUTER_THICKNESS,
+                    MAP_BOUNDS.getBottom() + BOUNDARY_OUTER_THICKNESS
+            ),
+            // Bottom
+            Rectangle.fromCorners(
+                    MAP_BOUNDS.getLeft() - BOUNDARY_OUTER_THICKNESS,
+                    MAP_BOUNDS.getBottom() - BOUNDARY_INNER_THICKNESS,
+                    MAP_BOUNDS.getRight(),
+                    MAP_BOUNDS.getBottom() + BOUNDARY_OUTER_THICKNESS
+            ),
+            // Left
+            Rectangle.fromCorners(
+                    MAP_BOUNDS.getLeft() - BOUNDARY_OUTER_THICKNESS,
+                    MAP_BOUNDS.getTop() - BOUNDARY_OUTER_THICKNESS,
+                    MAP_BOUNDS.getLeft() + BOUNDARY_INNER_THICKNESS,
+                    MAP_BOUNDS.getBottom()
+            )
     );
 
     private static final List<Rectangle> INNER_COLLISION_RECTS = List.of(
