@@ -528,6 +528,27 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
                     }
                 }
         );
+
+        // Toggle scene UI layer visibility (console stays available).
+        devConsole.registerDevCommand(
+                "/toggleUI",
+                "/toggleUI true|false|empty",
+                "Toggle scene UI visibility (excluding world and dev console).",
+                (args) -> {
+                    if (args.isEmpty())
+                    {
+                        boolean next = !uiLayer.isVisible();
+                        uiLayer.setVisible(next);
+                        uiLayer.setManaged(next);
+                        return "toggleUI = " + next;
+                    }
+
+                    boolean val = DevConsole.parseBooleanArg(args.getFirst());
+                    uiLayer.setVisible(val);
+                    uiLayer.setManaged(val);
+                    return "toggleUI = " + val;
+                }
+        );
     }
 
     /**

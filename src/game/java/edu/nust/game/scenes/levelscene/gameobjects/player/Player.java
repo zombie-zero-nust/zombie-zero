@@ -141,19 +141,24 @@ public class Player extends Character implements Damageable, Concrete
 
     public void movement(TimeSpan deltaTime)
     {
-        double dx = 0;
-        double dy = 0;
+        int horizontalInput = 0;
+        int verticalInput = 0;
 
-        if (activeKeys.contains(KeyCode.W)) dy -= getMovementSpeed() * deltaTime.asSeconds();
-        if (activeKeys.contains(KeyCode.S)) dy += getMovementSpeed() * deltaTime.asSeconds();
-        if (activeKeys.contains(KeyCode.A)) dx -= getMovementSpeed() * deltaTime.asSeconds();
-        if (activeKeys.contains(KeyCode.D)) dx += getMovementSpeed() * deltaTime.asSeconds();
+        if (activeKeys.contains(KeyCode.W) || activeKeys.contains(KeyCode.UP)) verticalInput -= 1;
+        if (activeKeys.contains(KeyCode.S) || activeKeys.contains(KeyCode.DOWN)) verticalInput += 1;
+        if (activeKeys.contains(KeyCode.A) || activeKeys.contains(KeyCode.LEFT)) horizontalInput -= 1;
+        if (activeKeys.contains(KeyCode.D) || activeKeys.contains(KeyCode.RIGHT)) horizontalInput += 1;
 
-        if (dx != 0 && dy != 0)
+        // Player movement is intentionally axis-locked (no diagonal movement).
+        if (horizontalInput != 0 && verticalInput != 0)
         {
-            dx = 0.707 * dx;
-            dy = 0.707 * dy;
+            horizontalInput = 0;
         }
+
+        double speed = getMovementSpeed() * deltaTime.asSeconds();
+        double dx = horizontalInput * speed;
+        double dy = verticalInput * speed;
+
         updateFacingSprite(dx, dy);
 
         // Check walkability before moving
