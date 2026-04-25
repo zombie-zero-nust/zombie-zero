@@ -28,6 +28,8 @@ public class Bullet extends GameObject implements Damaging, Concrete
     private final double range;
     private boolean destroyed = false;
     private HitBox hitbox;
+    private static final double COLLISION_HALF_WIDTH = 4;
+    private static final double COLLISION_HALF_HEIGHT = 4;
 
     public Bullet(int speed, Vector2D pos, double range, Vector2D mousePos, int damage)
     {
@@ -61,7 +63,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     @Override
     public void onInit()
     {
-        hitbox = new HitBox(pos, image.getHeight(), image.getWidth());
+        hitbox = new HitBox(pos, COLLISION_HALF_HEIGHT, COLLISION_HALF_WIDTH);
         this.addComponent(hitbox);
     }
 
@@ -101,7 +103,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     {
         if (this.hitbox == null)
         {
-            hitbox = new HitBox(pos, image.getHeight(), image.getWidth());
+            hitbox = new HitBox(pos, COLLISION_HALF_HEIGHT, COLLISION_HALF_WIDTH);
             this.addComponent(hitbox);
         }
     }

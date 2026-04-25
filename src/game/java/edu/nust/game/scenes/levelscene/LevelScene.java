@@ -335,6 +335,20 @@ public class LevelScene extends GameScene
     {
         gameOverState = true;
 
+        // Update heading tile based on win/defeat condition
+        if (gameOverHeadingTile != null)
+        {
+            gameOverHeadingTile.getStyleClass().removeAll("win-heading", "defeat-heading");
+            if (playerWon)
+            {
+                gameOverHeadingTile.getStyleClass().add("win-heading");
+            }
+            else
+            {
+                gameOverHeadingTile.getStyleClass().add("defeat-heading");
+            }
+        }
+
         // Show score display controller on game over
         if (scoreDisplayControllerContainer != null && scoreDisplayController != null)
         {

@@ -157,6 +157,14 @@
     -fx-background-image: url('../assets/images/GameOver/GameOverHeading.png');
 }
 
+.gameover-heading-tile.win-heading {
+    -fx-background-image: url('../assets/images/GameOver/WinHeading.png');
+}
+
+.gameover-heading-tile.defeat-heading {
+    -fx-background-image: url('../assets/images/GameOver/DefeatHeading.png');
+}
+
 .gameover-button-tile {
     -fx-min-width: 280px;
     -fx-pref-width: 280px;
