@@ -7,23 +7,11 @@
 <StackPane styleClass="ui-root" style="-fx-padding: 0;" xmlns:fx="http://javafx.com/fxml/1"
            xmlns="http://javafx.com/javafx/17.0.12">
 
-    <!-- ═══════════════════════════════════════════════════
-         TOP-LEFT HUD: health bar + gun card
-         ═══════════════════════════════════════════════════ -->
     <HBox StackPane.alignment="TOP_LEFT" alignment="TOP_LEFT" fillHeight="false" style="-fx-padding: 16;">
         <VBox spacing="10" alignment="TOP_LEFT">
 
-            <!-- Health bar — controller adds HealthBar child here -->
             <VBox fx:id="healthBarContainer"/>
 
-            <!--
-                Gun card: 2-section layout
-                ┌──────────────────────────┐
-                │       [ gun icon ]       │   ← gunIconPane
-                ├──────────────────────────┤
-                │  [ammoBar]      6 / 6   │   ← bottom row
-                └──────────────────────────┘
-            -->
             <VBox spacing="0"
                   style="-fx-background-color: #7a7a8a;
                          -fx-border-color: #3a3a3a;
@@ -32,7 +20,6 @@
                          -fx-background-radius: 5;
                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 6, 0, 2, 2);">
 
-                <!-- TOP: gun icon with inner padding -->
                 <StackPane prefWidth="150" prefHeight="95"
                            style="-fx-background-color: #9a9aaa;
                                   -fx-padding: 8;
@@ -44,7 +31,6 @@
                                StackPane.alignment="CENTER"/>
                 </StackPane>
 
-                <!-- BOTTOM: ammo bar + label with inner padding -->
                 <HBox alignment="CENTER_LEFT" spacing="6"
                       style="-fx-background-color: #5a5a6a;
                              -fx-padding: 6 10 6 10;
@@ -55,12 +41,20 @@
                           alignment="CENTER_LEFT"
                           HBox.hgrow="ALWAYS"/>
 
+                    <!--
+                        Ammo label: large, bold, bright white with a dark outline effect.
+                        -fx-font-size: 18       — big enough to read at a glance
+                        -fx-text-fill: white    — clean contrast on the dark strip
+                        -fx-effect: dropshadow  — simulates a text outline / shadow
+                                                  so it stays legible over any bg
+                    -->
                     <Label fx:id="ammoLabel" text="6 / 6"
-                           style="-fx-text-fill: #FFE44D;
-                                  -fx-font-size: 13;
+                           style="-fx-text-fill: white;
+                                  -fx-font-size: 18;
                                   -fx-font-weight: bold;
                                   -fx-font-family: 'Courier New';
-                                  -fx-padding: 0 0 0 4;"/>
+                                  -fx-padding: 0 0 0 8;
+                                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.85), 3, 0.6, 1, 1);"/>
                 </HBox>
 
             </VBox>
@@ -75,15 +69,9 @@
         <Label fx:id="healthLabel" visible="false" managed="false"/>
     </HBox>
 
-    <!-- ═══════════════════════════════════════════════════
-         TOP-RIGHT: reserved
-         ═══════════════════════════════════════════════════ -->
     <HBox StackPane.alignment="TOP_RIGHT" alignment="TOP_RIGHT" fillHeight="false" style="-fx-padding: 16;">
     </HBox>
 
-    <!-- ═══════════════════════════════════════════════════
-         PAUSE / GAME-OVER OVERLAY
-         ═══════════════════════════════════════════════════ -->
     <StackPane fx:id="pauseOverlay"
                managed="false" visible="false"
                styleClass="pauseOverlay"
