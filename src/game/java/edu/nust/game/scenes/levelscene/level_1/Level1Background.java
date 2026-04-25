@@ -7,8 +7,8 @@ import edu.nust.engine.logger.LogProgress;
 import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.LevelScene;
-import edu.nust.game.scenes.levelscene.gameobjects.statics.StaticObjectFactory;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObject;
+import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObjectFactory;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObjectType;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StoredPlacement;
 import javafx.scene.image.Image;
@@ -29,6 +29,7 @@ public final class Level1Background
 
     public static GameObject[] getObjects(final LevelScene scene)
     {
+        // TODO: Load ONLY after completion
         // final ArrayList<GameObject> objects = new ArrayList<>(loadPlacements(scene));
         final ArrayList<GameObject> objects = new ArrayList<>();
         placementFilePreBuilder(scene, objects);
@@ -180,24 +181,24 @@ public final class Level1Background
         final List<SpawnZone> zones = new ArrayList<>();
 
         // Ground Left-Middle
-        zones.add(SpawnZone.organicZone(4, 108, 68, 661));
+        zones.addAll(SpawnZone.groundZones(4, 108, 68, 661));
         // Ground Top Left 1
-        zones.add(SpawnZone.organicZone(108, 4, 852, 308));
+        zones.addAll(SpawnZone.groundZones(108, 4, 852, 308));
         // Ground Top Left 2
-        zones.add(SpawnZone.organicZone(892, 4, 1444, 308));
+        zones.addAll(SpawnZone.groundZones(892, 4, 1444, 308));
         // Ground Right-Middle
-        zones.add(SpawnZone.organicZone(1484, 76, 1600, 724));
+        zones.addAll(SpawnZone.groundZones(1484, 76, 1600, 724));
         // Ground Bottom Left 1
-        zones.add(SpawnZone.organicZone(108, 364, 204, 660));
-        zones.add(SpawnZone.organicZone(204, 364, 612, 794));
-        zones.add(SpawnZone.organicZone(612, 364, 660, 644));
+        zones.addAll(SpawnZone.groundZones(108, 364, 204, 660));
+        zones.addAll(SpawnZone.groundZones(204, 364, 612, 794));
+        zones.addAll(SpawnZone.groundZones(612, 364, 660, 644));
         // Ground Bottom Left 2
-        zones.add(SpawnZone.organicZone(700, 364, 876, 644));
-        zones.add(SpawnZone.organicZone(876, 364, 1060, 794));
-        zones.add(SpawnZone.organicZone(1060, 364, 1444, 564));
-        zones.add(SpawnZone.organicZone(1060, 604, 1444, 794));
+        zones.addAll(SpawnZone.groundZones(700, 364, 876, 644));
+        zones.addAll(SpawnZone.groundZones(876, 364, 1060, 794));
+        zones.addAll(SpawnZone.groundZones(1060, 364, 1444, 564));
+        zones.addAll(SpawnZone.groundZones(1060, 604, 1444, 794));
         // City Ground
-        zones.add(SpawnZone.organicZone(1648, 304, 2000, 752));
+        zones.addAll(SpawnZone.groundZones(1648, 304, 2000, 752));
 
         final Random random = new Random(3);
         final List<StoredPlacement> placements = new ArrayList<>();
@@ -211,19 +212,27 @@ public final class Level1Background
             {
                 for (int y = (int) rectangle.getTop(); y < ((int) rectangle.getBottom()); y += stepY)
                 {
-                    StaticObject grass = StaticObjectFactory.randomStaticAt(x, y, zone.options, scene.getPlayer(), random);
+                    StaticObject item = StaticObjectFactory.randomStaticAt(
+                            x,
+                            y,
+                            zone.options,
+                            scene.getPlayer(),
+                            random
+                    );
                     int offsetX = random.nextInt(-offset, offset + 1);
                     int offsetY = random.nextInt(-offset, offset + 1);
 
-                    grass.getTransform().getPosition().addSelf(offsetX, offsetY);
+                    item.getTransform().getPosition().addSelf(offsetX, offsetY);
 
                     placements.add(new StoredPlacement(
                             rectangle,
-                            grass.getTransform().getPosition(),
-                            StaticObjectType.getType(grass).orElseThrow(),
-                            grass.getVariant()
+                            item.getTransform().getPosition(),
+                            StaticObjectType.getType(item)
+                                    .orElseThrow(() -> new IllegalStateException("Unknown static object type for " + item.getClass()
+                                            .getSimpleName())),
+                            item.getVariant()
                     ));
-                    objectsRef.add(grass);
+                    objectsRef.add(item);
                 }
             }
         });
@@ -235,9 +244,42 @@ public final class Level1Background
 
     private record SpawnZone(List<StaticObjectType> options, Rectangle rectangle)
     {
-        public static SpawnZone organicZone(double sx, double sy, double ex, double ey)
+        public static SpawnZone create(List<StaticObjectType> types, double sx, double sy, double ex, double ey)
         {
-            return new SpawnZone(StaticObjectType.organics(), Rectangle.fromCorners(sx, sy, ex, ey));
+            return new SpawnZone(types, Rectangle.fromCorners(sx, sy, ex, ey).shrunk(8, 8));
+        }
+
+        public static SpawnZone create(StaticObjectType type, double sx, double sy, double ex, double ey)
+        {
+            return create(List.of(type), sx, sy, ex, ey);
+        }
+
+        /* PREDEFINED */
+
+        public static List<SpawnZone> groundZones(double sx, double sy, double ex, double ey)
+        {
+            Rectangle area = Rectangle.fromCorners(sx, sy, ex, ey);
+            Rectangle treesArea = area.shrunk(16, 16);
+            Rectangle grassArea = area.grown(8, 8);
+            Rectangle garbageArea = area.grown(16, 16);
+
+            SpawnZone trees = new SpawnZone(
+                    List.of(StaticObjectType.TREE, StaticObjectType.TREE_STUMP, StaticObjectType.FALLEN_TREE), //
+                    treesArea
+            );
+            SpawnZone grass = new SpawnZone(
+                    List.of(
+                            StaticObjectType.GRASS,
+                            StaticObjectType.GROUND_GRASS,
+                            StaticObjectType.BUSH,
+                            StaticObjectType.FLOWER,
+                            StaticObjectType.ROCK,
+                            StaticObjectType.STICK
+                    ), grassArea
+            );
+            SpawnZone garbage = new SpawnZone(List.of(StaticObjectType.GARBAGE), garbageArea);
+
+            return List.of(trees, grass, garbage);
         }
     }
 }

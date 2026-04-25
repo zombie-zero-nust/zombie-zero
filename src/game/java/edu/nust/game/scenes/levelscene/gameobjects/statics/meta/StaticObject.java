@@ -11,15 +11,9 @@ public abstract class StaticObject extends GameObject
 {
     protected final int variant;
 
-    public StaticObject(int variant)
-    {
-        this.variant = variant;
-    }
+    public StaticObject(int variant) { this.variant = variant; }
 
-    public StaticObject(Random random)
-    {
-        this.variant = random.nextInt(1, numImages() + 1);
-    }
+    public StaticObject(Random random) { this.variant = random.nextInt(1, numImages() + 1); }
 
     /* LIFETIME */
 
@@ -40,7 +34,7 @@ public abstract class StaticObject extends GameObject
         }
         catch (Exception e)
         {
-            logger.error(false, "Failed to load grass image ({})", filename(variant));
+            logger.error(false, "Failed to load {} image ({})", this.getClass().getSimpleName(), filename(variant));
             logger.logException(e);
         }
 

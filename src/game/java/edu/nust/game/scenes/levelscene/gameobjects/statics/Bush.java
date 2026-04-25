@@ -11,11 +11,14 @@ public class Bush extends StaticObject
     public Bush(Random random) { super(random); }
 
     @Override
-    protected int numImages() { return 7; }
+    protected int numImages() { return 9; }
 
     @Override
     protected String folderName() { return "bushes"; }
 
     @Override
     protected String filename(int index) { return "bush_" + index + ".png"; }
+
+    @Override
+    protected boolean rotateRandom() { return true; }
 }

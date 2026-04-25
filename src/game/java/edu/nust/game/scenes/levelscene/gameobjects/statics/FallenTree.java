@@ -18,4 +18,7 @@ public class FallenTree extends StaticObject
 
     @Override
     protected String filename(int index) { return "tree_" + index + ".png"; }
+
+    @Override
+    protected boolean rotateRandom() { return true; }
 }

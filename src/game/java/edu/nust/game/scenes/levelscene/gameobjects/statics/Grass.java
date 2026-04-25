@@ -4,20 +4,20 @@ import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObject;
 
 import java.util.Random;
 
-public class GarbageItem extends StaticObject
+public class Grass extends StaticObject
 {
-    public GarbageItem(int variant) { super(variant); }
+    public Grass(int variant) { super(variant); }
 
-    public GarbageItem(Random random) { super(random); }
+    public Grass(Random random) { super(random); }
 
     @Override
     protected int numImages() { return 15; }
 
     @Override
-    protected String folderName() { return "garbage"; }
+    protected String folderName() { return "grass"; }
 
     @Override
-    protected String filename(int index) { return "object_" + index + ".png"; }
+    protected String filename(int index) { return "grass_" + index + ".png"; }
 
     @Override
     protected boolean rotateRandom() { return true; }

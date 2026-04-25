@@ -1,6 +1,8 @@
 package edu.nust.game.scenes.levelscene.gameobjects.statics.meta;
 
+import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,11 +11,16 @@ import java.util.Random;
 public enum StaticObjectType
 {
     //@formatter:off
-    PLANT        (75),
-    TREE         (0),
-    FALLEN_TREE  (0),
     BUSH         (0),
-    GARBAGE_ITEM (0);
+    FALLEN_TREE  (0),
+    FLOWER       (0),
+    GARBAGE      (0),
+    GRASS        (0),
+    GROUND_GRASS (0),
+    ROCK         (0),
+    STICK        (0),
+    TREE         (0),
+    TREE_STUMP   (0);
     //@formatter:on
 
     private final double weight;
@@ -22,10 +29,47 @@ public enum StaticObjectType
 
     public double getWeight() { return weight; }
 
+    /* FACTORY */
+
+    // In StaticObjectType enum, add:
+    public StaticObject create(int variant, @Nullable Player player)
+    {
+        return switch (this)
+        {
+            case BUSH -> new Bush(variant);
+            case FALLEN_TREE -> new FallenTree(variant);
+            case FLOWER -> new Flower(variant);
+            case GARBAGE -> new Garbage(variant);
+            case GRASS -> new Grass(variant);
+            case GROUND_GRASS -> new GroundGrass(variant);
+            case ROCK -> new Rock(variant);
+            case STICK -> new Stick(variant);
+            case TREE -> new Tree(variant, player);
+            case TREE_STUMP -> new TreeStump(variant);
+        };
+    }
+
+    public StaticObject create(Random random, @Nullable Player player)
+    {
+        return switch (this)
+        {
+            case BUSH -> new Bush(random);
+            case FALLEN_TREE -> new FallenTree(random);
+            case FLOWER -> new Flower(random);
+            case GARBAGE -> new Garbage(random);
+            case GRASS -> new Grass(random);
+            case GROUND_GRASS -> new GroundGrass(random);
+            case ROCK -> new Rock(random);
+            case STICK -> new Stick(random);
+            case TREE -> new Tree(random, player);
+            case TREE_STUMP -> new TreeStump(random);
+        };
+    }
+
     /* RANDOM */
 
     /// Returns a random type from the provided options. Throws if given list is empty
-    public static StaticObjectType random(Random random, List<StaticObjectType> options)
+    public static StaticObjectType randomFrom(Random random, List<StaticObjectType> options)
     {
         if (options.isEmpty()) throw new IllegalArgumentException("Options list cannot be empty.");
 
@@ -45,10 +89,7 @@ public enum StaticObjectType
         return options.getLast(); // fallback
     }
 
-    public static StaticObjectType random(Random random)
-    {
-        return random(random, List.of(values()));
-    }
+    public static StaticObjectType random(Random random) { return randomFrom(random, List.of(values())); }
 
     /* STATIC HELPERS */
 
@@ -58,15 +99,15 @@ public enum StaticObjectType
         {
             case Bush bush -> Optional.of(BUSH);
             case FallenTree fallenTree -> Optional.of(FALLEN_TREE);
-            case GarbageItem garbageItem -> Optional.of(GARBAGE_ITEM);
-            case Plant plant -> Optional.of(PLANT);
+            case Flower flower -> Optional.of(FLOWER);
+            case Garbage garbage -> Optional.of(GARBAGE);
+            case Grass grass -> Optional.of(GRASS);
+            case GroundGrass groundGrass -> Optional.of(GROUND_GRASS);
+            case Rock rock -> Optional.of(ROCK);
+            case Stick stick -> Optional.of(STICK);
             case Tree tree -> Optional.of(TREE);
+            case TreeStump treeStump -> Optional.of(TREE_STUMP);
             default -> Optional.empty();
         };
-    }
-
-    public static List<StaticObjectType> organics()
-    {
-        return List.of(BUSH, FALLEN_TREE, PLANT, TREE);
     }
 }

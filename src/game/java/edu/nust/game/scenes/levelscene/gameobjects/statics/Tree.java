@@ -32,7 +32,7 @@ public class Tree extends StaticObject
     protected int renderLayer() { return 2; }
 
     @Override
-    protected int numImages() { return 4; }
+    protected int numImages() { return 2; }
 
     @Override
     protected String folderName() { return "trees"; }
