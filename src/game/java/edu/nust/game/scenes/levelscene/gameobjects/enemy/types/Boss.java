@@ -7,12 +7,14 @@ import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Attacks.BasicAttackObj;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Attacks.BossAbility1;
+import edu.nust.game.scenes.levelscene.gameobjects.player.Health;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.systems.assets.EnemyAsset;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Objects;
 
 public class Boss extends Enemy
 {
@@ -38,24 +40,27 @@ public class Boss extends Enemy
     private boolean performingAbility= false;
     private TimeSpan bossAbilityCooldown = TimeSpan.fromSeconds(10);
 
-
+    private int damage = 20;
     private SpriteRenderer spriteRenderer;
     private boolean animationStarted = false;
     private boolean animationFinished = false;
     private int width = 24;
     private int height = 36;
     private Facing facing = Facing.DOWN;
-    private TimeSpan deathAnimationTime = TimeSpan.fromMilliseconds(500);
+    private TimeSpan deathAnimationTime = TimeSpan.fromMilliseconds(1000);
     private double elapsed = 0;
     private double attack1Range = 10;
     private double attack1Time = 600;
     private double attackTimeElapsed;
     private double attackCooldownElapsed = 0;
-    private double attackCooldownTime = 800; // ms (adjust)
+    private double attackCooldownTime = 800; // ms
     private boolean canAttack = true;
-    private int attackingFrame;
     private BasicAttackObj attack1;
     private BossAbility1 bossAbility1;
+    private boolean resurrected = false;
+    // Add these new fields to the top of your class
+    private boolean resurrectionStarted = false;
+    private boolean resurrectionFinished = false;
 
 
     public Boss(Vector2D pos, double speed, int health, double damage)
@@ -185,7 +190,8 @@ public class Boss extends Enemy
                 case LEFT -> leftIdleSheet;
                 case RIGHT -> rightIdleSheet;
             };
-            spriteRenderer.setImage(image, 6, 1).setSize(this.getWidth(),this.getHeight());
+            spriteRenderer.setImage(image, 6, 1)
+                    .setSize(image.getWidth()/4,image.getHeight()*1.5);
         }
         else
         {
@@ -218,7 +224,7 @@ public class Boss extends Enemy
                 case LEFT -> leftAttack2Sheet;
                 case RIGHT -> rightAttack2Sheet;
             };
-            bossAbility1 = new BossAbility1(20,this,List.of(Enemy.class),image);
+            bossAbility1 = new BossAbility1(damage,this,List.of(Enemy.class),image);
             performingAbility = true;
             setAttacking(true);
             ability1cooldown = 0;
@@ -240,7 +246,7 @@ public class Boss extends Enemy
             attackTimeElapsed += deltaTime.asMilliseconds();
             if(attackTimeElapsed >= 250&& attack1 == null) {
                 attack1 = new BasicAttackObj(
-                        10, this, 3,
+                        damage, this, 3,
                         (double) height / 2,
                         List.of(Enemy.class),
                         TimeSpan.fromMilliseconds(attack1Time-250),
@@ -286,43 +292,105 @@ public class Boss extends Enemy
             spriteRenderer.setImage(image, 8, 1)
                     .startAnimation()
                     .setAnimationTime(TimeSpan.fromMilliseconds(attack1Time/4))
-                    .setSize(getWidth(),getHeight());
+                    .setSize(1.5*image.getWidth()/8,1.5*image.getHeight());
 
-            spriteRenderer.setSize(45,36);
             attackTimeElapsed = 0;
             setAttacking(true);
         }
 
     }
 
-    @Override
-    public void playDeathAnimation(TimeSpan deltaTime) {
 
+    public void resetBoss() {
+        Health health = new Health();
+        health.setCurrentHealth(10000);
+        this.setHealth(health);
+        this.setMovementSpeed(this.getMovementSpeed()*2);
+        this.attackTimeElapsed = 0;
+        this.attackCooldownElapsed = 0;
+        this.ability1cooldown = 0;
+        this.elapsed = 0;
+        bossAbilityCooldown = bossAbilityCooldown.multiply(0.2);
+        this.damage = damage * 2;
+        this.setAttacking(false);
+        unfreezeEnemy();
+        updateSprite(0,0);
+        spriteRenderer.startAnimation().setAnimationTime(TimeSpan.fromMilliseconds(150));
+    }
+
+    public void resurrect(TimeSpan deltaTime) {
+        Image image = (facing == Facing.UP || facing == Facing.RIGHT) ? deathRightSheet : deathLeftSheet;
+
+        // --- WAITING PHASE: hold on last death frame for 2 seconds ---
+        if (!resurrectionStarted) {
+            elapsed += deltaTime.asMilliseconds();
+            spriteRenderer.setFrame(6, 0); // keep holding last death frame during wait
+
+            if (elapsed < 5000) return;    // still waiting
+
+            // 2 seconds passed — begin resurrection
+            spriteRenderer.setSize(43, height);
+            spriteRenderer.setImage(image, 7, 1);
+            spriteRenderer.pauseAnimation();
+            spriteRenderer.setFrame(6, 0);
+            resurrectionStarted = true;
+            elapsed = 0;
+            return;
+        }
+
+        // --- REVERSE ANIMATION PHASE ---
         elapsed += deltaTime.asMilliseconds();
 
-        Image image;
+        int totalFrames = 7;
+        double frameDuration = deathAnimationTime.asMilliseconds() / totalFrames;
+        int currentFrame = (int) Math.min(elapsed / frameDuration, totalFrames - 1);
+        int reverseFrame = (totalFrames - 1) - currentFrame;
 
-        if (facing == Facing.UP || facing == Facing.RIGHT) {
-            image = deathRightSheet;
-        } else {
-            image = deathLeftSheet;
+        spriteRenderer.setFrame(reverseFrame, 0);
+
+        if (reverseFrame <= 0) {
+            spriteRenderer.setFrame(0, 0);
+            resurrectionFinished = true;
+            resurrected = true;
+            resurrectionStarted = false;
+            resetBoss();
         }
-        // Play animation only once
-        if (!animationStarted) {
-            spriteRenderer.setSize(43,height);
-            spriteRenderer.setImage(image, 6, 1)
-                    .startAnimation()
-                    .setAnimationTime(deathAnimationTime);
-            animationStarted = true;
-        }
-        if(! animationFinished) {
-            if (elapsed >= deathAnimationTime.asMilliseconds()) {
-                spriteRenderer.stopAnimation();
-                spriteRenderer.setFrame(6, 1);
+    }
+
+    @Override
+    public void playDeathAnimation(TimeSpan deltaTime) {
+        Image image = (facing == Facing.UP || facing == Facing.RIGHT) ? deathRightSheet : deathLeftSheet;
+
+        if (!animationFinished) {
+            if (!animationStarted) {
+                spriteRenderer.setSize(43, height);
+                spriteRenderer.setImage(image, 7, 1);
+                spriteRenderer.pauseAnimation();   // no internal timer — we drive frames manually
+                spriteRenderer.setFrame(0, 0);     // start on first frame
+                animationStarted = true;
                 elapsed = 0;
+                return;
+            }
+
+            elapsed += deltaTime.asMilliseconds();
+
+            int totalFrames = 7;
+            double frameDuration = deathAnimationTime.asMilliseconds() / totalFrames;
+            int currentFrame = (int) Math.min(elapsed / frameDuration, totalFrames - 1);
+
+            spriteRenderer.setFrame(currentFrame, 0);
+
+            if (currentFrame >= totalFrames - 1) {
+                spriteRenderer.setFrame(6, 0);  // lock on last frame
                 animationFinished = true;
+                elapsed = 0;
             }
         }
+        // --- PHASE 2: RESURRECTION ---
+        else if (!resurrected) {
+            resurrect(deltaTime);   // nothing else here — resurrect manages its own frame state
+        }
+        // --- PHASE 3: FINAL FADE ---
         else {
             double opacity = spriteRenderer.getOpacity();
             if (opacity > 0) {
@@ -333,4 +401,10 @@ public class Boss extends Enemy
         }
     }
 
+    public boolean isResurrected(){
+        return resurrected;
+    }
+    public boolean isAnimationFinished(){
+        return animationFinished;
+    }
 }

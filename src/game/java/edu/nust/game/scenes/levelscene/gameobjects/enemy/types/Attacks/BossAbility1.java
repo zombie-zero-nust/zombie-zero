@@ -55,18 +55,15 @@ public class BossAbility1 {
         if (!isAnimating)
         {
             renderer.setImage(animationSheet, 15, 1)
-                    .startAnimation().setSize(40,36);
+                    .startAnimation().setSize(1.5*animationSheet.getWidth()/15,1.5*animationSheet.getHeight());
 
             performingAbility = true;
             attacked = false;
             isAnimating = true;
             animElapsed = 0;
         }
-
-        // update animation timer
         animElapsed += deltaTime.asSeconds();
 
-        // spawn attacks at 20% of animation time
         if (animElapsed >= animDuration * 0.2 && !attacked)
         {
             boss.getScene().addGameObject(
@@ -97,15 +94,46 @@ public class BossAbility1 {
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), 80);
 
+            BasicAttackObj axeAttack5 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), 80);
+
+            BasicAttackObj axeAttack6 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), 80);
+
+            BasicAttackObj axeAttack7 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), 80);
+
+            BasicAttackObj axeAttack8 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), 80);
+
             axeAttack1.setTargetDirection(new Vector2D(1, 0));
             axeAttack2.setTargetDirection(new Vector2D(0, 1));
             axeAttack3.setTargetDirection(new Vector2D(-1, 0));
             axeAttack4.setTargetDirection(new Vector2D(0, -1));
 
+            if(boss.isResurrected()) {
+                double d = 1.0 / Math.sqrt(2); // ≈ 0.707
+                axeAttack5.setTargetDirection(new Vector2D(d, d));
+                axeAttack6.setTargetDirection(new Vector2D(-d, d));
+                axeAttack7.setTargetDirection(new Vector2D(-d, -d));
+                axeAttack8.setTargetDirection(new Vector2D(d, -d));
+            }
+
             boss.getScene().addGameObject(axeAttack1);
             boss.getScene().addGameObject(axeAttack2);
             boss.getScene().addGameObject(axeAttack3);
             boss.getScene().addGameObject(axeAttack4);
+
+            if(boss.isResurrected()) {
+                boss.getScene().addGameObject(axeAttack5);
+                boss.getScene().addGameObject(axeAttack6);
+                boss.getScene().addGameObject(axeAttack7);
+                boss.getScene().addGameObject(axeAttack8);
+            }
 
             attacked = true;
         }

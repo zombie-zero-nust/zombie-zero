@@ -147,8 +147,10 @@ public class CollisionManager
         {
             if (enemy instanceof Boss)
             {
-                levelScene.addScorePoints(POINTS_PER_BOSS_KILL);
-                levelScene.onBossDefeated();
+                if(((Boss) (enemy)).isResurrected() && ((Boss)enemy).isAnimationFinished()) {
+                    levelScene.addScorePoints(POINTS_PER_BOSS_KILL);
+                    levelScene.onBossDefeated();
+                }
             }
             else
             {

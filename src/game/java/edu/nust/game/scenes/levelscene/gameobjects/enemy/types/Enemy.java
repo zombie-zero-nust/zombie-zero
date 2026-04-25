@@ -28,8 +28,9 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     }
 
     private PathFinder pathFinder;
+    private boolean isDying = false;
 
-    private final double movementSpeed;
+    private double movementSpeed;
     private final double height;
     private final double width;
 
@@ -183,10 +184,28 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     }
 
     @Override
-    public void takeDamage(int damage)
-    {
+    public void takeDamage(int damage) {
         health.takeDamage(damage);
+        if (!health.isAlive() && !isDying) {
+            isDying = true;
+            freezeEnemy();
+        }
     }
+
+    private void freezeEnemy() {
+        movement = null;
+        currentPathIndex = 0;
+        attacking = false;
+        pathTimer = TimeSpan.zero();
+        if (getHitbox() != null) getHitbox().setActive(false);
+    }
+
+    public void unfreezeEnemy() {
+        isDying = false;
+        movement = new ArrayList<>();
+        if (getHitbox() != null) getHitbox().setActive(true);
+    }
+
 
     @Override
     public void setHealth(Health health)
@@ -228,5 +247,13 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
 
     public void setAttacking(boolean attacking) {
         this.attacking = attacking;
+    }
+
+    public void setMovementSpeed(double speed){
+        movementSpeed = speed;
+    }
+
+    public double getMovementSpeed() {
+        return movementSpeed;
     }
 }

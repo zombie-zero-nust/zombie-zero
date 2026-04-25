@@ -204,7 +204,6 @@ public class BasicEnemy extends Enemy
         double minDist = attack1Range + (this.getWidth() / 2);
 
         if (dist <= minDist) {
-
             BasicAttackObj attack1 = new BasicAttackObj(
                     10, this, 3,
                     (double) height / 2,
@@ -225,7 +224,7 @@ public class BasicEnemy extends Enemy
             spriteRenderer.setImage(image, 4, 1)
                     .startAnimation()
                     .setAnimationTime(TimeSpan.fromMilliseconds(attack1Time / 4));
-            spriteRenderer.setSize(11,14);
+            spriteRenderer.setSize(image.getWidth()/4,image.getHeight());
 
             attackTimeElapsed = 0;
             setAttacking(true);
