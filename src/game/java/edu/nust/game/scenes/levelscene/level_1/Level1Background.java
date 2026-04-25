@@ -202,9 +202,7 @@ public final class Level1Background
         final Random random = new Random(3);
         final List<StoredPlacement> placements = new ArrayList<>();
         zones.forEach((zone) -> {
-            List<StaticObjectType> options = zone.options();
-            Rectangle rectangle = zone.zone();
-            // scene.addDebugRectangle(rectangle, TimeSpan.fromDays(1));
+            Rectangle rectangle = zone.rectangle();
             final int stepX = 18;
             final int stepY = 24;
             final int offset = 13;
@@ -213,13 +211,11 @@ public final class Level1Background
             {
                 for (int y = (int) rectangle.getTop(); y < ((int) rectangle.getBottom()); y += stepY)
                 {
-                    StaticObject grass = StaticObjectFactory.randomStaticAt(x, y, options, scene.getPlayer(), random);
+                    StaticObject grass = StaticObjectFactory.randomStaticAt(x, y, zone.options, scene.getPlayer(), random);
                     int offsetX = random.nextInt(-offset, offset + 1);
                     int offsetY = random.nextInt(-offset, offset + 1);
 
                     grass.getTransform().getPosition().addSelf(offsetX, offsetY);
-
-                    // scene.addDebugPoint(grass.getTransform().getPosition(), TimeSpan.fromDays(1));
 
                     placements.add(new StoredPlacement(
                             rectangle,
@@ -237,7 +233,7 @@ public final class Level1Background
 
     /* UTILITIES */
 
-    private record SpawnZone(List<StaticObjectType> options, Rectangle zone)
+    private record SpawnZone(List<StaticObjectType> options, Rectangle rectangle)
     {
         public static SpawnZone organicZone(double sx, double sy, double ex, double ey)
         {

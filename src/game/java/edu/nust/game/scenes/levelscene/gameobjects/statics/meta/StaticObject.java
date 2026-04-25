@@ -31,7 +31,12 @@ public abstract class StaticObject extends GameObject
         try
         {
             Image image = Resources.loadImageOrThrow("assets", "scenes", "level_1", folderName(), filename(variant));
-            this.addComponent(new SpriteRenderer(image));
+            SpriteRenderer renderer = new SpriteRenderer(image);
+            this.addComponent(renderer);
+
+            // deterministic random flip
+            boolean shouldFlip = ((getTransform().getPosition().getX() * variant) % 2) == 0;
+            if (shouldFlip) renderer.flipHorizontal();
         }
         catch (Exception e)
         {
