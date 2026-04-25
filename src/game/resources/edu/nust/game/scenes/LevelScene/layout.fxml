@@ -1,63 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+
 <StackPane styleClass="ui-root" style="-fx-padding: 0;" xmlns:fx="http://javafx.com/fxml/1"
            xmlns="http://javafx.com/javafx/17.0.12">
 
-    <HBox StackPane.alignment="TOP_LEFT" alignment="TOP_LEFT" fillHeight="false" style="-fx-padding: 20;">
-        <VBox spacing="6" alignment="TOP_LEFT">
+    <!-- ═══════════════════════════════════════════════════
+         TOP-LEFT HUD: health bar + gun card
+         ═══════════════════════════════════════════════════ -->
+    <HBox StackPane.alignment="TOP_LEFT" alignment="TOP_LEFT" fillHeight="false" style="-fx-padding: 16;">
+        <VBox spacing="10" alignment="TOP_LEFT">
+
+            <!-- Health bar — controller adds HealthBar child here -->
             <VBox fx:id="healthBarContainer"/>
-            <HBox alignment="CENTER_LEFT" spacing="8" fx:id="bulletIndicatorRow">
-                <ImageView fx:id="gunIconView" fitHeight="75" fitWidth="75" preserveRatio="true" smooth="false"/>
-                <VBox fx:id="ammoBarContainer"/>
-                <Label fx:id="ammoLabel" text="5 / 5"
-                       style="-fx-text-fill: #FFFF00; -fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-alignment: CENTER;"/>
-            </HBox>
-            <Label fx:id="reloadLabel" visible="false" managed="false"/>
+
+            <!--
+                Gun card: 2-section layout
+                ┌──────────────────────────┐
+                │       [ gun icon ]       │   ← gunIconPane
+                ├──────────────────────────┤
+                │  [ammoBar]      6 / 6   │   ← bottom row
+                └──────────────────────────┘
+            -->
+            <VBox spacing="0"
+                  style="-fx-background-color: #7a7a8a;
+                         -fx-border-color: #3a3a3a;
+                         -fx-border-width: 2;
+                         -fx-border-radius: 5;
+                         -fx-background-radius: 5;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 6, 0, 2, 2);">
+
+                <!-- TOP: gun icon with inner padding -->
+                <StackPane prefWidth="150" prefHeight="95"
+                           style="-fx-background-color: #9a9aaa;
+                                  -fx-padding: 8;
+                                  -fx-border-color: #3a3a3a;
+                                  -fx-border-width: 0 0 2 0;">
+                    <ImageView fx:id="gunIconView"
+                               fitWidth="120" fitHeight="68"
+                               preserveRatio="true" smooth="false"
+                               StackPane.alignment="CENTER"/>
+                </StackPane>
+
+                <!-- BOTTOM: ammo bar + label with inner padding -->
+                <HBox alignment="CENTER_LEFT" spacing="6"
+                      style="-fx-background-color: #5a5a6a;
+                             -fx-padding: 6 10 6 10;
+                             -fx-border-radius: 0 0 4 4;
+                             -fx-background-radius: 0 0 4 4;">
+
+                    <VBox fx:id="ammoBarContainer"
+                          alignment="CENTER_LEFT"
+                          HBox.hgrow="ALWAYS"/>
+
+                    <Label fx:id="ammoLabel" text="6 / 6"
+                           style="-fx-text-fill: #FFE44D;
+                                  -fx-font-size: 13;
+                                  -fx-font-weight: bold;
+                                  -fx-font-family: 'Courier New';
+                                  -fx-padding: 0 0 0 4;"/>
+                </HBox>
+
+            </VBox>
+
+            <!-- Hidden reload label -->
+            <Label fx:id="reloadLabel" text="RELOADING..."
+                   visible="false" managed="false"
+                   style="-fx-text-fill: #FF4444; -fx-font-size: 11; -fx-font-weight: bold;"/>
+
         </VBox>
+
         <Label fx:id="healthLabel" visible="false" managed="false"/>
     </HBox>
 
-    <HBox StackPane.alignment="TOP_RIGHT" alignment="TOP_RIGHT" fillHeight="false" style="-fx-padding: 20;">
+    <!-- ═══════════════════════════════════════════════════
+         TOP-RIGHT: reserved
+         ═══════════════════════════════════════════════════ -->
+    <HBox StackPane.alignment="TOP_RIGHT" alignment="TOP_RIGHT" fillHeight="false" style="-fx-padding: 16;">
     </HBox>
 
-    <!-- Pause Overlay - Full Screen with Centered Content -->
-    <StackPane fx:id="pauseOverlay" managed="false" styleClass="pauseOverlay" visible="false"
-               StackPane.alignment="CENTER" maxWidth="Infinity" maxHeight="Infinity" minWidth="0" minHeight="0">
+    <!-- ═══════════════════════════════════════════════════
+         PAUSE / GAME-OVER OVERLAY
+         ═══════════════════════════════════════════════════ -->
+    <StackPane fx:id="pauseOverlay"
+               managed="false" visible="false"
+               styleClass="pauseOverlay"
+               StackPane.alignment="CENTER"
+               maxWidth="Infinity" maxHeight="Infinity"
+               minWidth="0" minHeight="0">
 
         <VBox alignment="CENTER" spacing="20" styleClass="overlay-content-box">
+
             <Region fx:id="pauseHeadingTile" styleClass="pause-heading-tile"/>
-            <Region fx:id="gameOverHeadingTile" managed="false" styleClass="gameover-heading-tile" visible="false"/>
-            <Label fx:id="overlayTitleLabel" managed="false" styleClass="overlay-title" text="Game Over"
-                   visible="false"/>
-            
-            <!-- Score Display Controller - Pixel art 3-digit counter -->
+            <Region fx:id="gameOverHeadingTile"
+                    managed="false" visible="false"
+                    styleClass="gameover-heading-tile"/>
+            <Label fx:id="overlayTitleLabel"
+                   managed="false" visible="false"
+                   styleClass="overlay-title" text="Game Over"/>
+
             <StackPane fx:id="scoreDisplayControllerContainer"
                        alignment="CENTER"
-                       managed="false"
-                       visible="false"
-                       maxWidth="400"
-                       prefWidth="350"/>
-            
-            
-            <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="pause-button-tile, resume-button-tile"
-                    text=""/>
-            <Button fx:id="pauseRetryButton" onAction="#retryLevel" styleClass="pause-button-tile, retry-button-tile"
-                    text=""/>
-            <Button fx:id="pauseExitButton" onAction="#exitToMainMenu"
-                    styleClass="pause-button-tile, overlay-exit-button-tile" text=""/>
-            <Button fx:id="gameOverNewGameButton" managed="false" onAction="#startNewGame"
-                    styleClass="gameover-button-tile, gameover-newgame-button-tile" text="" visible="false"/>
-            <Button fx:id="gameOverMainMenuButton" managed="false" onAction="#exitToMainMenu"
-                    styleClass="gameover-button-tile, gameover-mainmenu-button-tile" text="" visible="false"/>
-            <Button fx:id="gameOverHighScoresButton" managed="false" onAction="#viewHighScores"
-                    styleClass="gameover-button-tile, gameover-highscores-button-tile" text="" visible="false"/>
-        </VBox>
+                       managed="false" visible="false"
+                       maxWidth="400" prefWidth="350"/>
 
+            <!-- Pause buttons -->
+            <Button fx:id="resumeButton"
+                    onAction="#resumeGame"
+                    styleClass="pause-button-tile, resume-button-tile" text=""/>
+            <Button fx:id="pauseRetryButton"
+                    onAction="#retryLevel"
+                    styleClass="pause-button-tile, retry-button-tile" text=""/>
+            <Button fx:id="pauseExitButton"
+                    onAction="#exitToMainMenu"
+                    styleClass="pause-button-tile, overlay-exit-button-tile" text=""/>
+
+            <!-- Game-over buttons -->
+            <Button fx:id="gameOverNewGameButton"
+                    managed="false" visible="false"
+                    onAction="#startNewGame"
+                    styleClass="gameover-button-tile, gameover-newgame-button-tile" text=""/>
+            <Button fx:id="gameOverMainMenuButton"
+                    managed="false" visible="false"
+                    onAction="#exitToMainMenu"
+                    styleClass="gameover-button-tile, gameover-mainmenu-button-tile" text=""/>
+            <Button fx:id="gameOverHighScoresButton"
+                    managed="false" visible="false"
+                    onAction="#viewHighScores"
+                    styleClass="gameover-button-tile, gameover-highscores-button-tile" text=""/>
+
+        </VBox>
     </StackPane>
 
 </StackPane>
-
