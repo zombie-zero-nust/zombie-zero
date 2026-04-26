@@ -105,3 +105,14 @@ Zombie Zero is a top-down 2D shooter built on a custom Java game engine with Jav
 
 - High scores are persisted in `highscores.txt`.
 - Build and packaging behavior is defined in `build.gradle`.
+
+
+##  Screenshots
+Main Menu
+<img width="1263" height="706" alt="image" src="https://github.com/user-attachments/assets/0140ad4c-94a9-4d41-a059-f4ef651792d7" />
+Level
+<img width="1264" height="710" alt="image" src="https://github.com/user-attachments/assets/87f34202-dcc7-4a5e-ac16-259c9b4e134f" />
+High Score
+<img width="1261" height="708" alt="image" src="https://github.com/user-attachments/assets/0698ca07-8d7a-4116-80a2-055e832405f0" />
+
+
