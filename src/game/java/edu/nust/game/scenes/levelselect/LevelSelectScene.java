@@ -32,6 +32,7 @@ public class LevelSelectScene extends GameScene
     @FXML
     private void startLevel1()
     {
+        playButtonClickSound();
         String playerName = playerNameField != null ? playerNameField.getText().trim() : "";
         if (playerName.isEmpty())
         {
@@ -59,9 +60,14 @@ public class LevelSelectScene extends GameScene
     @FXML
     private void goBack(ActionEvent ignored)
     {
+        playButtonClickSound();
         this.getWorld().setScene(new StartScene(this.getWorld()));
     }
 
     @FXML
-    private void goBack(MouseEvent ignored) { this.getWorld().setScene(new StartScene(this.getWorld())); }
+    private void goBack(MouseEvent ignored)
+    {
+        playButtonClickSound();
+        this.getWorld().setScene(new StartScene(this.getWorld()));
+    }
 }

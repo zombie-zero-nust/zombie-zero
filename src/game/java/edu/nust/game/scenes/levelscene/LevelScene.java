@@ -463,6 +463,7 @@ public class LevelScene extends GameScene
     @FXML
     private void resumeGame()
     {
+        playButtonClickSound();
         if (gameOverState) return;
         setPaused(false);
     }
@@ -470,6 +471,7 @@ public class LevelScene extends GameScene
     @FXML
     private void exitToMainMenu()
     {
+        playButtonClickSound();
         MusicManager.resumeMusic();
         this.getWorld().setScene(new StartScene(this.getWorld()));
     }
@@ -627,6 +629,7 @@ public class LevelScene extends GameScene
     @FXML
     private void retryLevel()
     {
+        playButtonClickSound();
         gameOverState = false;
         this.getWorld().setScene(new LevelScene(this.getWorld()));
     }
@@ -637,6 +640,7 @@ public class LevelScene extends GameScene
     @FXML
     private void viewHighScores()
     {
+        playButtonClickSound();
         if (!saveWinningScoreIfNeeded()) return;
         MusicManager.resumeMusic();
         this.getWorld().setScene(new HighScoresScene(this.getWorld()));

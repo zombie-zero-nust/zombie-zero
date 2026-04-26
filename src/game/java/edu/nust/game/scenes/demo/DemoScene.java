@@ -141,12 +141,14 @@ public class DemoScene extends GameScene
     @FXML
     private void resumeGame()
     {
+        playButtonClickSound();
         setPaused(false);
     }
 
     @FXML
     private void exitToMainMenu()
     {
+        playButtonClickSound();
         this.getWorld().setScene(new StartScene(this.getWorld()));
     }
 }

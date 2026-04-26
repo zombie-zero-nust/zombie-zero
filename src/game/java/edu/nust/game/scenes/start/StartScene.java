@@ -22,13 +22,25 @@ public class StartScene extends GameScene
     /* FXML */
 
     @FXML
-    private void switchToGameScene(MouseEvent ignored) { switchScene(new LevelScene(this.getWorld())); }
+    private void switchToGameScene(MouseEvent ignored)
+    {
+        playButtonClickSound();
+        switchScene(new LevelScene(this.getWorld()));
+    }
 
     @FXML
-    private void switchToHighScoresScene(MouseEvent ignored) { switchScene(new HighScoresScene(this.getWorld())); }
+    private void switchToHighScoresScene(MouseEvent ignored)
+    {
+        playButtonClickSound();
+        switchScene(new HighScoresScene(this.getWorld()));
+    }
 
     @FXML
-    private void exitApplication(MouseEvent ignored) { this.getWorld().stop(); }
+    private void exitApplication(MouseEvent ignored)
+    {
+        playButtonClickSound();
+        this.getWorld().stop();
+    }
 
     /* HELPERS */
 

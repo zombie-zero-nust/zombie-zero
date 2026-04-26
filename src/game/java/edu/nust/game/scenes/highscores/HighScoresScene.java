@@ -98,6 +98,7 @@ public class HighScoresScene extends GameScene
     @FXML
     private void backToMainMenu()
     {
+        playButtonClickSound();
         this.getWorld().setScene(new StartScene(this.getWorld()));
     }
 }
