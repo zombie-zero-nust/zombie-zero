@@ -1,11 +1,13 @@
 package edu.nust.game.scenes.levelscene.gameobjects.weapon;
 
 import edu.nust.engine.core.GameObject;
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
+import edu.nust.game.systems.audio.Audios;
 import edu.nust.game.systems.collision.Concrete;
 import edu.nust.game.systems.collision.Damageable;
 import edu.nust.game.systems.collision.Damaging;
@@ -94,6 +96,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     @Override
     public void destroyThis()
     {
+        Audios.randomPlayerImpactZombieRef().ifPresent(SoundEffectReference::play);
         if (isDestroyable()) this.destroy();
     }
 
@@ -113,6 +116,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     @Override
     public void triggerCollisionEffect(Concrete collidedObj)
     {
+        Audios.randomPlayerImpactEnvironmentRef().ifPresent(SoundEffectReference::play);
         if (ThreadLocalRandom.current().nextBoolean()) // spawn impact effect half the time
             spawnBulletImpact(collidedObj == null
                               ? BulletImpact.ImpactType.ENVIRONMENT

@@ -1,5 +1,6 @@
 package edu.nust.game.scenes.levelscene.gameobjects.enemy.types;
 
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
@@ -7,6 +8,7 @@ import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Attacks.BasicAttackObj;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.systems.assets.EnemyAsset;
+import edu.nust.game.systems.audio.Audios;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
@@ -222,6 +224,7 @@ public class BasicEnemy extends Enemy
                     TimeSpan.fromMilliseconds(attack1Time),
                     attack1Range
             );
+            Audios.randomZombieBasicAttackRef().ifPresent(SoundEffectReference::play);
 
             this.getScene().addGameObject(attack1);
 

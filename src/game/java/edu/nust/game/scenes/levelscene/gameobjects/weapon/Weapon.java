@@ -1,11 +1,13 @@
 package edu.nust.game.scenes.levelscene.gameobjects.weapon;
 
 import edu.nust.engine.core.GameObject;
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.core.components.renderers.BoxRenderer;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.systems.audio.Audios;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -201,6 +203,7 @@ public class Weapon extends GameObject
             setFiring(false);
             ammo.decreaseAmmo();
             triggerMuzzleFlash();
+            Audios.randomPlayerGunShotRef().ifPresent(SoundEffectReference::play);
             return new Bullet(playerCenterPos, 1000, shotTarget, damage);
         }
 
@@ -210,6 +213,7 @@ public class Weapon extends GameObject
             fireCooldown = 1.0 / fireRate;
             ammo.decreaseAmmo();
             triggerMuzzleFlash();
+            Audios.randomPlayerGunShotRef().ifPresent(SoundEffectReference::play);
             return new Bullet(playerCenterPos, 1000, shotTarget, damage);
         }
 

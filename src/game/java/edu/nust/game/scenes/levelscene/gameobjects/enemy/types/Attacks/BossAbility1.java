@@ -1,11 +1,13 @@
 package edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Attacks;
 
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.systems.assets.EnemyAsset;
+import edu.nust.game.systems.audio.Audios;
 import edu.nust.game.systems.collision.Damageable;
 import javafx.scene.image.Image;
 
@@ -78,6 +80,7 @@ public class BossAbility1 {
                             0
                     )
             );
+            Audios.randomZombieBossGrowlRef().ifPresent(SoundEffectReference::play);
 
             BasicAttackObj axeAttack1 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
                     notDamageObj, 5, projectile, 9, 1,

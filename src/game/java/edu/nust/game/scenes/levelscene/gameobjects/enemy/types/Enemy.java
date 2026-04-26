@@ -1,12 +1,14 @@
 package edu.nust.game.scenes.levelscene.gameobjects.enemy.types;
 
 import edu.nust.engine.core.GameObject;
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Health;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.systems.assets.EnemyAsset;
+import edu.nust.game.systems.audio.Audios;
 import edu.nust.game.systems.collision.Concrete;
 import edu.nust.game.systems.collision.Damageable;
 import edu.nust.game.systems.collision.HitBox;
@@ -230,6 +232,12 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     {
         health.takeDamage(damage);
         onHealthChanged();
+        if(this.getClass() == BasicEnemy.class) {
+            Audios.randomZombieBasicHurtRef().ifPresent(SoundEffectReference::play);
+        }
+        else{
+            Audios.randomZombieBossHurtRef();
+        }
         if (!health.isAlive() && !isDying)
         {
             isDying = true;

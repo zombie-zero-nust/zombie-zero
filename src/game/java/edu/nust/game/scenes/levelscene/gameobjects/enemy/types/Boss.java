@@ -1,6 +1,7 @@
 package edu.nust.game.scenes.levelscene.gameobjects.enemy.types;
 
 
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
@@ -10,6 +11,7 @@ import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Attacks.BossAbili
 import edu.nust.game.scenes.levelscene.gameobjects.player.Health;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.systems.assets.EnemyAsset;
+import edu.nust.game.systems.audio.Audios;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
@@ -262,10 +264,10 @@ public class Boss extends Enemy
                         TimeSpan.fromMilliseconds(attack1Time/4),
                         attack1Range
                 );
+                Audios.randomZombieBossAttackRef().ifPresent(SoundEffectReference::play);
 
                 this.getScene().addGameObject(attack1);
             }
-
             if (attackTimeElapsed >= attack1Time) {
                 if (attack1 != null) {
                     attack1.destroy();

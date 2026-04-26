@@ -1,5 +1,6 @@
 package edu.nust.game.scenes.levelscene.gameobjects.player;
 
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.TimeSpan;
@@ -8,6 +9,7 @@ import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 import edu.nust.game.systems.assets.CharacterAsset;
+import edu.nust.game.systems.audio.Audios;
 import edu.nust.game.systems.collision.Concrete;
 import edu.nust.game.systems.collision.Damageable;
 import edu.nust.game.systems.collision.HitBox;
@@ -58,6 +60,8 @@ public class Player extends Character implements Damageable, Concrete
     private Function<Rectangle, Boolean> walkabilityChecker;
     private static final double MOVEMENT_COLLISION_HALF_WIDTH = 4.0;
     private static final double MOVEMENT_COLLISION_HALF_HEIGHT = 6.0;
+    private double footstepTimer = 0;
+    private static final double FOOTSTEP_INTERVAL = 3; // seconds
 
     private boolean invincible = false;
     private static final double MAX_RED_TINT_STRENGTH = 0.5;
@@ -177,6 +181,17 @@ public class Player extends Character implements Damageable, Concrete
             if (isWalkable(slideX)) setX(getX() + dx);
             else if (isWalkable(slideY)) setY(getY() + dy);
         }
+        boolean moving = dx != 0 || dy != 0;
+
+        if (moving)
+        {
+            footstepTimer -= deltaTime.asSeconds();
+            if (footstepTimer <= 0)
+            {
+                Audios.randomPlayerFootstepRef().ifPresent(SoundEffectReference::play);
+                footstepTimer = FOOTSTEP_INTERVAL;
+            }
+        }
     }
 
     private void updateFacingSprite(double dx, double dy)
@@ -187,6 +202,7 @@ public class Player extends Character implements Damageable, Concrete
 
         if (moving)
         {
+            Audios.randomPlayerFootstepRef().ifPresent(SoundEffectReference::play);
             if (Math.abs(dx) >= Math.abs(dy)) facing = dx >= 0 ? Facing.RIGHT : Facing.LEFT;
             else facing = dy >= 0 ? Facing.DOWN : Facing.UP;
         }
@@ -218,6 +234,7 @@ public class Player extends Character implements Damageable, Concrete
 
     public void takeDamage(int damage)
     {
+
         if (health != null)
         {
             health.takeDamage(damage);
@@ -248,7 +265,7 @@ public class Player extends Character implements Damageable, Concrete
     {
         if (hitbox == null)
         {
-            hitbox = new HitBox(getSpawnPos(), height, width);
+            hitbox = new HitBox(getSpawnPos(), height/2, width/2);
             this.addComponent(hitbox);
         }
     }
