@@ -95,7 +95,9 @@ public final class Level1CollisionMask
             Rectangle.fromCorners(2208, 652, 2224, 736), // inner bottom
             Rectangle.fromCorners(2320, 602, 2336, 644), // inner top 1
             Rectangle.fromCorners(2128, 588, 2144, 656), // inner top 2.1
-            Rectangle.fromCorners(2096, 656, 2200, 672) // inner top 2.2
+            Rectangle.fromCorners(2096, 656, 2200, 672), // inner top 2.2
+            // Cones
+            Rectangle.fromCorners(1678, 4, 1688, 48) // top
     );
 
     private static final List<Rectangle> ALL_RECTS = new ArrayList<>();

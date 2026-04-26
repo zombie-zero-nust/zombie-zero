@@ -8,6 +8,7 @@ import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.LevelScene;
+import edu.nust.game.scenes.levelscene.gameobjects.Cone;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.SerializablePlacement;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObject;
 import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObjectFactory;
@@ -29,10 +30,17 @@ public final class Level1Background
 
     private static final GameLogger LOGGER = GameLogger.getLogger(Level1Background.class);
 
+    private static final List<Vector2D> CONE_POSITIONS = List.of(
+            new Vector2D(1682, 12),
+            new Vector2D(1682, 24),
+            new Vector2D(1682, 36),
+            new Vector2D(1682, 48)
+    );
+
     public static GameObject[] getObjects(final LevelScene scene)
     {
         final ArrayList<GameObject> objects = new ArrayList<>(loadPlacements(scene));
-        // MARK: To regenerate objects_placement.txt
+        // MARK: To regenerate objects_placement.txt, comment above and uncomment below
         // final ArrayList<GameObject> objects = new ArrayList<>();
         // placementFilePreBuilder(scene, objects);
         // objects.addAll(loadPlacements(scene));
@@ -40,6 +48,7 @@ public final class Level1Background
         try
         {
             objects.add(backgroundGO());
+            CONE_POSITIONS.forEach(pos -> objects.add(new Cone(pos.getX(), pos.getY())));
             return objects.toArray(new GameObject[0]);
         }
         catch (Exception e)
