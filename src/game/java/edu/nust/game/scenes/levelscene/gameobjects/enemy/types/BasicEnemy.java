@@ -33,7 +33,7 @@ public class BasicEnemy extends Enemy
     private boolean animationFinished = false;
     private int width = 12;
     private int height = 16;
-    private Facing facing = Facing.DOWN;
+    private Facing facing = Facing.getRandom();
     private TimeSpan deathAnimationTime = TimeSpan.fromMilliseconds(300);
     private double elapsed = 0;
     private double attack1Range = 3;

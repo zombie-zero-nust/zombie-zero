@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Enemy extends GameObject implements Concrete, Damageable
 {
@@ -24,7 +25,12 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
         UP,
         DOWN,
         RIGHT,
-        LEFT,
+        LEFT;
+
+        public static Facing getRandom()
+        {
+            return values()[ThreadLocalRandom.current().nextInt(values().length)];
+        }
     }
 
     private PathFinder pathFinder;
@@ -110,6 +116,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
             currentPathIndex = 0;
             pathTimer = TimeSpan.zero();
             attack(deltaTime);
+            if (!isAttacking()) updateSprite(0, 0);
             return;
         }
 
@@ -131,7 +138,8 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
 
         if (!attacking)
         {
-            moveAlongPath(deltaTime);
+            boolean moved = moveAlongPath(deltaTime);
+            if (!moved && !isAttacking()) updateSprite(0, 0);
         }
         attack(deltaTime);
 
@@ -155,10 +163,10 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
         followRadius *= factor;
     }
 
-    private void moveAlongPath(TimeSpan deltaTime)
+    private boolean moveAlongPath(TimeSpan deltaTime)
     {
 
-        if (movement == null || currentPathIndex >= movement.size()) return;
+        if (movement == null || currentPathIndex >= movement.size()) return false;
 
         Vector2D currentPos = this.getTransform().getPosition();
         Node targetNode = movement.get(currentPathIndex);
@@ -187,6 +195,8 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
             Vector2D velocity = direction.normalize().multiply(moveDist);
             this.getTransform().setPosition(currentPos.add(velocity));
         }
+
+        return true;
     }
 
     @Override

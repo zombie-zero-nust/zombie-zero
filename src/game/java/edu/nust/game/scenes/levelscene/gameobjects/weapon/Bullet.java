@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class Bullet extends GameObject implements Damaging, Concrete
@@ -135,7 +136,11 @@ public class Bullet extends GameObject implements Damaging, Concrete
         impactPos = this.getTransform().getPosition().copy();
         destroyThis();
         // collidedObj is null when hitting collision mask
-        spawnBulletImpact(collidedObj == null ? BulletImpact.ImpactType.ENVIRONMENT : BulletImpact.ImpactType.BLOOD);
+        // spawn impacts half the time
+        if (ThreadLocalRandom.current().nextBoolean()) // 
+            spawnBulletImpact(collidedObj == null
+                              ? BulletImpact.ImpactType.ENVIRONMENT
+                              : BulletImpact.ImpactType.BLOOD);
     }
 
     @Override
