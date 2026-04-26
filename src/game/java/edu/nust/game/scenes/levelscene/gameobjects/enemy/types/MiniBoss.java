@@ -209,7 +209,7 @@ public class MiniBoss extends Enemy
                 case RIGHT -> rightIdleSheet;
             };
             spriteRenderer.setImage(image, 6, 1)
-                    .setSize(image.getWidth()/4,image.getHeight()*1.5);
+                    .setSize(image.getWidth() / 4, image.getHeight() * 1.5);
         }
         else
         {
@@ -222,7 +222,7 @@ public class MiniBoss extends Enemy
                 case LEFT -> leftMoveSheet;
                 case RIGHT -> rightMoveSheet;
             };
-            spriteRenderer.setImage(image, 8, 1).setSize(this.getWidth(),this.getHeight());
+            spriteRenderer.setImage(image, 8, 1).setSize(this.getWidth(), this.getHeight());
         }
     }
 
@@ -425,4 +425,7 @@ public class MiniBoss extends Enemy
     {
         return isDead;
     }
+
+    @Override
+    protected double baseFollowRadius() { return 200; }
 }

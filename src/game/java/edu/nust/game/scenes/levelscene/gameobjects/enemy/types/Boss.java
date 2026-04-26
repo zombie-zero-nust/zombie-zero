@@ -420,4 +420,7 @@ public class Boss extends Enemy
     public boolean getIsDead(){
         return isDead;
     }
+
+    @Override
+    protected double baseFollowRadius() { return 200; }
 }

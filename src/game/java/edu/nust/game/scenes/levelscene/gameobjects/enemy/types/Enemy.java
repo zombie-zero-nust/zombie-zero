@@ -52,9 +52,8 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
 
     private static final int NODE_SIZE = 2;
     private static final double MAX_RED_TINT_STRENGTH = 0.5;
-    private static final double BASE_CHASE_RADIUS = 100;
 
-    private double followRadius = BASE_CHASE_RADIUS;
+    private double followRadius = baseFollowRadius();
 
     public Enemy(Vector2D startPosition, double speed, int health)
     {
@@ -313,4 +312,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     {
         return movementSpeed;
     }
+
+
+    protected double baseFollowRadius() { return 100; }
 }
