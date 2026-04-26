@@ -17,6 +17,7 @@ public class MainWorld extends GameWorld
         stage.setTitle("Test World");
         stage.setWidth(1280);
         stage.setHeight(768);
+        stage.resizableProperty().set(false);
         stage.centerOnScreen();
         try
         {
