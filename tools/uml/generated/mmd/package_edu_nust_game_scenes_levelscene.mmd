@@ -1,0 +1,24 @@
+---
+title: edu.nust.game.scenes.levelscene
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class LevelScene
+class LevelID <<enumeration>>
+class Package_edu_nust_game_scenes_levelscene_components <<package>>
+class Package_edu_nust_game_scenes_levelscene_gameobjects <<package>>
+class Package_edu_nust_game_scenes_levelscene_hud <<package>>
+class Package_edu_nust_game_scenes_levelscene_level_1 <<package>>
+LevelScene --> Package_edu_nust_game_scenes_levelscene_gameobjects : uses
+LevelScene --> Package_edu_nust_game_scenes_levelscene_hud : uses
+LevelScene --> Package_edu_nust_game_scenes_levelscene_level_1 : uses
+Package_edu_nust_game_scenes_levelscene_level_1 --> LevelScene : uses
+Package_edu_nust_game_scenes_levelscene_components --> Package_edu_nust_game_scenes_levelscene_gameobjects : uses
+Package_edu_nust_game_scenes_levelscene_hud --> Package_edu_nust_game_scenes_levelscene_gameobjects : uses
+Package_edu_nust_game_scenes_levelscene_level_1 --> Package_edu_nust_game_scenes_levelscene_gameobjects : uses

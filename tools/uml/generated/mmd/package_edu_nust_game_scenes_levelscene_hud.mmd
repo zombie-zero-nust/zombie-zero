@@ -1,0 +1,15 @@
+---
+title: edu.nust.game.scenes.levelscene.hud
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class HealthBar
+class ScoreDisplayController
+class Bar
+Bar <|-- HealthBar : extends

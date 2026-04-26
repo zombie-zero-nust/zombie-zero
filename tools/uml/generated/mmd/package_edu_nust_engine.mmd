@@ -1,0 +1,17 @@
+---
+title: edu.nust.engine
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class Package_edu_nust_engine_core <<package>>
+class Package_edu_nust_engine_logger <<package>>
+class Package_edu_nust_engine_math <<package>>
+class Package_edu_nust_engine_resources <<package>>
+Package_edu_nust_engine_core --> Package_edu_nust_engine_logger : uses
+Package_edu_nust_engine_core --> Package_edu_nust_engine_math : uses

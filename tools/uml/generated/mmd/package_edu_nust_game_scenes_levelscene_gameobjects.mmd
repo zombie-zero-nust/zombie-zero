@@ -1,0 +1,21 @@
+---
+title: edu.nust.game.scenes.levelscene.gameobjects
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class Car
+class Cone
+class Package_edu_nust_game_scenes_levelscene_gameobjects__tags <<package>>
+class Package_edu_nust_game_scenes_levelscene_gameobjects_enemy <<package>>
+class Package_edu_nust_game_scenes_levelscene_gameobjects_player <<package>>
+class Package_edu_nust_game_scenes_levelscene_gameobjects_statics <<package>>
+class Package_edu_nust_game_scenes_levelscene_gameobjects_unused <<package>>
+class Package_edu_nust_game_scenes_levelscene_gameobjects_weapon <<package>>
+Package_edu_nust_game_scenes_levelscene_gameobjects_enemy --> Package_edu_nust_game_scenes_levelscene_gameobjects_player : uses
+Package_edu_nust_game_scenes_levelscene_gameobjects_statics --> Package_edu_nust_game_scenes_levelscene_gameobjects_player : uses

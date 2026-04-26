@@ -1,0 +1,38 @@
+---
+title: edu.nust.game.scenes.levelscene.gameobjects.statics
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class Stick
+class Rock
+class Garbage
+class Grass
+class Flower
+class Tree
+class SerializablePlacement
+class StaticObjectFactory
+class FallenTree
+class TreeStump
+class GroundGrass
+class Bush
+class StaticObjectType <<enumeration>>
+class StaticObject
+StaticObject <|-- Bush : extends
+StaticObject <|-- FallenTree : extends
+StaticObject <|-- Flower : extends
+StaticObject <|-- Garbage : extends
+StaticObject <|-- Grass : extends
+StaticObject <|-- GroundGrass : extends
+StaticObject <|-- Rock : extends
+StaticObject <|-- Stick : extends
+StaticObject <|-- Tree : extends
+StaticObject <|-- TreeStump : extends
+SerializablePlacement --> StaticObjectType : uses
+StaticObjectFactory --> StaticObject : uses
+StaticObjectFactory --> StaticObjectType : uses

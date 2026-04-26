@@ -1,0 +1,26 @@
+---
+title: edu.nust.engine.logger
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class LogFormats
+class Format
+class ColorPair
+class LogProgress
+class GameLogger
+class LogProgressType <<enumeration>>
+class LogLevel <<enumeration>>
+class ANSIStripper
+class ColoredConsoleAppender
+GameLogger --> LogProgress : uses
+GameLogger --> LogLevel : uses
+GameLogger --> LogProgressType : uses
+LogProgress --> ColorPair : uses
+LogProgress --> GameLogger : uses
+LogFormats --> Format : uses

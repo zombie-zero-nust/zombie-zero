@@ -1,0 +1,18 @@
+---
+title: edu.nust
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class Launcher
+class Main
+class Package_edu_nust_engine <<package>>
+class Package_edu_nust_game <<package>>
+class Package_edu_nust_tests <<package>>
+Package_edu_nust_game --> Package_edu_nust_engine : uses
+Package_edu_nust_tests --> Package_edu_nust_engine : uses

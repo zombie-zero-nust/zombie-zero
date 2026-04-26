@@ -1,0 +1,19 @@
+---
+title: edu.nust.game.scenes.levelscene.gameobjects.player
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class Player
+class Facing <<enumeration>>
+class Health
+class Character
+class CharacterAnimAssets <<enumeration>>
+Character <|-- Player : extends
+Player --> Facing : uses
+Player --> Health : uses

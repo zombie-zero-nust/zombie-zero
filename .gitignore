@@ -51,3 +51,10 @@ logs/
 *.gen.*
 
 highscores.txt
+
+### python ###
+__pycache__/
+*.pyc
+*.pyo
+
+.venv/

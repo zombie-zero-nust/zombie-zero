@@ -1,0 +1,17 @@
+---
+title: edu.nust.engine.math
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class TimeSpan
+class Rectangle
+class Vector2D
+class Angle
+Rectangle --> Vector2D : uses
+Vector2D --> Angle : uses

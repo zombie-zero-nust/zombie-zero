@@ -1,0 +1,15 @@
+---
+title: edu.nust.game.scenes.highscores
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class HighScoresScene
+class HighScoreStorage
+class HighScoreEntry
+HighScoreStorage --> HighScoreEntry : uses

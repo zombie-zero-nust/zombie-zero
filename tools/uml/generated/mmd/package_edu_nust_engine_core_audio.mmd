@@ -1,0 +1,21 @@
+---
+title: edu.nust.engine.core.audio
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class GameAudioManager
+class SoundEffectReference
+class MusicTrackReference
+class AudioReference
+AudioReference --> MusicTrackReference : uses
+AudioReference --> SoundEffectReference : uses
+GameAudioManager --> MusicTrackReference : uses
+GameAudioManager --> SoundEffectReference : uses
+AudioReference <|-- MusicTrackReference : extends
+AudioReference <|-- SoundEffectReference : extends
