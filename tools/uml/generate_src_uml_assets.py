@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# AI USE DISCLOSURE
 """Generate Mermaid UML diagrams and rendered assets for the src tree."""
 
 import argparse
