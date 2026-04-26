@@ -201,7 +201,7 @@ public class Weapon extends GameObject
             setFiring(false);
             ammo.decreaseAmmo();
             triggerMuzzleFlash();
-            return new Bullet(200, playerCenterPos, 1000, shotTarget, damage);
+            return new Bullet(playerCenterPos, 1000, shotTarget, damage);
         }
 
         fireCooldown -= deltaTime.asSeconds();
@@ -210,7 +210,7 @@ public class Weapon extends GameObject
             fireCooldown = 1.0 / fireRate;
             ammo.decreaseAmmo();
             triggerMuzzleFlash();
-            return new Bullet(200, playerCenterPos, 1000, shotTarget, damage);
+            return new Bullet(playerCenterPos, 1000, shotTarget, damage);
         }
 
         return null;

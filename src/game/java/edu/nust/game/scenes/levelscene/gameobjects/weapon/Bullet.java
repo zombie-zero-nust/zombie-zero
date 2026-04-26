@@ -10,9 +10,7 @@ import edu.nust.game.systems.collision.Concrete;
 import edu.nust.game.systems.collision.Damageable;
 import edu.nust.game.systems.collision.Damaging;
 import edu.nust.game.systems.collision.HitBox;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -21,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Bullet extends GameObject implements Damaging, Concrete
 {
-    private final int speed;
+    private final int speed = 250;
     private final Vector2D startPos;
     private Vector2D direction;
     private Image image;
@@ -34,13 +32,9 @@ public class Bullet extends GameObject implements Damaging, Concrete
     private static final double COLLISION_HALF_WIDTH = 4;
     private static final double COLLISION_HALF_HEIGHT = 4;
 
-    private boolean shouldShowLine = false;
-    private boolean lineShown = false;
-    private Vector2D impactPos;
-
-    public Bullet(int speed, Vector2D pos, double range, Vector2D mousePos, int damage)
+    public Bullet(Vector2D pos, double range, Vector2D mousePos, int damage)
     {
-        this.speed = speed;
+        this.setRenderLayer(100);
         this.startPos = pos;
         totalDistance = 0;
         this.range = range;
@@ -55,9 +49,8 @@ public class Bullet extends GameObject implements Damaging, Concrete
         this.getTransform().setPosition(pos);
     }
 
-    public Bullet(int speed, Vector2D pos, Image image, double range)
+    public Bullet(Vector2D pos, Image image, double range)
     {
-        this.speed = speed;
         this.startPos = pos;
         this.image = image;
         totalDistance = 0;
@@ -88,18 +81,6 @@ public class Bullet extends GameObject implements Damaging, Concrete
     @Override
     public void lateUpdate(TimeSpan deltaTime) { if (outOfRange) this.destroy(); }
 
-    @Override
-    public void onRender(GraphicsContext context)
-    {
-        if (shouldShowLine)
-        {
-            // draw a line from start position to impact position
-            context.setStroke(Color.RED);
-            context.setLineWidth(2);
-            context.strokeLine(startPos.getX(), startPos.getY(), impactPos.getX(), impactPos.getY());
-            lineShown = true;
-        }
-    }
 
     @Override
     public int getDamage() { return this.damage; }
@@ -113,8 +94,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     @Override
     public void destroyThis()
     {
-        shouldShowLine = true;
-        if (isDestroyable() && lineShown) this.destroy();
+        if (isDestroyable()) this.destroy();
     }
 
     @Override
@@ -133,18 +113,15 @@ public class Bullet extends GameObject implements Damaging, Concrete
     @Override
     public void triggerCollisionEffect(Concrete collidedObj)
     {
-        impactPos = this.getTransform().getPosition().copy();
-        destroyThis();
-        // collidedObj is null when hitting collision mask
-        // spawn impacts half the time
-        if (ThreadLocalRandom.current().nextBoolean()) // 
+        if (ThreadLocalRandom.current().nextBoolean()) // spawn impact effect half the time
             spawnBulletImpact(collidedObj == null
                               ? BulletImpact.ImpactType.ENVIRONMENT
                               : BulletImpact.ImpactType.BLOOD);
+        destroyThis();
     }
 
     @Override
-    public List<Class<? extends Concrete>> notInteractWith() { return List.of(Player.class); }
+    public List<Class<? extends Concrete>> notInteractWith() { return List.of(Player.class, this.getClass()); }
 
     private void spawnBulletImpact(BulletImpact.ImpactType impactType)
     {
