@@ -30,7 +30,5 @@ public class MainWorld extends GameWorld
     protected void loadAudios()
     {
         Audios.setManager(this);
-        Audios.forEachSoundEffect(this::loadSoundEffect);
-        Audios.forEachMusicTrack(this::loadMusicTrack);
     }
 }
