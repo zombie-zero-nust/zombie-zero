@@ -15,12 +15,12 @@ public abstract class Character extends GameObject
 
     public Character(Vector2D pos, int health, int mSpeed, boolean moveable)
     {
-        spawnPos = pos;
-        prePos = pos;
+        spawnPos = pos.copy();
+        prePos = pos.copy();
         this.health = health;
         movementSpeed = mSpeed;
         this.moveable = moveable;
-        movePos = pos;
+        movePos = pos.copy();
     }
 
     public double getY()
@@ -45,17 +45,19 @@ public abstract class Character extends GameObject
 
     public Character(Vector2D pos, boolean moveable)
     {
-        prePos = pos;
+        spawnPos = pos.copy();
+        prePos = pos.copy();
+        movePos = pos.copy();
         this.moveable = moveable;
     }
 
-    public void setPrePos(Vector2D pos) { prePos = pos; }
+    public void setPrePos(Vector2D pos) { prePos = pos.copy(); }
 
     public Vector2D getPrePos() { return prePos; }
 
     public Vector2D getMovePos() { return this.movePos; }
 
-    public void setMovePos(Vector2D movepos) { this.movePos = movepos; }
+    public void setMovePos(Vector2D movepos) { this.movePos = movepos.copy(); }
 
     public Vector2D getSpawnPos() { return spawnPos; }
 

@@ -5,6 +5,7 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Health;
+import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.systems.assets.EnemyAsset;
 import edu.nust.game.systems.collision.Concrete;
 import edu.nust.game.systems.collision.Damageable;
@@ -18,7 +19,6 @@ import java.util.List;
 
 public abstract class Enemy extends GameObject implements Concrete, Damageable
 {
-
     protected enum Facing
     {
         UP,
@@ -52,14 +52,14 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
 
     private static final int NODE_SIZE = 2;
     private static final double MAX_RED_TINT_STRENGTH = 0.5;
+    private static final double CHASE_RADIUS = 100;
 
     public Enemy(Vector2D startPosition, double speed, int health)
     {
         this(startPosition, speed, EnemyAsset.ZOMBIE_SMALL, health);
     }
 
-    public Enemy(Vector2D startPosition, double speed, int health,
-                 double height, double width, double damage, EnemyAsset enemyType)
+    public Enemy(Vector2D startPosition, double speed, int health, double height, double width, double damage, EnemyAsset enemyType)
     {
         this.movementSpeed = speed;
         this.width = width;
@@ -100,6 +100,18 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
         }
         if (pathFinder == null) pathFinder = new PathFinder((LevelScene) this.getScene());
 
+        Player player = (Player) this.getScene().getFirstOfType(Player.class);
+        boolean canChasePlayer = isPlayerWithinChaseRadius(player);
+
+        if (!canChasePlayer)
+        {
+            movement = null;
+            currentPathIndex = 0;
+            pathTimer = TimeSpan.zero();
+            attack(deltaTime);
+            return;
+        }
+
         pathTimer = pathTimer.add(deltaTime);
 
         if (pathTimer.asSeconds() >= pathUpdateInterval.asSeconds())
@@ -116,11 +128,24 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
             pathTimer = TimeSpan.zero();
         }
 
-        if(!attacking) {
+        if (!attacking)
+        {
             moveAlongPath(deltaTime);
         }
         attack(deltaTime);
 
+    }
+
+    private boolean isPlayerWithinChaseRadius(Player player)
+    {
+        if (player == null) return false;
+
+        double distanceToPlayer = player.getTransform()
+                .getPosition()
+                .subtract(this.getTransform().getPosition())
+                .magnitude();
+
+        return distanceToPlayer <= CHASE_RADIUS;
     }
 
     private void moveAlongPath(TimeSpan deltaTime)
@@ -131,12 +156,11 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
         Vector2D currentPos = this.getTransform().getPosition();
         Node targetNode = movement.get(currentPathIndex);
 
-        Vector2D targetPos = pathFinder.getMapTopLeftPos().add(
-                new Vector2D(
+        Vector2D targetPos = pathFinder.getMapTopLeftPos()
+                .add(new Vector2D(
                         targetNode.getCol() * NODE_SIZE + NODE_SIZE / 2.0,
                         targetNode.getRow() * NODE_SIZE + NODE_SIZE / 2.0
-                )
-        );
+                ));
 
         Vector2D direction = targetPos.subtract(currentPos);
         double distance = direction.magnitude();
@@ -163,7 +187,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     {
         if (hitbox == null)
         {
-            hitbox = new HitBox(this.getTransform().getPosition(), height/2, width/2);
+            hitbox = new HitBox(this.getTransform().getPosition(), height / 2, width / 2);
             this.addComponent(hitbox);
         }
     }
@@ -185,16 +209,19 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     }
 
     @Override
-    public void takeDamage(int damage) {
+    public void takeDamage(int damage)
+    {
         health.takeDamage(damage);
         onHealthChanged();
-        if (!health.isAlive() && !isDying) {
+        if (!health.isAlive() && !isDying)
+        {
             isDying = true;
             freezeEnemy();
         }
     }
 
-    private void freezeEnemy() {
+    private void freezeEnemy()
+    {
         movement = null;
         currentPathIndex = 0;
         attacking = false;
@@ -202,7 +229,8 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
         if (getHitbox() != null) getHitbox().setActive(false);
     }
 
-    public void unfreezeEnemy() {
+    public void unfreezeEnemy()
+    {
         isDying = false;
         movement = new ArrayList<>();
         if (getHitbox() != null) getHitbox().setActive(true);
@@ -248,27 +276,33 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
 
     public abstract void attack(TimeSpan deltaTime);
 
-    public double getWidth(){
+    public double getWidth()
+    {
         return width;
     }
 
-    public double getHeight() {
+    public double getHeight()
+    {
         return height;
     }
 
-    public boolean isAttacking() {
+    public boolean isAttacking()
+    {
         return attacking;
     }
 
-    public void setAttacking(boolean attacking) {
+    public void setAttacking(boolean attacking)
+    {
         this.attacking = attacking;
     }
 
-    public void setMovementSpeed(double speed){
+    public void setMovementSpeed(double speed)
+    {
         movementSpeed = speed;
     }
 
-    public double getMovementSpeed() {
+    public double getMovementSpeed()
+    {
         return movementSpeed;
     }
 }

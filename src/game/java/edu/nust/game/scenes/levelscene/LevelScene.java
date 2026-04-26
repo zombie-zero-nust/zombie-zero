@@ -10,7 +10,7 @@ import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.highscores.HighScoresScene;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
-import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.StaticEnemySpawnPoint;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemySpawnPointGameObject;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
@@ -45,7 +45,7 @@ import java.util.Arrays;
 public class LevelScene extends GameScene
 {
     private static final Vector2D WEAPON_NON_FOLLOW_AREA_SIZE = new Vector2D(8, 12);
-    private static final Vector2D SPAWN_VIEW_GROWTH = new Vector2D(160, 120);
+    private static final Vector2D GROWN_CAMERA_VIEW = new Vector2D(160, 120);
 
     @FXML private StackPane pauseOverlay;
     @FXML private Label overlayTitleLabel;
@@ -95,7 +95,7 @@ public class LevelScene extends GameScene
         collisionManager = new CollisionManager(this);
 
         score = new Score();
-        player = new Player(Level1SpawnPoints.PLAYER_SPAWN_POINT, 100, 50, true);
+        player = new Player(Level1SpawnPoints.PLAYER_SPAWN_POINT.copy(), 100, 50, true);
         this.addGameObject(player.addTag(PlayerTag.class));
 
         player.setMovePos(clampPlayerToPlayArea(player.getTransform().getPosition()));
@@ -143,10 +143,9 @@ public class LevelScene extends GameScene
     private void initStaticEnemySpawnPoints()
     {
         Level1SpawnPoints.forEachEnemySpawnPoint(definition -> {
-            StaticEnemySpawnPoint spawnPoint = new StaticEnemySpawnPoint(
-                    definition.position(),
-                                                                         definition.enemyType(),
-                                                                         SPAWN_VIEW_GROWTH
+            EnemySpawnPointGameObject spawnPoint = new EnemySpawnPointGameObject(
+                    definition.position(), definition.enemyType(), //
+                    GROWN_CAMERA_VIEW
             );
             spawnPoint.setSpawnEnabled(definition.enabled());
             this.addGameObject(spawnPoint);

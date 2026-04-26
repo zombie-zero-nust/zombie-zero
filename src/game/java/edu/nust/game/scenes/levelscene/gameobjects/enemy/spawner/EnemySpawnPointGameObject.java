@@ -12,7 +12,7 @@ import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 
 import java.lang.reflect.Constructor;
 
-public class StaticEnemySpawnPoint extends GameObject
+public class EnemySpawnPointGameObject extends GameObject
 {
     private static final double DEFAULT_BOSS_SPEED = 30;
     private static final int DEFAULT_BOSS_HEALTH = 1000;
@@ -25,7 +25,7 @@ public class StaticEnemySpawnPoint extends GameObject
     private boolean spawnEnabled = true;
     private boolean spawned = false;
 
-    public StaticEnemySpawnPoint(Vector2D spawnPosition, Class<? extends Enemy> enemyType, Vector2D cameraViewGrowth)
+    public EnemySpawnPointGameObject(Vector2D spawnPosition, Class<? extends Enemy> enemyType, Vector2D cameraViewGrowth)
     {
         this.spawnPosition = spawnPosition.copy();
         this.enemyType = enemyType;
