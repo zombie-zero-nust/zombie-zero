@@ -5,6 +5,7 @@ import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.MiniBoss;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,9 +24,12 @@ public final class Level1SpawnPoints
     private static final double SPAWN_GRID_STEP = 40;
     private static final double RANDOM_SPAWN_OFFSET = 7;
     private static final double SPAWN_CHANCE = 0.7;
+    private static final double SPAWN_PADDING = 20;
+
 
     private static final List<SpawnPoint> BOSS_SPAWN_POINTS = List.of(
-            SpawnPoint.enabled(new Vector2D(2200, 100), Boss.class)
+            SpawnPoint.enabled(new Vector2D(2200, 100), Boss.class),
+            SpawnPoint.enabled(new Vector2D(800, 740), MiniBoss.class)
     );
 
     public static void forEachEnemySpawnPoint(Consumer<SpawnPoint> action)
@@ -56,6 +60,7 @@ public final class Level1SpawnPoints
         Rectangle spawnableArea = Level1CollisionMask.getMapBounds();
         List<Rectangle> collisionRects = new ArrayList<>();
         Level1CollisionMask.forEachRect(collisionRects::add);
+        collisionRects.forEach(rect -> rect.grown(SPAWN_PADDING, SPAWN_PADDING));
 
         List<Vector2D> candidates = new ArrayList<>();
         for (double y = spawnableArea.getTop(); y < spawnableArea.getBottom(); y += SPAWN_GRID_STEP)

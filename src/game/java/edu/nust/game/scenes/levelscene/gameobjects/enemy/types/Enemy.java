@@ -52,7 +52,9 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
 
     private static final int NODE_SIZE = 2;
     private static final double MAX_RED_TINT_STRENGTH = 0.5;
-    private static final double CHASE_RADIUS = 100;
+    private static final double BASE_CHASE_RADIUS = 100;
+
+    private double followRadius = BASE_CHASE_RADIUS;
 
     public Enemy(Vector2D startPosition, double speed, int health)
     {
@@ -145,7 +147,13 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
                 .subtract(this.getTransform().getPosition())
                 .magnitude();
 
-        return distanceToPlayer <= CHASE_RADIUS;
+        return distanceToPlayer <= followRadius;
+    }
+
+    public void multiplyFollowRadius(double factor)
+    {
+        if (factor <= 0) return;
+        followRadius *= factor;
     }
 
     private void moveAlongPath(TimeSpan deltaTime)

@@ -5,6 +5,8 @@ import edu.nust.engine.core.GameScene;
 import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.MiniBoss;
+import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
 import edu.nust.game.scenes.levelscene.level_1.Level1CollisionMask;
 
 import java.util.HashSet;
@@ -13,7 +15,9 @@ import java.util.Set;
 public class CollisionManager
 {
     private static final int POINTS_PER_ZOMBIE_KILL = 3;
+    private static final int POINTS_PER_MINIBOSS_KILL = 8;
     private static final int POINTS_PER_BOSS_KILL = 15;
+    private static final double BULLET_HIT_FOLLOW_RADIUS_FACTOR = 2.5;
 
     private final GameScene scene;
 
@@ -87,6 +91,11 @@ public class CollisionManager
                     boolean wasAlive = !obj.isDead();
                     obj.takeDamage(otherObj.getDamage());
 
+                    if (obj instanceof Enemy enemy && otherObj instanceof Bullet)
+                    {
+                        enemy.multiplyFollowRadius(BULLET_HIT_FOLLOW_RADIUS_FACTOR);
+                    }
+
                     // Award kill score exactly when an enemy transitions from alive to dead.
                     if (wasAlive && obj.isDead() && obj instanceof Enemy)
                     {
@@ -124,7 +133,6 @@ public class CollisionManager
                 }
                 obj.getHitbox().setMin(otherObj.getHitbox());
 
-                boolean intersectsWithLevelCollision = false;
                 Level1CollisionMask.forEachRect((levelRect) -> {
                     if (obj.getHitbox().asRect().intersects(levelRect)) {
                         obj.triggerCollisionEffect(null);
@@ -158,6 +166,10 @@ public class CollisionManager
                     levelScene.addScorePoints(POINTS_PER_BOSS_KILL);
                     levelScene.onBossDefeated();
                 }
+            }
+            else if (enemy instanceof MiniBoss)
+            {
+                levelScene.addScorePoints(POINTS_PER_MINIBOSS_KILL);
             }
             else
             {

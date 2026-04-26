@@ -9,8 +9,7 @@ import edu.nust.game.scenes.levelscene.gameobjects._tags.EnemyTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
-
-import java.lang.reflect.Constructor;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.MiniBoss;
 
 public class EnemySpawnPointGameObject extends GameObject
 {
@@ -87,25 +86,18 @@ public class EnemySpawnPointGameObject extends GameObject
             return new Boss(spawnPosition.copy(), DEFAULT_BOSS_SPEED, DEFAULT_BOSS_HEALTH, DEFAULT_BOSS_DAMAGE);
         }
 
+        if (enemyType == MiniBoss.class)
+        {
+            return new MiniBoss(spawnPosition.copy(), DEFAULT_BOSS_SPEED, DEFAULT_BOSS_HEALTH, DEFAULT_BOSS_DAMAGE);
+        }
+
         if (enemyType == BasicEnemy.class)
         {
             return new BasicEnemy(spawnPosition.copy());
         }
 
-        // Fallback for enemy classes that expose a Vector2D constructor.
-        try
-        {
-            Constructor<? extends Enemy> ctor = enemyType.getDeclaredConstructor(Vector2D.class);
-            ctor.setAccessible(true);
-            return ctor.newInstance(spawnPosition.copy());
-        }
-        catch (Exception e)
-        {
-            throw new IllegalStateException(
-                    "Failed to instantiate enemy type " + enemyType.getSimpleName() + " at " + spawnPosition,
-                    e
-            );
-        }
+
+        throw new IllegalStateException("Enemy type " + enemyType.getSimpleName() + " not setup.");
     }
 }
 
