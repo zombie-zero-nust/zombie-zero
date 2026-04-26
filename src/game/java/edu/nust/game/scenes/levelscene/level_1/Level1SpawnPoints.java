@@ -15,6 +15,9 @@ import java.util.function.Consumer;
 
 public final class Level1SpawnPoints
 {
+    private static final Vector2D BASIC_ENEMY_SIZE = new Vector2D(12, 16);
+    private static final Vector2D LARGE_ENEMY_SIZE = new Vector2D(24, 36);
+
     private Level1SpawnPoints() { }
 
     public static final Vector2D PLAYER_SPAWN_POINT = new Vector2D(40, 50);
@@ -24,12 +27,19 @@ public final class Level1SpawnPoints
     private static final double SPAWN_GRID_STEP = 40;
     private static final double RANDOM_SPAWN_OFFSET = 7;
     private static final double SPAWN_CHANCE = 0.7;
-    private static final double SPAWN_PADDING = 20;
+    private static final double SPAWN_PADDING = 2;
+    private static final double SPAWN_MOVE_CHECK_DISTANCE = 12;
 
 
     private static final List<SpawnPoint> BOSS_SPAWN_POINTS = List.of(
-            SpawnPoint.enabled(new Vector2D(2200, 100), Boss.class),
-            SpawnPoint.enabled(new Vector2D(800, 740), MiniBoss.class)
+            SpawnPoint.enabled(
+                    new Vector2D(2200, 100),
+                    Boss.class
+            ),
+            SpawnPoint.enabled(
+                    new Vector2D(800, 740),
+                    MiniBoss.class
+            )
     );
 
     public static void forEachEnemySpawnPoint(Consumer<SpawnPoint> action)
@@ -40,7 +50,8 @@ public final class Level1SpawnPoints
     private static List<SpawnPoint> generateEnemySpawnPoints()
     {
         List<Vector2D> positions = generateWalkablePositions();
-        List<SpawnPoint> points = new ArrayList<>(positions.size());
+        List<SpawnPoint> points = new ArrayList<>(positions.size() + BOSS_SPAWN_POINTS.size());
+        Level1CollisionMask collisionMask = new Level1CollisionMask();
 
         for (Vector2D position : positions)
         {
@@ -48,7 +59,10 @@ public final class Level1SpawnPoints
         }
 
         for (SpawnPoint position : BOSS_SPAWN_POINTS)
-            points.add(SpawnPoint.enabled(position.position(), position.enemyType()));
+        {
+            if (isValidSpawnPoint(position.position(), position.enemyType(), collisionMask))
+                points.add(SpawnPoint.enabled(position.position(), position.enemyType()));
+        }
 
         return points;
     }
@@ -56,11 +70,9 @@ public final class Level1SpawnPoints
     private static List<Vector2D> generateWalkablePositions()
     {
         final ThreadLocalRandom random = ThreadLocalRandom.current();
+        Level1CollisionMask collisionMask = new Level1CollisionMask();
 
         Rectangle spawnableArea = Level1CollisionMask.getMapBounds();
-        List<Rectangle> collisionRects = new ArrayList<>();
-        Level1CollisionMask.forEachRect(collisionRects::add);
-        collisionRects.forEach(rect -> rect.grown(SPAWN_PADDING, SPAWN_PADDING));
 
         List<Vector2D> candidates = new ArrayList<>();
         for (double y = spawnableArea.getTop(); y < spawnableArea.getBottom(); y += SPAWN_GRID_STEP)
@@ -71,10 +83,10 @@ public final class Level1SpawnPoints
                 double offsetY = random.nextDouble(-RANDOM_SPAWN_OFFSET, RANDOM_SPAWN_OFFSET);
                 Vector2D point = new Vector2D(x, y).add(offsetX, offsetY);
                 if (!NON_SPAWNABLE_AREA.contains(point) // not in spawn area
-                        && isWalkableSpawnPoint(point, spawnableArea, collisionRects) // not inside collision boxes
-                        && random.nextDouble() < SPAWN_CHANCE)
+                        && isValidSpawnPoint(point, BasicEnemy.class, collisionMask) && // valid spawn
+                        random.nextDouble() < SPAWN_CHANCE)
                 {
-                    candidates.add(point.add(offsetX, offsetY));
+                    candidates.add(point);
                 }
             }
         }
@@ -84,16 +96,41 @@ public final class Level1SpawnPoints
         return candidates;
     }
 
-    private static boolean isWalkableSpawnPoint(Vector2D point, Rectangle spawnableArea, List<Rectangle> collisionRects)
+    private static boolean isValidSpawnPoint(Vector2D point, Class<? extends Enemy> enemyType, Level1CollisionMask collisionMask)
     {
-        if (!spawnableArea.contains(point)) return false;
+        Rectangle spawnFootprint = getRequiredSize(point, enemyType);
+        if (!collisionMask.isWalkable(spawnFootprint)) return false;
 
-        for (Rectangle rect : collisionRects)
+        for (Vector2D offset : getMovementCheckOffsets())
         {
-            if (rect.contains(point)) return false;
+            Rectangle movedFootprint = getRequiredSize(point.add(offset), enemyType);
+            if (collisionMask.isWalkable(movedFootprint)) return true;
         }
 
-        return true;
+        return false;
+    }
+
+    private static Rectangle getRequiredSize(Vector2D point, Class<? extends Enemy> enemyType)
+    {
+        Rectangle area = Rectangle.fromCenter(point, getEnemySize(enemyType));
+        return area.grown(SPAWN_PADDING, SPAWN_PADDING);
+    }
+
+    private static Vector2D getEnemySize(Class<? extends Enemy> enemyType)
+    {
+        if (enemyType == Boss.class || enemyType == MiniBoss.class) return LARGE_ENEMY_SIZE;
+
+        return BASIC_ENEMY_SIZE;
+    }
+
+    private static List<Vector2D> getMovementCheckOffsets()
+    {
+        return List.of(
+                new Vector2D(SPAWN_MOVE_CHECK_DISTANCE, 0),
+                new Vector2D(-SPAWN_MOVE_CHECK_DISTANCE, 0),
+                new Vector2D(0, SPAWN_MOVE_CHECK_DISTANCE),
+                new Vector2D(0, -SPAWN_MOVE_CHECK_DISTANCE)
+        );
     }
 
     public record SpawnPoint(Vector2D position, Class<? extends Enemy> enemyType, boolean enabled)
