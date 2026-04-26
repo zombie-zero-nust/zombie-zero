@@ -26,6 +26,7 @@ public class BossAbility1 {
 
     private double animElapsed = 0;
     private final double animDuration = 1.0; // seconds
+    private double axeSpeed = 100;
 
     public BossAbility1(int damage, Boss boss,
                         List<Class<? extends Damageable>> notDamageObj,
@@ -64,7 +65,7 @@ public class BossAbility1 {
         }
         animElapsed += deltaTime.asSeconds();
 
-        if (animElapsed >= animDuration * 0.2 && !attacked)
+        if (animElapsed >= animDuration * 0.5 && !attacked)
         {
             boss.getScene().addGameObject(
                     new BasicAttackObj(
@@ -80,35 +81,67 @@ public class BossAbility1 {
 
             BasicAttackObj axeAttack1 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
                     notDamageObj, 5, projectile, 9, 1,
-                    TimeSpan.fromMilliseconds(300), 80);
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
 
             BasicAttackObj axeAttack2 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
                     notDamageObj, 5, projectile, 9, 1,
-                    TimeSpan.fromMilliseconds(300), 80);
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
 
             BasicAttackObj axeAttack3 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
                     notDamageObj, 5, projectile, 9, 1,
-                    TimeSpan.fromMilliseconds(300), 80);
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
 
             BasicAttackObj axeAttack4 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
                     notDamageObj, 5, projectile, 9, 1,
-                    TimeSpan.fromMilliseconds(300), 80);
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
 
             BasicAttackObj axeAttack5 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
                     notDamageObj, 5, projectile, 9, 1,
-                    TimeSpan.fromMilliseconds(300), 80);
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
 
             BasicAttackObj axeAttack6 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
                     notDamageObj, 5, projectile, 9, 1,
-                    TimeSpan.fromMilliseconds(300), 80);
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
 
             BasicAttackObj axeAttack7 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
                     notDamageObj, 5, projectile, 9, 1,
-                    TimeSpan.fromMilliseconds(300), 80);
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
 
             BasicAttackObj axeAttack8 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
                     notDamageObj, 5, projectile, 9, 1,
-                    TimeSpan.fromMilliseconds(300), 80);
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+            BasicAttackObj axeAttack9  = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+
+            BasicAttackObj axeAttack10 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+
+            BasicAttackObj axeAttack11 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+
+            BasicAttackObj axeAttack12 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+
+            BasicAttackObj axeAttack13 = new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+
+            BasicAttackObj axeAttack14 =new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+
+            BasicAttackObj axeAttack15 =new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+
+            BasicAttackObj axeAttack16 =new BasicAttackObj(damage / 2, boss, 10, 10, 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+
 
             axeAttack1.setTargetDirection(new Vector2D(1, 0));
             axeAttack2.setTargetDirection(new Vector2D(0, 1));
@@ -117,10 +150,20 @@ public class BossAbility1 {
 
             if(boss.isResurrected()) {
                 double d = 1.0 / Math.sqrt(2); // ≈ 0.707
+                double a = 0.89442719;
+                double b = 0.44721359;
                 axeAttack5.setTargetDirection(new Vector2D(d, d));
                 axeAttack6.setTargetDirection(new Vector2D(-d, d));
                 axeAttack7.setTargetDirection(new Vector2D(-d, -d));
                 axeAttack8.setTargetDirection(new Vector2D(d, -d));
+                axeAttack9.setTargetDirection(new Vector2D(a, b));      // between Right and NE
+                axeAttack10.setTargetDirection(new Vector2D(b, a));     // between NE and Down
+                axeAttack11.setTargetDirection(new Vector2D(-b, a));    // between Down and NW
+                axeAttack12.setTargetDirection(new Vector2D(-a, b));    // between NW and Left
+                axeAttack13.setTargetDirection(new Vector2D(-a, -b));   // between Left and SW
+                axeAttack14.setTargetDirection(new Vector2D(-b, -a));   // between SW and Up
+                axeAttack15.setTargetDirection(new Vector2D(b, -a));    // between Up and SE
+                axeAttack16.setTargetDirection(new Vector2D(a, -b));    // between SE and Right
             }
 
             boss.getScene().addGameObject(axeAttack1);
@@ -133,6 +176,14 @@ public class BossAbility1 {
                 boss.getScene().addGameObject(axeAttack6);
                 boss.getScene().addGameObject(axeAttack7);
                 boss.getScene().addGameObject(axeAttack8);
+                boss.getScene().addGameObject(axeAttack9);
+                boss.getScene().addGameObject(axeAttack10);
+                boss.getScene().addGameObject(axeAttack11);
+                boss.getScene().addGameObject(axeAttack12);
+                boss.getScene().addGameObject(axeAttack13);
+                boss.getScene().addGameObject(axeAttack14);
+                boss.getScene().addGameObject(axeAttack15);
+                boss.getScene().addGameObject(axeAttack16);
             }
 
             attacked = true;

@@ -49,7 +49,7 @@ public class Boss extends Enemy
     private Facing facing = Facing.DOWN;
     private TimeSpan deathAnimationTime = TimeSpan.fromMilliseconds(1000);
     private double elapsed = 0;
-    private double attack1Range = 10;
+    private double attack1Range = 30;
     private double attack1Time = 600;
     private double attackTimeElapsed;
     private double attackCooldownElapsed = 0;
@@ -252,15 +252,14 @@ public class Boss extends Enemy
             return;
         }
 
-        // If attacking -> update attack timer only
         if (isAttacking()) {
             attackTimeElapsed += deltaTime.asMilliseconds();
-            if(attackTimeElapsed >= 250&& attack1 == null) {
+            if(attackTimeElapsed >= attack1Time/4&& attack1 == null) {
                 attack1 = new BasicAttackObj(
                         damage, this, 3,
                         (double) height / 2,
                         List.of(Enemy.class),
-                        TimeSpan.fromMilliseconds(attack1Time-250),
+                        TimeSpan.fromMilliseconds(attack1Time/4),
                         attack1Range
                 );
 
@@ -268,6 +267,10 @@ public class Boss extends Enemy
             }
 
             if (attackTimeElapsed >= attack1Time) {
+                if (attack1 != null) {
+                    attack1.destroy();
+                    attack1 = null;
+                }
                 setAttacking(false);
                 canAttack = false;
                 attackCooldownElapsed = 0;
@@ -311,12 +314,10 @@ public class Boss extends Enemy
 
     }
 
-
     public void resetBoss() {
-        Health health = new Health(5000);
-        health.setCurrentHealth(5000);
+        Health health = new Health(10000);
         this.setHealth(health);
-        this.setMovementSpeed(this.getMovementSpeed()*2);
+        this.setMovementSpeed(this.getMovementSpeed()*3);
         this.attackTimeElapsed = 0;
         this.attackCooldownElapsed = 0;
         this.ability1cooldown = 0;
@@ -334,14 +335,12 @@ public class Boss extends Enemy
     public void resurrect(TimeSpan deltaTime) {
         Image image = (facing == Facing.UP || facing == Facing.RIGHT) ? deathRightSheet : deathLeftSheet;
 
-        // --- WAITING PHASE: hold on last death frame for 2 seconds ---
         if (!resurrectionStarted) {
             elapsed += deltaTime.asMilliseconds();
-            spriteRenderer.setFrame(6, 0); // keep holding last death frame during wait
+            spriteRenderer.setFrame(6, 0);
 
-            if (elapsed < 5000) return;    // still waiting
+            if (elapsed < 5000) return;
 
-            // 2 seconds passed — begin resurrection
             spriteRenderer.setSize(43, height);
             spriteRenderer.setImage(image, 7, 1);
             spriteRenderer.pauseAnimation();

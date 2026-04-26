@@ -86,7 +86,6 @@ public class CollisionManager
                 {
                     boolean wasAlive = !obj.isDead();
                     obj.takeDamage(otherObj.getDamage());
-                    System.out.println("Damaging logic working");
 
                     // Award kill score exactly when an enemy transitions from alive to dead.
                     if (wasAlive && obj.isDead() && obj instanceof Enemy)
