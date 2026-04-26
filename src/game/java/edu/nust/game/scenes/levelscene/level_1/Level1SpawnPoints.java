@@ -3,6 +3,7 @@ package edu.nust.game.scenes.levelscene.level_1;
 import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.BasicEnemy;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 
 import java.util.ArrayList;
@@ -23,6 +24,10 @@ public final class Level1SpawnPoints
     private static final double RANDOM_SPAWN_OFFSET = 7;
     private static final double SPAWN_CHANCE = 0.7;
 
+    private static final List<SpawnPoint> BOSS_SPAWN_POINTS = List.of(
+            SpawnPoint.enabled(new Vector2D(2200, 100), Boss.class)
+    );
+
     public static void forEachEnemySpawnPoint(Consumer<SpawnPoint> action)
     {
         generateEnemySpawnPoints().forEach(point -> action.accept(point.copy()));
@@ -37,6 +42,9 @@ public final class Level1SpawnPoints
         {
             points.add(SpawnPoint.enabled(position, BasicEnemy.class));
         }
+
+        for (SpawnPoint position : BOSS_SPAWN_POINTS)
+            points.add(SpawnPoint.enabled(position.position(), position.enemyType()));
 
         return points;
     }
