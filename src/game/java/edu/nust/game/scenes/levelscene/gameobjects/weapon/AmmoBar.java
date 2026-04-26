@@ -11,8 +11,7 @@ import java.net.URL;
 public class AmmoBar extends HBox
 {
     private static final int BULLET_SLOTS = 10;
-    private static final String BULLET_UI_BASE = "raw/PostApocalypse/UI/BulletIndicators";
-    private static final double BULLET_ICON_HEIGHT = 42;
+    private static final double BULLET_ICON_HEIGHT = 22;
 
     private final ImageView[] bulletViews = new ImageView[BULLET_SLOTS];
 
@@ -32,8 +31,8 @@ public class AmmoBar extends HBox
 
     private void loadBulletSprites()
     {
-        URL filledUrl = Resources.tryGetResource("assets", BULLET_UI_BASE, "Gun-Bullet.png");
-        URL emptyUrl = Resources.tryGetResource("assets", BULLET_UI_BASE, "Gun-Bullet_Empty.png");
+        URL filledUrl = Resources.tryGetResource("scenes", "LevelScene", "ui", "bullet.png");
+        URL emptyUrl = Resources.tryGetResource("scenes", "LevelScene", "ui", "bullet_empty.png");
 
         if (filledUrl == null || emptyUrl == null)
         {

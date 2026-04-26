@@ -48,6 +48,7 @@ public class LevelScene extends GameScene
     private static final Vector2D GROWN_CAMERA_VIEW = new Vector2D(160, 120);
     private static final double RELOAD_OPACITY_MIN = 0.5;
     private static final double RELOAD_OPACITY_MAX = 1.0;
+    private static final TimeSpan RELOAD_OPACITY_CHANGE_DURATION = TimeSpan.fromSeconds(0.5);
 
     @FXML private StackPane pauseOverlay;
     @FXML private Label overlayTitleLabel;
@@ -85,7 +86,6 @@ public class LevelScene extends GameScene
     private boolean playerWon = false;
     private boolean allHitboxesVisible = false;
     private MapNodeSetter nodeSetter;
-    private double gunReloadOpacity = RELOAD_OPACITY_MAX;
 
     public LevelScene(GameWorld world) { super(world); }
 
@@ -231,25 +231,22 @@ public class LevelScene extends GameScene
         // if (scoreLabel != null) scoreLabel.setText(String.valueOf(score.getScore()));
 
         if (ammoBar != null && weapon != null) ammoBar.updateUI(weapon.getAmmo(), ammoLabel);
-        updateReloadGunOpacity(deltaTime);
+        updateReloadGunOpacity();
 
         if (healthBar != null && player != null) healthBar.updateUI(player.getHealthSystem(), healthLabel);
     }
 
-    private void updateReloadGunOpacity(TimeSpan deltaTime)
+    private void updateReloadGunOpacity()
     {
         if (gunIconView == null || weapon == null || weapon.getAmmo() == null) return;
 
         if (!weapon.getAmmo().isReloading())
         {
-            gunReloadOpacity = RELOAD_OPACITY_MAX;
             gunIconView.setOpacity(RELOAD_OPACITY_MAX);
         }
         else
         {
-            gunReloadOpacity -= deltaTime.asSeconds() * 2; // Fade out over 0.5 seconds
-            if (gunReloadOpacity < RELOAD_OPACITY_MIN) gunReloadOpacity = RELOAD_OPACITY_MIN;
-            gunIconView.setOpacity(gunReloadOpacity);
+            gunIconView.setOpacity(RELOAD_OPACITY_MIN);
         }
     }
 
@@ -447,14 +444,7 @@ public class LevelScene extends GameScene
     {
         try
         {
-            URL gunIconUrl = Resources.tryGetResource(
-                    "assets",
-                    "raw",
-                    "PostApocalypse",
-                    "Objects",
-                    "Pickable",
-                    "PistolIcon.png"
-            );
+            URL gunIconUrl = Resources.tryGetResource("scenes", "LevelScene", "ui", "gun.png");
             if (gunIconUrl != null)
             {
                 Image gunIcon = new Image(gunIconUrl.toExternalForm());
