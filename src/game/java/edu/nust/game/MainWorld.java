@@ -29,6 +29,7 @@ public class MainWorld extends GameWorld
     @Override
     protected void loadAudios()
     {
+        Audios.setManager(this);
         Audios.forEachSoundEffect(this::loadSoundEffect);
         Audios.forEachMusicTrack(this::loadMusicTrack);
     }

@@ -24,6 +24,7 @@ import edu.nust.game.scenes.levelscene.level_1.Level1SpawnPoints;
 import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
 import edu.nust.game.systems.Score;
+import edu.nust.game.systems.audio.MusicManager;
 import edu.nust.game.systems.collision.CollisionManager;
 import edu.nust.game.systems.collision.HitBox;
 import edu.nust.game.systems.pathfinder.MapNodeSetter;
@@ -91,6 +92,8 @@ public class LevelScene extends GameScene
     @Override
     public void onInit()
     {
+        MusicManager.playLevelMusic();
+
         level1CollisionMask = new Level1CollisionMask();
 
         collisionManager = new CollisionManager(this);
@@ -376,7 +379,11 @@ public class LevelScene extends GameScene
     }
 
     @FXML
-    private void exitToMainMenu() { this.getWorld().setScene(new StartScene(this.getWorld())); }
+    private void exitToMainMenu()
+    {
+        MusicManager.resumeMusic();
+        this.getWorld().setScene(new StartScene(this.getWorld()));
+    }
 
     private void gameOver()
     {
@@ -467,6 +474,7 @@ public class LevelScene extends GameScene
     @FXML
     private void viewHighScores()
     {
+        MusicManager.resumeMusic();
         saveScoreIfNeeded();
         this.getWorld().setScene(new HighScoresScene(this.getWorld()));
     }

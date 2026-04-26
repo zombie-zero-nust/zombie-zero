@@ -4,12 +4,20 @@ import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
 import edu.nust.game.scenes.highscores.HighScoresScene;
 import edu.nust.game.scenes.levelselect.LevelSelectScene;
+import edu.nust.game.systems.audio.MusicManager;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 
 public class StartScene extends GameScene
 {
     public StartScene(GameWorld world) { super(world); }
+
+    @Override
+    public void onInit()
+    {
+        if (!MusicManager.isMenuMusicPlaying())
+            MusicManager.ensureMenuMusicPlaying();
+    }
 
     /* FXML */
 

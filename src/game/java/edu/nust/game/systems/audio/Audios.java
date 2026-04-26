@@ -21,6 +21,8 @@ public class Audios
 
     private static final String[] MUSIC_TRACKS = {  //
             "music/background.wav",
+            "music/MainMenu.wav",
+            "music/levelScene.wav",
             // .
             // .
             // add more here
@@ -28,9 +30,13 @@ public class Audios
 
     /* REFERENCES */
 
-    public static Optional<SoundEffectReference> testSoundRef() { return manager.getSoundEffectByName(SOUND_EFFECTS[0]); }
+    public static Optional<SoundEffectReference> testSoundRef() { return manager.getSoundEffectByName("testSound.wav"); }
 
-    public static Optional<MusicTrackReference> backgroundMusicRef() { return manager.getMusicTrackByName(MUSIC_TRACKS[0]); }
+    public static Optional<MusicTrackReference> backgroundMusicRef() { return manager.getMusicTrackByName("background.wav"); }
+
+    public static Optional<MusicTrackReference> mainMenuMusicRef() { return manager.getMusicTrackByName("MainMenu.wav"); }
+
+    public static Optional<MusicTrackReference> levelSceneMusicRef() { return manager.getMusicTrackByName("levelScene.wav"); }
 
     /* SETUP */
 

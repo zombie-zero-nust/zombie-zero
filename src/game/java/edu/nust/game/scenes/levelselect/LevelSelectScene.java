@@ -5,6 +5,7 @@ import edu.nust.engine.core.GameWorld;
 import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
+import edu.nust.game.systems.audio.MusicManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -19,6 +20,13 @@ public class LevelSelectScene extends GameScene
     public LevelSelectScene(GameWorld world)
     {
         super(world);
+    }
+
+    @Override
+    public void onInit()
+    {
+        if (!MusicManager.isMenuMusicPlaying())
+            MusicManager.ensureMenuMusicPlaying();
     }
 
     @FXML

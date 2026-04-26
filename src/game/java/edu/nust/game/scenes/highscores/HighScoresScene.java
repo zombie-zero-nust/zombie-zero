@@ -5,6 +5,7 @@ import edu.nust.engine.core.GameWorld;
 import edu.nust.game.scenes.highscores.highscores.HighScoreEntry;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.start.StartScene;
+import edu.nust.game.systems.audio.MusicManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -29,6 +30,9 @@ public class HighScoresScene extends GameScene
     @Override
     public void onInit()
     {
+        if (!MusicManager.isMenuMusicPlaying())
+            MusicManager.ensureMenuMusicPlaying();
+
         List<HighScoreEntry> topScores = HighScoreStorage.loadTop(MAX_ROWS);
         updateBanner(topScores);
         populateRows(topScores);

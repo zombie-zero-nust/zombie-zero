@@ -18,10 +18,9 @@ public class Main extends Application
     public void start(Stage stage)
     {
         MainWorld world = new MainWorld(stage);
+        Audios.setManager(world);
         world.setScene(new StartScene(world));
         world.start();
-
-        Audios.setManager(world);
     }
 
     public static void main(String[] ignored)
