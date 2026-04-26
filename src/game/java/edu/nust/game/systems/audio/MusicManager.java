@@ -2,12 +2,16 @@ package edu.nust.game.systems.audio;
 
 import edu.nust.engine.core.audio.MusicTrackReference;
 import edu.nust.engine.logger.GameLogger;
+import javafx.util.Duration;
 
 import java.util.Optional;
 
 public class MusicManager
 {
     private static final GameLogger logger = GameLogger.getLogger(MusicManager.class);
+    private static final double MENU_MUSIC_VOLUME = 1.0;
+    private static final double LEVEL_MUSIC_VOLUME = 0.4;
+    private static final Duration MUSIC_FADE_DURATION = Duration.seconds(1);
     private static MusicTrackReference currentMusic;
     private static boolean hasPlaybackStarted = false;
 
@@ -24,19 +28,7 @@ public class MusicManager
             return;
         }
 
-        // Stop level music if it's playing
-        if (currentMusic != null)
-        {
-            logger.info("Stopping current music track");
-            currentMusic.stop();
-        }
-
-        currentMusic = musicRef.get();
-        logger.info("Starting MainMenu music playback with looping");
-        currentMusic.setLooping(true);
-        currentMusic.play();
-        hasPlaybackStarted = true;
-        logger.info("Music play() called successfully");
+        transitionToMusic(musicRef.get(), MENU_MUSIC_VOLUME, "MainMenu");
     }
 
     /**
@@ -62,7 +54,9 @@ public class MusicManager
         logger.info("stopMusic() called");
         if (currentMusic != null)
         {
+            currentMusic.setFadeOnStop(true, MUSIC_FADE_DURATION);
             currentMusic.stop();
+            currentMusic = null;
             hasPlaybackStarted = false;
             logger.info("Music stopped");
         }
@@ -85,19 +79,7 @@ public class MusicManager
             return;
         }
 
-        // Stop menu music if playing
-        if (currentMusic != null)
-        {
-            logger.info("Stopping current music track");
-            currentMusic.stop();
-        }
-
-        currentMusic = musicRef.get();
-        logger.info("Starting Level scene music playback with looping");
-        currentMusic.setLooping(true);
-        currentMusic.play();
-        hasPlaybackStarted = true;
-        logger.info("Level music play() called successfully");
+        transitionToMusic(musicRef.get(), LEVEL_MUSIC_VOLUME, "Level scene");
     }
 
     /**
@@ -124,6 +106,24 @@ public class MusicManager
     public static boolean isMenuMusicPlaying()
     {
         return hasPlaybackStarted && currentMusic != null;
+    }
+
+    private static void transitionToMusic(MusicTrackReference nextMusic, double volume, String label)
+    {
+        if (currentMusic != null)
+        {
+            logger.info("Fading out current music track");
+            currentMusic.setFadeOnStop(true, MUSIC_FADE_DURATION);
+            currentMusic.stop();
+        }
+
+        currentMusic = nextMusic;
+        logger.info("Starting {} music playback with looping and fade-in", label);
+        currentMusic.setLooping(true);
+        currentMusic.setVolume(volume);
+        currentMusic.fadeIn(MUSIC_FADE_DURATION);
+        hasPlaybackStarted = true;
+        logger.info("{} music fade-in started successfully", label);
     }
 }
 

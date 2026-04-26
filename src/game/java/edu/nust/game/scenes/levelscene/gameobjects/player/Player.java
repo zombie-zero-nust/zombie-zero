@@ -61,7 +61,7 @@ public class Player extends Character implements Damageable, Concrete
     private static final double MOVEMENT_COLLISION_HALF_WIDTH = 4.0;
     private static final double MOVEMENT_COLLISION_HALF_HEIGHT = 6.0;
     private double footstepTimer = 0;
-    private static final double FOOTSTEP_INTERVAL = 3; // seconds
+    private static final double FOOTSTEP_INTERVAL = 0.2; // seconds
 
     private boolean invincible = false;
     private static final double MAX_RED_TINT_STRENGTH = 0.5;
@@ -202,7 +202,6 @@ public class Player extends Character implements Damageable, Concrete
 
         if (moving)
         {
-            Audios.randomPlayerFootstepRef().ifPresent(SoundEffectReference::play);
             if (Math.abs(dx) >= Math.abs(dy)) facing = dx >= 0 ? Facing.RIGHT : Facing.LEFT;
             else facing = dy >= 0 ? Facing.DOWN : Facing.UP;
         }
