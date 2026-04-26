@@ -5,7 +5,6 @@ Zombie Zero is a top-down 2D shooter built on a custom Java game engine with Jav
 ## Game Metadata
 
 - Name: Zombie Zero
-- Levels: 4
 - Genre: Top down 2D Shooter
 
 ## Storyline

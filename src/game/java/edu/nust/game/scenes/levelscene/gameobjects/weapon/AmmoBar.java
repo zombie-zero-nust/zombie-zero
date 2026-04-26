@@ -79,7 +79,7 @@ public class AmmoBar extends HBox
         }
     }
 
-    public void updateUI(Ammo ammoSystem, Label ammoLabel, Label reloadLabel)
+    public void updateUI(Ammo ammoSystem, Label ammoLabel)
     {
         if (ammoLabel != null)
             ammoLabel.setText(ammoSystem.getCurrentAmmo() + " / " + ammoSystem.getMaxAmmo());
@@ -93,23 +93,6 @@ public class AmmoBar extends HBox
         else
         {
             updateAmmo(ammoSystem.getCurrentAmmo());
-        }
-
-        if (reloadLabel != null)
-        {
-            if (ammoSystem.isReloading())
-            {
-                reloadLabel.setText(String.format("RELOADING: %.1fs", ammoSystem.getReloadTimeRemaining()));
-                reloadLabel.setStyle(
-                        "-fx-text-fill: #FF6600; -fx-font-size: 11; -fx-font-weight: bold; -fx-font-family: 'Courier New';");
-                reloadLabel.setVisible(true);
-                reloadLabel.setManaged(true);
-            }
-            else
-            {
-                reloadLabel.setVisible(false);
-                reloadLabel.setManaged(false);
-            }
         }
     }
 }

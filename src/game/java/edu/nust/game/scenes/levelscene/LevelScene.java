@@ -46,13 +46,14 @@ public class LevelScene extends GameScene
 {
     private static final Vector2D WEAPON_NON_FOLLOW_AREA_SIZE = new Vector2D(8, 12);
     private static final Vector2D GROWN_CAMERA_VIEW = new Vector2D(160, 120);
+    private static final double RELOAD_OPACITY_MIN = 0.5;
+    private static final double RELOAD_OPACITY_MAX = 1.0;
 
     @FXML private StackPane pauseOverlay;
     @FXML private Label overlayTitleLabel;
     @FXML private Label scoreLabel;
     @FXML private StackPane scoreDisplayControllerContainer;
     @FXML private Label ammoLabel;
-    @FXML private Label reloadLabel;
     @FXML private Label healthLabel;
     @FXML private VBox ammoBarContainer;
     @FXML private VBox healthBarContainer;
@@ -84,6 +85,7 @@ public class LevelScene extends GameScene
     private boolean playerWon = false;
     private boolean allHitboxesVisible = false;
     private MapNodeSetter nodeSetter;
+    private double gunReloadOpacity = RELOAD_OPACITY_MAX;
 
     public LevelScene(GameWorld world) { super(world); }
 
@@ -228,9 +230,27 @@ public class LevelScene extends GameScene
         // Score is only displayed on game over, not during gameplay
         // if (scoreLabel != null) scoreLabel.setText(String.valueOf(score.getScore()));
 
-        if (ammoBar != null && weapon != null) ammoBar.updateUI(weapon.getAmmo(), ammoLabel, reloadLabel);
+        if (ammoBar != null && weapon != null) ammoBar.updateUI(weapon.getAmmo(), ammoLabel);
+        updateReloadGunOpacity(deltaTime);
 
         if (healthBar != null && player != null) healthBar.updateUI(player.getHealthSystem(), healthLabel);
+    }
+
+    private void updateReloadGunOpacity(TimeSpan deltaTime)
+    {
+        if (gunIconView == null || weapon == null || weapon.getAmmo() == null) return;
+
+        if (!weapon.getAmmo().isReloading())
+        {
+            gunReloadOpacity = RELOAD_OPACITY_MAX;
+            gunIconView.setOpacity(RELOAD_OPACITY_MAX);
+        }
+        else
+        {
+            gunReloadOpacity -= deltaTime.asSeconds() * 2; // Fade out over 0.5 seconds
+            if (gunReloadOpacity < RELOAD_OPACITY_MIN) gunReloadOpacity = RELOAD_OPACITY_MIN;
+            gunIconView.setOpacity(gunReloadOpacity);
+        }
     }
 
     private Vector2D clampPlayerToPlayArea(Vector2D clampedPos)
