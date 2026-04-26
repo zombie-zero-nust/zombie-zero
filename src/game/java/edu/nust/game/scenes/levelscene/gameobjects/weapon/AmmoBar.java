@@ -68,7 +68,7 @@ public class AmmoBar extends HBox
     {
         // Math.clamp is not available on all Java versions; use explicit clamp
         int filledSlots = (int) Math.ceil(currentAmmo / 3.0);
-        filledSlots = (int) Math.clamp(filledSlots, 0, BULLET_SLOTS);
+        filledSlots = Math.clamp(filledSlots, 0, BULLET_SLOTS);
         for (int i = 0; i < BULLET_SLOTS; i++)
         {
             if (spritesReady)

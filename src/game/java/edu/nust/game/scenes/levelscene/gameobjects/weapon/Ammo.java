@@ -9,16 +9,19 @@ public class Ammo
 
     // Magazine size used by HUD bullet indicators.
     private static final int MAX_AMMO = 30;
+    private static final double RELOAD_START_DELAY = 0.5;
     private static final double RELOAD_TIME = 2.0;
 
     private int currentAmmo;
     private boolean isReloading;
+    private double reloadDelayTimer;
     private double reloadTimer;
 
     public Ammo()
     {
         this.currentAmmo = MAX_AMMO;
         this.isReloading = false;
+        this.reloadDelayTimer = 0.0;
         this.reloadTimer = 0.0;
         logger.debug("Ammo initialized: {} bullets", MAX_AMMO);
     }
@@ -42,6 +45,7 @@ public class Ammo
         if (!isReloading)
         {
             isReloading = true;
+            reloadDelayTimer = RELOAD_START_DELAY;
             reloadTimer = RELOAD_TIME;
             logger.info("Reload started");
         }
@@ -69,7 +73,22 @@ public class Ammo
         currentAmmo = Math.clamp(amount, 0, MAX_AMMO);
         // Direct dev set should take effect immediately.
         isReloading = false;
+        reloadDelayTimer = 0.0;
         reloadTimer = 0.0;
+    }
+
+    public boolean isReloadDelayActive()
+    {
+        return isReloading && reloadDelayTimer > 0.0;
+    }
+
+    public double getReloadDelayProgress()
+    {
+        if (!isReloading) return 0.0;
+        if (reloadDelayTimer <= 0.0) return 1.0;
+
+        double progress = 1.0 - (reloadDelayTimer / RELOAD_START_DELAY);
+        return Math.clamp(progress, 0.0, 1.0);
     }
 
     public double getReloadTimeRemaining()
@@ -89,11 +108,24 @@ public class Ammo
     {
         if (isReloading)
         {
-            reloadTimer -= deltaTime.asSeconds();
+            double elapsedSeconds = deltaTime.asSeconds();
+
+            if (reloadDelayTimer > 0.0)
+            {
+                reloadDelayTimer -= elapsedSeconds;
+                if (reloadDelayTimer > 0.0) return;
+
+                // Carry any overshoot into the actual reload timer.
+                elapsedSeconds = -reloadDelayTimer;
+                reloadDelayTimer = 0.0;
+            }
+
+            reloadTimer -= elapsedSeconds;
 
             if (reloadTimer <= 0.0)
             {
                 isReloading = false;
+                reloadDelayTimer = 0.0;
                 reloadTimer = 0.0;
                 refillAmmo();
                 logger.info("Reload complete");

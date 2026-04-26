@@ -12,6 +12,7 @@ import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemySpawnPointGameObject;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
+import edu.nust.game.scenes.levelscene.gameobjects.weapon.Ammo;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Weapon;
@@ -48,11 +49,9 @@ public class LevelScene extends GameScene
     private static final Vector2D GROWN_CAMERA_VIEW = new Vector2D(160, 120);
     private static final double RELOAD_OPACITY_MIN = 0.5;
     private static final double RELOAD_OPACITY_MAX = 1.0;
-    private static final TimeSpan RELOAD_OPACITY_CHANGE_DURATION = TimeSpan.fromSeconds(0.5);
 
     @FXML private StackPane pauseOverlay;
     @FXML private Label overlayTitleLabel;
-    @FXML private Label scoreLabel;
     @FXML private StackPane scoreDisplayControllerContainer;
     @FXML private Label ammoLabel;
     @FXML private Label healthLabel;
@@ -240,7 +239,8 @@ public class LevelScene extends GameScene
     {
         if (gunIconView == null || weapon == null || weapon.getAmmo() == null) return;
 
-        if (!weapon.getAmmo().isReloading())
+        Ammo ammo = weapon.getAmmo();
+        if (!ammo.isReloading() && !ammo.isReloadDelayActive())
         {
             gunIconView.setOpacity(RELOAD_OPACITY_MAX);
         }
@@ -271,18 +271,15 @@ public class LevelScene extends GameScene
             double halfViewportW = (canvasW / 2.0) / zoom;
             double halfViewportH = (canvasH / 2.0) / zoom;
 
-            double minCamX = halfViewportW;
-            double maxCamX = worldWidth - halfViewportW;
-            double minCamY = halfViewportH;
-            double maxCamY = worldHeight - halfViewportH;
-
             double camX = cameraTarget.getX();
             double camY = cameraTarget.getY();
 
-            if (minCamX <= maxCamX) camX = Math.clamp(camX, minCamX, maxCamX);
+            if (halfViewportW <= worldWidth - halfViewportW)
+                camX = Math.clamp(camX, halfViewportW, worldWidth - halfViewportW);
             else camX = worldWidth / 2.0;
 
-            if (minCamY <= maxCamY) camY = Math.clamp(camY, minCamY, maxCamY);
+            if (halfViewportH <= worldHeight - halfViewportH)
+                camY = Math.clamp(camY, halfViewportH, worldHeight - halfViewportH);
             else camY = worldHeight / 2.0;
 
             cameraTarget = new Vector2D(camX, camY);
