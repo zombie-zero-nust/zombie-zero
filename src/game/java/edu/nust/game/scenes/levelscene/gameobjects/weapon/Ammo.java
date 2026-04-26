@@ -77,6 +77,14 @@ public class Ammo
         return reloadTimer;
     }
 
+    public double getReloadProgress()
+    {
+        if (!isReloading) return 0.0;
+
+        double progress = 1.0 - (reloadTimer / RELOAD_TIME);
+        return Math.clamp(progress, 0.0, 1.0);
+    }
+
     public void update(TimeSpan deltaTime)
     {
         if (isReloading)

@@ -68,7 +68,7 @@ public class AmmoBar extends HBox
     {
         // Math.clamp is not available on all Java versions; use explicit clamp
         int filledSlots = (int) Math.ceil(currentAmmo / 3.0);
-        filledSlots = Math.max(0, Math.min(filledSlots, BULLET_SLOTS));;
+        filledSlots = (int) Math.clamp(filledSlots, 0, BULLET_SLOTS);
         for (int i = 0; i < BULLET_SLOTS; i++)
         {
             if (spritesReady)
@@ -80,19 +80,17 @@ public class AmmoBar extends HBox
 
     public void updateUI(Ammo ammoSystem, Label ammoLabel)
     {
-        if (ammoLabel != null)
-            ammoLabel.setText(ammoSystem.getCurrentAmmo() + " / " + ammoSystem.getMaxAmmo());
-
-        // If reloading, show all bullets as filled during the reload animation
+        int displayedAmmo = ammoSystem.getCurrentAmmo();
         if (ammoSystem.isReloading())
         {
-            updateAmmo(ammoSystem.getMaxAmmo());
+            int missingAmmo = ammoSystem.getMaxAmmo() - ammoSystem.getCurrentAmmo();
+            displayedAmmo += (int) Math.round(missingAmmo * ammoSystem.getReloadProgress());
         }
 
-        else
-        {
-            updateAmmo(ammoSystem.getCurrentAmmo());
-        }
+        if (ammoLabel != null)
+            ammoLabel.setText(displayedAmmo + " / " + ammoSystem.getMaxAmmo());
+
+        updateAmmo(displayedAmmo);
     }
 }
 
