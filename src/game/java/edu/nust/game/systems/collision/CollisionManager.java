@@ -164,7 +164,6 @@ public class CollisionManager
             {
                 if(((Boss) (enemy)).isResurrected() && ((Boss)enemy).getIsDead()) {
                     levelScene.addScorePoints(POINTS_PER_BOSS_KILL);
-                    levelScene.onBossDefeated();
                 }
             }
             else if (enemy instanceof MiniBoss)

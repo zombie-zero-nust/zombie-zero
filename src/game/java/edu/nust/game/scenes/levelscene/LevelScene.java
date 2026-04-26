@@ -8,6 +8,7 @@ import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.highscores.HighScoresScene;
+import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemySpawnPointGameObject;
@@ -31,6 +32,7 @@ import edu.nust.game.systems.pathfinder.MapNodeSetter;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -50,11 +52,13 @@ public class LevelScene extends GameScene
     private static final Vector2D GROWN_CAMERA_VIEW = new Vector2D(160, 120);
     private static final double RELOAD_OPACITY_MIN = 0.5;
     private static final double RELOAD_OPACITY_MAX = 1.0;
+    private static final int ONE_SHOT_DAMAGE = 1_000_000;
 
     @FXML private StackPane pauseOverlay;
     @FXML private Label overlayTitleLabel;
     @FXML private StackPane scoreDisplayControllerContainer;
     @FXML private Label ammoLabel;
+    @FXML private Label remainingZombiesLabel;
     @FXML private Label healthLabel;
     @FXML private VBox ammoBarContainer;
     @FXML private VBox healthBarContainer;
@@ -65,6 +69,9 @@ public class LevelScene extends GameScene
     @FXML private Button gameOverNewGameButton;
     @FXML private Button gameOverMainMenuButton;
     @FXML private Button gameOverHighScoresButton;
+    @FXML private VBox winScoreSaveContainer;
+    @FXML private TextField winNameField;
+    @FXML private Label winNameStatusLabel;
     @FXML private Region pauseHeadingTile;
     @FXML private Region gameOverHeadingTile;
     private Player player;
@@ -85,6 +92,8 @@ public class LevelScene extends GameScene
     private boolean gameOverState = false;
     private boolean playerWon = false;
     private boolean allHitboxesVisible = false;
+    private boolean oneShotEnabled = false;
+    private int previousWeaponDamage = 0;
     private MapNodeSetter nodeSetter;
 
     public LevelScene(GameWorld world) { super(world); }
@@ -108,6 +117,7 @@ public class LevelScene extends GameScene
         player.setWalkabilityChecker((hitbox) -> level1CollisionMask.isWalkable(hitbox));
 
         weapon = new Weapon();
+        previousWeaponDamage = weapon.getDamage();
         this.addGameObject(weapon);
 
         initLevel1WithBackground();
@@ -133,6 +143,12 @@ public class LevelScene extends GameScene
 
         // Initialize ScoreDisplayController for game over screen
         scoreDisplayController = new ScoreDisplayController();
+
+        if (winNameField != null)
+        {
+            winNameField.setText(PlayerSession.getPlayerName());
+            winNameField.textProperty().addListener((ignored, oldValue, newValue) -> clearWinNameStatus());
+        }
 
         Rectangle bounds = Level1CollisionMask.getMapBounds();
         worldWidth = bounds.getWidth();
@@ -193,6 +209,12 @@ public class LevelScene extends GameScene
             return;
         }
 
+        if (!gameOverState && getRemainingEnemyCount() == 0)
+        {
+            onBossDefeated();
+            return;
+        }
+
         updateCameraPosition(playerPos, canvasW, canvasH, zoom);
         renderCollisionDebugOverlays();
     }
@@ -235,7 +257,39 @@ public class LevelScene extends GameScene
         if (ammoBar != null && weapon != null) ammoBar.updateUI(weapon.getAmmo(), ammoLabel);
         updateReloadGunOpacity();
 
+        if (remainingZombiesLabel != null)
+            remainingZombiesLabel.setText(String.valueOf(getRemainingEnemyCount()));
+
         if (healthBar != null && player != null) healthBar.updateUI(player.getHealthSystem(), healthLabel);
+    }
+
+    private int getRemainingEnemyCount()
+    {
+        int remainingEnemies = 0;
+
+        remainingEnemies += countRemainingEnemies(gameObjects);
+        remainingEnemies += countRemainingEnemies(gameObjectsToAdd);
+
+        return remainingEnemies;
+    }
+
+    private static int countRemainingEnemies(Iterable<GameObject> objects)
+    {
+        int remainingEnemies = 0;
+
+        for (GameObject object : objects)
+        {
+            if (object instanceof Enemy enemy && !enemy.isDead())
+            {
+                remainingEnemies++;
+                continue;
+            }
+
+            if (object instanceof EnemySpawnPointGameObject spawnPoint && spawnPoint.isSpawnEnabled())
+                remainingEnemies++;
+        }
+
+        return remainingEnemies;
     }
 
     private void updateReloadGunOpacity()
@@ -350,6 +404,7 @@ public class LevelScene extends GameScene
         setVisibleManaged(gameOverNewGameButton, gameOverUi);
         setVisibleManaged(gameOverMainMenuButton, gameOverUi);
         setVisibleManaged(gameOverHighScoresButton, gameOverUi);
+        setVisibleManaged(winScoreSaveContainer, gameOverUi && playerWon);
 
         if (overlayTitleLabel != null)
         {
@@ -418,7 +473,13 @@ public class LevelScene extends GameScene
             scoreDisplayControllerContainer.setManaged(true);
         }
 
-        saveScoreIfNeeded();
+        if (playerWon && winNameField != null)
+        {
+            winNameField.setText(PlayerSession.getPlayerName());
+            winNameField.positionCaret(winNameField.getText().length());
+        }
+
+        clearWinNameStatus();
         setPaused(true);
     }
 
@@ -436,12 +497,80 @@ public class LevelScene extends GameScene
         gameOver();
     }
 
-    private void saveScoreIfNeeded()
+    private void clearWinNameStatus()
     {
-        if (scoreSaved) return;
+        if (winNameStatusLabel != null)
+            winNameStatusLabel.setText("");
+    }
 
+    private boolean saveWinningScoreIfNeeded()
+    {
+        if (!playerWon || scoreSaved)
+            return true;
+
+        if (winNameField == null)
+            return false;
+
+        String playerName = winNameField.getText() != null ? winNameField.getText().trim() : "";
+        if (playerName.isEmpty())
+        {
+            if (winNameStatusLabel != null)
+                winNameStatusLabel.setText("Enter your name to save your score.");
+            winNameField.requestFocus();
+            return false;
+        }
+
+        if (playerName.contains(","))
+        {
+            if (winNameStatusLabel != null)
+                winNameStatusLabel.setText("Name cannot contain commas.");
+            winNameField.requestFocus();
+            return false;
+        }
+
+        PlayerSession.setPlayerName(playerName);
         scoreSaved = true;
-        HighScoreStorage.append(PlayerSession.getPlayerName(), getCurrentScore(), LocalDateTime.now());
+        HighScoreStorage.append(playerName, getCurrentScore(), LocalDateTime.now());
+        clearWinNameStatus();
+        return true;
+    }
+
+    private String toggleOneShot()
+    {
+        if (weapon == null) return "Weapon not initialized";
+
+        if (!oneShotEnabled)
+        {
+            previousWeaponDamage = weapon.getDamage();
+            weapon.setDamage(ONE_SHOT_DAMAGE);
+            oneShotEnabled = true;
+            return "One-shot mode ON.";
+        }
+
+        weapon.setDamage(previousWeaponDamage);
+        oneShotEnabled = false;
+        return "One-shot mode OFF.";
+    }
+
+    private String triggerWin()
+    {
+        if (gameOverState)
+            return playerWon ? "Game already won." : "Game already over.";
+
+        onBossDefeated();
+        return "Win triggered.";
+    }
+
+    private String triggerLoss()
+    {
+        if (player == null) return "Player not initialized";
+        if (gameOverState)
+            return playerWon ? "Game already won." : "Game already lost.";
+
+        playerWon = false;
+        player.takeDamage(Integer.MAX_VALUE);
+        gameOver();
+        return "Loss triggered.";
     }
 
     private void loadGunIcon()
@@ -474,8 +603,8 @@ public class LevelScene extends GameScene
     @FXML
     private void viewHighScores()
     {
+        if (!saveWinningScoreIfNeeded()) return;
         MusicManager.resumeMusic();
-        saveScoreIfNeeded();
         this.getWorld().setScene(new HighScoresScene(this.getWorld()));
     }
 
@@ -500,6 +629,18 @@ public class LevelScene extends GameScene
     @Override
     protected void registerDevCommands()
     {
+        registerDevCommand(
+            "/oneShot", "/oneShot", "Toggle one-shot kills for the player's weapon.", args -> toggleOneShot()
+        );
+
+        registerDevCommand(
+            "/win", "/win", "Trigger the win state immediately.", args -> triggerWin()
+        );
+
+        registerDevCommand(
+            "/lose", "/lose", "Trigger the lose state immediately.", args -> triggerLoss()
+        );
+
         // invincible mode (sets speed to 500 and health to 9999)
         registerDevCommand(
                 "/invincible", "/invincible", "Toggle invincibility mode for the player.", args -> {

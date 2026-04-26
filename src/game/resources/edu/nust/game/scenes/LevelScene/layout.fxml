@@ -10,21 +10,25 @@
             <Label fx:id="healthLabel" managed="false" visible="false"/>
         </VBox>
     </HBox>
-    <HBox alignment="TOP_RIGHT" fillHeight="false" prefWidth="200" style="-fx-padding: 16;"
+    <HBox alignment="TOP_RIGHT" fillHeight="false" prefWidth="220" style="-fx-padding: 16;"
           StackPane.alignment="TOP_RIGHT">
-        <VBox alignment="TOP_RIGHT" spacing="10"
-              style="-fx-background-color: #7a7a8a; -fx-border-color: #3a3a3a; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 6, 0, 2, 2);">
-            <VBox>
-                <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 8;">
+        <VBox alignment="TOP_RIGHT" spacing="10">
+            <VBox styleClass="level-hud-card">
+                <HBox alignment="CENTER_LEFT" spacing="12" styleClass="level-hud-row">
                     <ImageView fx:id="gunIconView" fitHeight="24" preserveRatio="true" smooth="false"
                                StackPane.alignment="CENTER"/>
                     <VBox fx:id="ammoBarContainer" alignment="CENTER"
                           HBox.hgrow="ALWAYS"/>
-                    <VBox prefWidth="70" alignment="CENTER">
-                        <Label fx:id="ammoLabel"
-                               style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold; -fx-font-family: 'Courier New'; -fx-padding: 0 0 0 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.85), 3, 0.6, 1, 1);"
-                               text="6 / 6"/>
+                    <VBox alignment="CENTER" prefWidth="70">
+                        <Label fx:id="ammoLabel" styleClass="level-hud-value" text="6 / 6"/>
                     </VBox>
+                </HBox>
+            </VBox>
+            <VBox styleClass="level-hud-card">
+                <HBox alignment="CENTER_LEFT" spacing="12" styleClass="level-hud-row">
+                    <Label styleClass="level-hud-title" text="Zombies"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="remainingZombiesLabel" styleClass="level-hud-value" text="0"/>
                 </HBox>
             </VBox>
         </VBox>
@@ -36,8 +40,14 @@
             <Region fx:id="gameOverHeadingTile" managed="false" styleClass="gameover-heading-tile" visible="false"/>
             <Label fx:id="overlayTitleLabel" managed="false" styleClass="overlay-title" text="Game Over"
                    visible="false"/>
-            <StackPane fx:id="scoreDisplayControllerContainer" alignment="CENTER" managed="false" maxWidth="400"
-                       prefWidth="350" visible="false"/> <!-- Pause buttons -->
+                <StackPane fx:id="scoreDisplayControllerContainer" alignment="CENTER" managed="false" maxWidth="400"
+                       prefWidth="350" visible="false"/>
+                <VBox fx:id="winScoreSaveContainer" alignment="CENTER" managed="false" spacing="8" visible="false">
+                <Label styleClass="win-name-prompt" text="Enter your name to save this winning score"/>
+                <TextField fx:id="winNameField" maxWidth="260" promptText="Player name" styleClass="win-name-field"/>
+                <Label fx:id="winNameStatusLabel" styleClass="win-name-status" text="" wrapText="true"/>
+                </VBox>
+                <!-- Pause buttons -->
             <Button fx:id="resumeButton" onAction="#resumeGame" styleClass="pause-button-tile, resume-button-tile"
                     text=""/>
             <Button fx:id="pauseRetryButton" onAction="#retryLevel" styleClass="pause-button-tile, retry-button-tile"

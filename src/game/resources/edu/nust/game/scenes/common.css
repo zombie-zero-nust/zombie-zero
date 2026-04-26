@@ -88,6 +88,38 @@
     -fx-font-weight: bold;
 }
 
+.level-hud-card {
+    -fx-min-width: 350px;
+    -fx-pref-width: 350px;
+    -fx-background-color: #7a7a8a;
+    -fx-border-color: #3a3a3a;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 6, 0, 2, 2);
+}
+
+.level-hud-row {
+    -fx-padding: 8;
+}
+
+.level-hud-title {
+    -fx-text-fill: white;
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Courier New';
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.85), 3, 0.6, 1, 1);
+}
+
+.level-hud-value {
+    -fx-text-fill: white;
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Courier New';
+    -fx-padding: 0 0 0 8;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.85), 3, 0.6, 1, 1);
+}
+
 .pause-heading-tile {
     -fx-min-width: 320px;
     -fx-pref-width: 320px;
@@ -206,5 +238,41 @@
 
 .gameover-highscores-button-tile {
     -fx-background-image: url('../assets/images/GameOver/ViewHigScores.png');
+}
+
+.win-name-prompt {
+    -fx-text-fill: #f5f1dc;
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Courier New';
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 2, 0.2, 1, 1);
+}
+
+.win-name-field {
+    -fx-background-color: rgba(25, 18, 12, 0.92);
+    -fx-background-radius: 6;
+    -fx-border-color: #b7863b;
+    -fx-border-radius: 6;
+    -fx-border-width: 2;
+    -fx-text-fill: #f5f1dc;
+    -fx-prompt-text-fill: rgba(245, 241, 220, 0.6);
+    -fx-font-size: 18;
+    -fx-font-family: 'Courier New';
+    -fx-padding: 10 14;
+    -fx-highlight-fill: #b7863b;
+    -fx-highlight-text-fill: #1a120d;
+}
+
+.win-name-field:focused {
+    -fx-border-color: #f0c46c;
+    -fx-effect: dropshadow(gaussian, rgba(240, 196, 108, 0.35), 10, 0.2, 0, 0);
+}
+
+.win-name-status {
+    -fx-text-fill: #ffccb0;
+    -fx-font-size: 14;
+    -fx-font-family: 'Courier New';
+    -fx-alignment: center;
+    -fx-text-alignment: center;
 }
 
