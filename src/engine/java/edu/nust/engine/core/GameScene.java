@@ -191,6 +191,8 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
             this.lateUpdate(deltaTime);
         }
 
+        this.worldCamera.update(deltaTime.asSeconds());
+
         // remove gameobjects
         gameObjects.removeAll(gameObjectsToRemove);
         gameObjectsToRemove.clear();
@@ -659,7 +661,8 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         ctx.scale(zoom, zoom);
 
         // translate context to center at camera position
-        ctx.translate(-worldCamera.getPosition().getX(), -worldCamera.getPosition().getY());
+        Vector2D renderPosition = worldCamera.getRenderPosition();
+        ctx.translate(-renderPosition.getX(), -renderPosition.getY());
 
         contextConsumer.accept(ctx);
 
@@ -888,8 +891,9 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         double canvasH = worldCanvas.getHeight();
 
         // camera center
-        double camX = worldCamera.getPosition().getX();
-        double camY = worldCamera.getPosition().getY();
+        Vector2D renderPosition = worldCamera.getRenderPosition();
+        double camX = renderPosition.getX();
+        double camY = renderPosition.getY();
 
         // visible world bounds
         double halfW = canvasW / 2.0 / zoom;
@@ -931,8 +935,9 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         double canvasW = worldCanvas.getWidth();
         double canvasH = worldCanvas.getHeight();
 
-        double camX = worldCamera.getPosition().getX();
-        double camY = worldCamera.getPosition().getY();
+        Vector2D renderPosition = worldCamera.getRenderPosition();
+        double camX = renderPosition.getX();
+        double camY = renderPosition.getY();
 
         double halfW = canvasW / 2.0 / zoom;
         double halfH = canvasH / 2.0 / zoom;
@@ -968,8 +973,9 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         double canvasW = worldCanvas.getWidth();
         double canvasH = worldCanvas.getHeight();
 
-        double camX = worldCamera.getPosition().getX();
-        double camY = worldCamera.getPosition().getY();
+        Vector2D renderPosition = worldCamera.getRenderPosition();
+        double camX = renderPosition.getX();
+        double camY = renderPosition.getY();
 
         double halfW = canvasW / 2.0 / zoom;
         double halfH = canvasH / 2.0 / zoom;

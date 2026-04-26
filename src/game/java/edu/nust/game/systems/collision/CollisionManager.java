@@ -6,6 +6,7 @@ import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Boss;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.MiniBoss;
+import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
 import edu.nust.game.scenes.levelscene.level_1.Level1CollisionMask;
 
@@ -94,6 +95,13 @@ public class CollisionManager
                     if (obj instanceof Enemy enemy && otherObj instanceof Bullet)
                     {
                         enemy.multiplyFollowRadius(BULLET_HIT_FOLLOW_RADIUS_FACTOR);
+                        if (scene instanceof LevelScene levelScene)
+                            levelScene.shakeOnEnemyHit();
+                    }
+
+                    if (obj instanceof Player && scene instanceof LevelScene levelScene)
+                    {
+                        levelScene.shakeOnPlayerHit();
                     }
 
                     // Award kill score exactly when an enemy transitions from alive to dead.

@@ -427,5 +427,5 @@ public class MiniBoss extends Enemy
     }
 
     @Override
-    protected double baseFollowRadius() { return 200; }
+    public double getBaseFollowRadius() { return 300; }
 }

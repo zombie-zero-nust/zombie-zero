@@ -364,7 +364,6 @@ public class DevConsole
         }
         else
         {
-            suggestionIndex = 0;
             hint.setText(suggestions.getFirst());
             LOGGER.trace("{} suggestions available, first: {}", suggestions.size(), suggestions.getFirst());
         }
@@ -380,7 +379,9 @@ public class DevConsole
 
         int size = suggestions.size();
         int oldIndex = suggestionIndex;
-        suggestionIndex = (suggestionIndex + dir + size) % size;
+        if (suggestionIndex == -1)
+            suggestionIndex = dir < 0 ? size - 1 : 0;
+        else suggestionIndex = (suggestionIndex + dir + size) % size;
 
         String cmd = suggestions.get(suggestionIndex).split("\\s+")[0];
         input.setText(cmd + " ");

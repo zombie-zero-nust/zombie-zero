@@ -52,6 +52,10 @@ public class LevelScene extends GameScene
     private static final Vector2D GROWN_CAMERA_VIEW = new Vector2D(160, 120);
     private static final double RELOAD_OPACITY_MIN = 0.5;
     private static final double RELOAD_OPACITY_MAX = 1.0;
+    private static final double ENEMY_HIT_SHAKE_INTENSITY = 0.14;
+    private static final double ENEMY_HIT_SHAKE_DISTANCE = 3.0;
+    private static final double PLAYER_HIT_SHAKE_INTENSITY = 0.22;
+    private static final double PLAYER_HIT_SHAKE_DISTANCE = 5.0;
     private static final int ONE_SHOT_DAMAGE = 1_000_000;
 
     @FXML private StackPane pauseOverlay;
@@ -92,6 +96,7 @@ public class LevelScene extends GameScene
     private boolean gameOverState = false;
     private boolean playerWon = false;
     private boolean allHitboxesVisible = false;
+    private boolean enemyFollowRadiusVisible = false;
     private boolean oneShotEnabled = false;
     private int previousWeaponDamage = 0;
     private MapNodeSetter nodeSetter;
@@ -231,6 +236,23 @@ public class LevelScene extends GameScene
                 addFrameDebugRectangle(hitBox.asRect());
             }
         }
+
+        if (enemyFollowRadiusVisible)
+        {
+            for (GameObject object : getAllGameObjects())
+            {
+                if (!(object instanceof Enemy enemy) || enemy.isDead())
+                    continue;
+
+                double followRadius = enemy.getBaseFollowRadius();
+                Vector2D enemyPosition = enemy.getTransform().getPosition();
+                Rectangle followArea = Rectangle.fromCenter(
+                        enemyPosition,
+                        new Vector2D(followRadius * 2, followRadius * 2)
+                );
+                addFrameDebugEllipse(followArea);
+            }
+        }
     }
 
     private void updateMouseWorldPosition(double canvasW, double canvasH, Vector2D cameraPos, double zoom)
@@ -305,6 +327,18 @@ public class LevelScene extends GameScene
         {
             gunIconView.setOpacity(RELOAD_OPACITY_MIN);
         }
+    }
+
+    public void shakeOnEnemyHit()
+    {
+        if (this.getWorldCamera() == null) return;
+        this.getWorldCamera().shake(ENEMY_HIT_SHAKE_INTENSITY, ENEMY_HIT_SHAKE_DISTANCE);
+    }
+
+    public void shakeOnPlayerHit()
+    {
+        if (this.getWorldCamera() == null) return;
+        this.getWorldCamera().shake(PLAYER_HIT_SHAKE_INTENSITY, PLAYER_HIT_SHAKE_DISTANCE);
     }
 
     private Vector2D clampPlayerToPlayArea(Vector2D clampedPos)
@@ -639,6 +673,29 @@ public class LevelScene extends GameScene
 
         registerDevCommand(
             "/lose", "/lose", "Trigger the lose state immediately.", args -> triggerLoss()
+        );
+
+        registerDevCommand(
+                "/toggleEnemyFollowRadius",
+                "/toggleEnemyFollowRadius true|false|empty",
+                "Toggle visualization of each enemy's base follow radius.",
+                args -> {
+                    if (args.isEmpty())
+                    {
+                        enemyFollowRadiusVisible = !enemyFollowRadiusVisible;
+                    }
+                    else
+                    {
+                        String value = args.getFirst().toLowerCase();
+                        if (value.equals("true") || value.equals("1") || value.equals("on") || value.equals("yes"))
+                            enemyFollowRadiusVisible = true;
+                        else if (value.equals("false") || value.equals("0") || value.equals("off") || value.equals("no"))
+                            enemyFollowRadiusVisible = false;
+                        else return "Usage: /toggleEnemyFollowRadius true|false";
+                    }
+
+                    return "enemyFollowRadiusVisible = " + enemyFollowRadiusVisible;
+                }
         );
 
         // invincible mode (sets speed to 500 and health to 9999)
