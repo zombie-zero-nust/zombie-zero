@@ -19,7 +19,7 @@ import edu.nust.game.scenes.levelscene.hud.HealthBar;
 import edu.nust.game.scenes.levelscene.hud.ScoreDisplayController;
 import edu.nust.game.scenes.levelscene.level_1.Level1Background;
 import edu.nust.game.scenes.levelscene.level_1.Level1CollisionMask;
-import edu.nust.game.scenes.levelscene.level_1.Level1EnemySpawnPoints;
+import edu.nust.game.scenes.levelscene.level_1.Level1SpawnPoints;
 import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
 import edu.nust.game.systems.Score;
@@ -95,7 +95,7 @@ public class LevelScene extends GameScene
         collisionManager = new CollisionManager(this);
 
         score = new Score();
-        player = new Player(new Vector2D(80, 80), 100, 50, true);
+        player = new Player(Level1SpawnPoints.PLAYER_SPAWN_POINT, 100, 50, true);
         this.addGameObject(player.addTag(PlayerTag.class));
 
         player.setMovePos(clampPlayerToPlayArea(player.getTransform().getPosition()));
@@ -142,11 +142,11 @@ public class LevelScene extends GameScene
 
     private void initStaticEnemySpawnPoints()
     {
-        Level1EnemySpawnPoints.forEachSpawnPoint(definition -> {
+        Level1SpawnPoints.forEachEnemySpawnPoint(definition -> {
             StaticEnemySpawnPoint spawnPoint = new StaticEnemySpawnPoint(
                     definition.position(),
-                    definition.enemyType(),
-                    SPAWN_VIEW_GROWTH
+                                                                         definition.enemyType(),
+                                                                         SPAWN_VIEW_GROWTH
             );
             spawnPoint.setSpawnEnabled(definition.enabled());
             this.addGameObject(spawnPoint);
