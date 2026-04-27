@@ -300,7 +300,7 @@ def registerPackageTask = { String name, String targetOs, String installerType -
 
         // Windows-only options
         if (targetOs == 'windows') {
-            args += ['--win-shortcut', '--win-menu', '--win-dir-chooser', '--win-console']
+            args += ['--win-shortcut', '--win-menu', '--win-dir-chooser']
         }
 
         commandLine([jpackageExecutable] + args)

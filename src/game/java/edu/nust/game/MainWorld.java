@@ -14,7 +14,7 @@ public class MainWorld extends GameWorld
     @Override
     protected void initStage()
     {
-        stage.setTitle("Test World");
+        stage.setTitle("Zombie Zero");
         stage.setWidth(1280);
         stage.setHeight(768);
         stage.resizableProperty().set(false);
