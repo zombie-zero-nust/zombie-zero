@@ -26,7 +26,7 @@ import java.util.function.Function;
  *     <li>{@link SoundEffectReference} -> short, such as button clicks or hit effects</li>
  *     <li>{@link MusicTrackReference} -> long, such as background music tracks</li>
  * </ul>
- * All loaded references are cached by filename; loading the same file twice returns the existing reference.
+ * All loaded references are cached by full relative path; loading the same asset twice returns the existing reference.
  * <br><br>
  * All paths are resolved relative to {@code edu/nust/game/assets/audio/}.
  * <br><br>
@@ -125,7 +125,10 @@ public final class GameAudioManager
      *
      * @return {@code true} if the sound effect is loaded
      */
-    public boolean isSoundEffectLoaded(String filename) { return loadedSoundEffects.containsKey(filename); }
+    public boolean isSoundEffectLoaded(String filename)
+    {
+        return loadedSoundEffects.values().stream().anyMatch(ref -> ref.getFileName().equals(filename));
+    }
 
     /**
      * Returns whether a music track with the given filename has been loaded into the cache.
@@ -134,7 +137,10 @@ public final class GameAudioManager
      *
      * @return {@code true} if the music track is loaded
      */
-    public boolean isMusicTrackLoaded(String filename) { return loadedMusicTracks.containsKey(filename); }
+    public boolean isMusicTrackLoaded(String filename)
+    {
+        return loadedMusicTracks.values().stream().anyMatch(ref -> ref.getFileName().equals(filename));
+    }
 
     /* UNLOAD */
 
@@ -230,7 +236,10 @@ public final class GameAudioManager
      */
     public @Nullable SoundEffectReference tryGetSoundEffect(String filename)
     {
-        return loadedSoundEffects.get(filename);
+        return loadedSoundEffects.values().stream()
+                .filter(ref -> ref.getFileName().equals(filename))
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -244,7 +253,10 @@ public final class GameAudioManager
      */
     public @Nullable MusicTrackReference tryGetMusicTrack(String filename)
     {
-        return loadedMusicTracks.get(filename);
+        return loadedMusicTracks.values().stream()
+                .filter(ref -> ref.getFileName().equals(filename))
+                .findFirst()
+                .orElse(null);
     }
 
     /* COUNTS */
@@ -377,6 +389,7 @@ public final class GameAudioManager
     private <T extends AudioReference> Optional<T> tryLoadAudioReference(Class<T> caller, Function<URL, T> onSuccess, HashMap<String, T> cachedList, String... relativePath)
     {
         String path = Resources.resolvePath(getAudioPath(relativePath));
+        String cacheKey = String.join("/", relativePath);
 
         URL url;
         try { url = Resources.getResourceOrThrow(path); }
@@ -395,14 +408,14 @@ public final class GameAudioManager
         String name = URLUtils.getFileNameFromURL(url);
 
         // if already loaded, return that
-        if (cachedList.containsKey(name)) return Optional.of(cachedList.get(name));
+        if (cachedList.containsKey(cacheKey)) return Optional.of(cachedList.get(cacheKey));
 
         try
         {
             T ref = onSuccess.apply(url);
 
             // store the reference
-            cachedList.put(name, ref);
+            cachedList.put(cacheKey, ref);
 
             LOGGER.info("Loaded [{}] \"{}\"", caller.getSimpleName(), name);
             return Optional.of(ref);

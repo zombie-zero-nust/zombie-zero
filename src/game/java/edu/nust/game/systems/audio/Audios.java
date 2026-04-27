@@ -114,7 +114,12 @@ public class Audios
         return randomSoundEffectRef(PLAYER_FOOTSTEPS);
     }
 
-    public static Optional<SoundEffectReference> randomPlayerGunShotRef() { return randomSoundEffectRef(PLAYER_SHOOT_GUN); }
+    public static Optional<SoundEffectReference> randomPlayerGunShotRef()
+    {
+        Optional<SoundEffectReference> ref = randomSoundEffectRef(PLAYER_SHOOT_GUN);
+        ref.ifPresent(r -> r.setMaxConcurrentPlays(7));
+        return ref;
+    }
 
     public static Optional<SoundEffectReference> randomPlayerImpactEnvironmentRef()
     {
