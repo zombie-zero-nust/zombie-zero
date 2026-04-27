@@ -236,7 +236,6 @@ public final class MusicTrackReference extends AudioReference
     /// volume. Starts playback immediately.
     ///
     /// @param duration The fade-in duration; must not be {@code null}
-    @Override
     public void fadeIn(Duration duration)
     {
         player.setVolume(0.0);
@@ -252,7 +251,6 @@ public final class MusicTrackReference extends AudioReference
     /// modify the configured base volume.
     ///
     /// @param duration The fade-out duration; must not be {@code null}
-    @Override
     public void fadeOut(Duration duration)
     {
         Timeline timeline = new Timeline(

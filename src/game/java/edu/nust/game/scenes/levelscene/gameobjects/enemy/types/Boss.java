@@ -238,6 +238,7 @@ public class Boss extends Enemy
                 case RIGHT -> rightAttack2Sheet;
             };
             bossAbility1 = new BossAbility1(damage,this,List.of(Enemy.class),image);
+            Audios.randomZombieBossGrowlRef().ifPresent(SoundEffectReference::play);
             performingAbility = true;
             setAttacking(true);
             ability1cooldown = 0;
@@ -305,6 +306,7 @@ public class Boss extends Enemy
                 case LEFT -> leftAttackSheet;
             };
 
+            Audios.randomZombieBossGrowlRef().ifPresent(SoundEffectReference::play);
             spriteRenderer.setImage(image, 8, 1)
                     .startAnimation()
                     .setAnimationTime(TimeSpan.fromMilliseconds(attack1Time/4))

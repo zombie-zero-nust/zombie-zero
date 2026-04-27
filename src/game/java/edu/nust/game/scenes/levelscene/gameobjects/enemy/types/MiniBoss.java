@@ -2,12 +2,14 @@ package edu.nust.game.scenes.levelscene.gameobjects.enemy.types;
 
 
 import edu.nust.engine.core.components.renderers.SpriteRenderer;
+import edu.nust.engine.core.audio.SoundEffectReference;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Attacks.BasicAttackObj;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
 import edu.nust.game.systems.assets.EnemyAsset;
+import edu.nust.game.systems.audio.Audios;
 import javafx.scene.image.Image;
 
 import java.io.FileNotFoundException;
@@ -251,6 +253,7 @@ public class MiniBoss extends Enemy
                     .startAnimation()
                     .setSize(1.5 * image.getWidth() / 15, 1.5 * image.getHeight());
 
+                Audios.randomZombieBossGrowlRef().ifPresent(SoundEffectReference::play);
             performingAbility = true;
             setAttacking(true);
             ability1cooldown = 0;
@@ -291,6 +294,7 @@ public class MiniBoss extends Enemy
                         attack1Range
                 );
 
+                    Audios.randomZombieBossAttackRef().ifPresent(SoundEffectReference::play);
                 this.getScene().addGameObject(attack1);
             }
 
@@ -337,6 +341,7 @@ public class MiniBoss extends Enemy
                 case LEFT -> leftAttackSheet;
             };
 
+            Audios.randomZombieBossGrowlRef().ifPresent(SoundEffectReference::play);
             spriteRenderer.setImage(image, 8, 1)
                     .startAnimation()
                     .setAnimationTime(TimeSpan.fromMilliseconds(attack1Time / 4))
@@ -371,6 +376,7 @@ public class MiniBoss extends Enemy
                 AXE_THROW_SPEED
         );
         axeAttack.setTargetDirection(direction);
+        Audios.randomZombieBossAttackRef().ifPresent(SoundEffectReference::play);
         this.getScene().addGameObject(axeAttack);
     }
 

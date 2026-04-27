@@ -4,18 +4,16 @@ import edu.nust.engine.core.GameWorld;
 import edu.nust.engine.core.files.URLUtils;
 import edu.nust.engine.logger.GameLogger;
 import edu.nust.engine.resources.Resources;
-import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import org.jetbrains.annotations.Nullable;
 
+import javax.sound.sampled.Clip;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Manages all in-game audio. Linked to the {@link GameWorld}. Loaded Clips are only unloaded when game exits.
@@ -61,7 +59,7 @@ public final class GameAudioManager
     {
         return tryLoadAudioReference(
                 SoundEffectReference.class,
-                url -> new SoundEffectReference(url, new AudioClip(url.toExternalForm())),
+                SoundEffectReference::new,
                 loadedSoundEffects,
                 relativePath
         );
@@ -152,7 +150,7 @@ public final class GameAudioManager
      */
     public void unloadSoundEffect(String filename)
     {
-        SoundEffectReference ref = loadedSoundEffects.remove(filename);
+        SoundEffectReference ref = removeReferenceByFilename(filename, loadedSoundEffects);
         if (ref != null)
         {
             LOGGER.info("Unloaded [SoundEffectReference] \"{}\"", ref.getFileName());
@@ -167,7 +165,7 @@ public final class GameAudioManager
      */
     public void unloadMusicTrack(String filename)
     {
-        MusicTrackReference ref = loadedMusicTracks.remove(filename);
+        MusicTrackReference ref = removeReferenceByFilename(filename, loadedMusicTracks);
         if (ref != null)
         {
             ref.dispose();
@@ -182,6 +180,28 @@ public final class GameAudioManager
     {
         loadedSoundEffects.clear();
         LOGGER.info("Unloaded all SoundEffectReferences");
+    }
+
+    /**
+     * Removes and releases loaded sound effects whose cache key does not match the given predicate.
+     *
+     * @param keepLoaded {@link Predicate} that should returns {@code true} for cache keys that should remain loaded
+     */
+    public void unloadSoundEffectsExcept(Predicate<String> keepLoaded)
+    {
+        Iterator<Map.Entry<String, SoundEffectReference>> iterator = loadedSoundEffects.entrySet().iterator();
+        int unloadedCount = 0;
+
+        while (iterator.hasNext())
+        {
+            Map.Entry<String, SoundEffectReference> entry = iterator.next();
+            if (keepLoaded.test(entry.getKey())) continue;
+
+            iterator.remove();
+            unloadedCount++;
+        }
+
+        LOGGER.info("Unloaded {} SoundEffectReferences", unloadedCount);
     }
 
     /**
@@ -236,7 +256,8 @@ public final class GameAudioManager
      */
     public @Nullable SoundEffectReference tryGetSoundEffect(String filename)
     {
-        return loadedSoundEffects.values().stream()
+        return loadedSoundEffects.values()
+                .stream()
                 .filter(ref -> ref.getFileName().equals(filename))
                 .findFirst()
                 .orElse(null);
@@ -253,7 +274,8 @@ public final class GameAudioManager
      */
     public @Nullable MusicTrackReference tryGetMusicTrack(String filename)
     {
-        return loadedMusicTracks.values().stream()
+        return loadedMusicTracks.values()
+                .stream()
                 .filter(ref -> ref.getFileName().equals(filename))
                 .findFirst()
                 .orElse(null);
@@ -267,6 +289,17 @@ public final class GameAudioManager
      * @return The loaded sound effect count
      */
     public int getLoadedSoundEffectCount() { return loadedSoundEffects.size(); }
+
+    /**
+     * Returns the total number of currently active (i.e. playing) {@link Clip} instances across {@code ALL} loaded
+     * sound effects.
+     *
+     * @return Total active sound-effect clip count
+     */
+    public int getLoadedSoundEffectClipCount()
+    {
+        return loadedSoundEffects.values().stream().mapToInt(SoundEffectReference::getLoadedClipCount).sum();
+    }
 
     /**
      * Returns the number of music tracks currently held in the cache.
@@ -426,6 +459,22 @@ public final class GameAudioManager
             LOGGER.logException(e);
             return Optional.empty();
         }
+    }
+
+
+    /// <b>{@code INTERNAL}</b>
+    private <T extends AudioReference> @Nullable T removeReferenceByFilename(String filename, HashMap<String, T> cachedList)
+    {
+        Iterator<Map.Entry<String, T>> iterator = cachedList.entrySet().iterator();
+        while (iterator.hasNext())
+        {
+            Map.Entry<String, T> entry = iterator.next();
+            if (!entry.getValue().getFileName().equals(filename)) continue;
+
+            iterator.remove();
+            return entry.getValue();
+        }
+        return null;
     }
 
     /**

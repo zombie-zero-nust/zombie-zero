@@ -124,6 +124,12 @@ public class CollisionManager
             if (obj == null || obj.getHitbox() == null)
                 continue;
 
+            if (collidesWithLevelRect(obj))
+            {
+                obj.triggerCollisionEffect(null);
+                continue;
+            }
+
             for (Concrete otherObj : concreteObjs)
             {
                 if (otherObj == null || otherObj == obj || otherObj.getHitbox() == null)
@@ -141,12 +147,6 @@ public class CollisionManager
                 }
                 obj.getHitbox().setMin(otherObj.getHitbox());
 
-                Level1CollisionMask.forEachRect((levelRect) -> {
-                    if (obj.getHitbox().asRect().intersects(levelRect)) {
-                        obj.triggerCollisionEffect(null);
-                    }
-                });
-
                 if (obj.getHitbox().isTouching(otherObj.getHitbox()))
                 {
 
@@ -162,6 +162,20 @@ public class CollisionManager
             obj.destroyThis();
         }
         destroyQueue.clear();
+    }
+
+    private static boolean collidesWithLevelRect(Concrete obj)
+    {
+        if (obj.getHitbox() == null)
+            return false;
+
+        for (var levelRect : Level1CollisionMask.getAllCollisionRects())
+        {
+            if (obj.getHitbox().asRect().intersects(levelRect))
+                return true;
+        }
+
+        return false;
     }
 
     private void awardKillPoints(Enemy enemy)
