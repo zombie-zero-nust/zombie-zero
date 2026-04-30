@@ -422,6 +422,7 @@ public final class GameAudioManager
     private <T extends AudioReference> Optional<T> tryLoadAudioReference(Class<T> caller, Function<URL, T> onSuccess, HashMap<String, T> cachedList, String... relativePath)
     {
         String path = Resources.resolvePath(getAudioPath(relativePath));
+        String cacheKey = String.join("/", relativePath);
 
         URL url;
         try { url = Resources.getResourceOrThrow(path); }
@@ -440,7 +441,7 @@ public final class GameAudioManager
         String name = URLUtils.getFileNameFromURL(url);
 
         // if already loaded, return that
-        if (cachedList.containsKey(name)) return Optional.of(cachedList.get(name));
+        if (cachedList.containsKey(cacheKey)) return Optional.of(cachedList.get(cacheKey));
 
         try
         {
