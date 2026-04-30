@@ -16,7 +16,10 @@ import edu.nust.game.scenes.levelscene.gameobjects.statics.meta.StaticObjectType
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -81,8 +84,15 @@ public final class Level1Background
 
         try
         {
-            Path path = Paths.get("src/game/resources/edu/nust/game/scenes/LevelScene/objects_placements.txt");
-            List<String> lines = Files.readAllLines(path);
+            List<String> lines;
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    Resources.getResourceOrThrow("scenes", "LevelScene", "objects_placements.txt").openStream(),
+                    StandardCharsets.UTF_8
+            )))
+            {
+                lines = reader.lines().toList();
+            }
 
             progress.log("Total lines to process: {}", lines.size());
 

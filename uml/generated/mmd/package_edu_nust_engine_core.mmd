@@ -1,0 +1,43 @@
+---
+title: edu.nust.engine.core
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class DevCommand
+class GameCamera
+class DevCommandExecutor <<interface>>
+class DevConsole
+class GameObject
+class Component
+class GameScene
+class GameWorld
+class GameURLs
+class Package_edu_nust_engine_core_audio <<package>>
+class Package_edu_nust_engine_core_components <<package>>
+class Package_edu_nust_engine_core_debug <<package>>
+class Package_edu_nust_engine_core_files <<package>>
+class Package_edu_nust_engine_core_gameobjects <<package>>
+class Package_edu_nust_engine_core_interfaces <<package>>
+Component --> GameObject : uses
+DevCommand --> DevCommandExecutor : uses
+DevConsole --> DevCommandExecutor : uses
+GameObject --> Component : uses
+GameObject --> GameScene : uses
+GameScene --> DevConsole : uses
+GameScene --> GameCamera : uses
+GameScene --> GameObject : uses
+GameScene --> GameWorld : uses
+GameWorld --> GameScene : uses
+GameWorld --> Package_edu_nust_engine_core_audio : uses
+GameObject --> Package_edu_nust_engine_core_components : uses
+Package_edu_nust_engine_core_components --> Component : uses
+Component --> Package_edu_nust_engine_core_interfaces : uses
+GameObject --> Package_edu_nust_engine_core_interfaces : uses
+GameScene --> Package_edu_nust_engine_core_interfaces : uses
+Package_edu_nust_engine_core_components --> Package_edu_nust_engine_core_interfaces : uses

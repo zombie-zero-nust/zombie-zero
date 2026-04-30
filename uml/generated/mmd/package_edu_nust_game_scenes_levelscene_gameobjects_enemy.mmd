@@ -1,0 +1,34 @@
+---
+title: edu.nust.game.scenes.levelscene.gameobjects.enemy
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class EnemySpawner
+class MiniBoss
+class EnemySpawnPointGameObject
+class BasicEnemy
+class Enemy
+class BossAbility1
+class Facing <<enumeration>>
+class BasicAttackObj
+class Boss
+class EnemyConfig <<enumeration>>
+EnemySpawnPointGameObject --> Enemy : uses
+EnemySpawner --> Boss : uses
+BasicAttackObj --> Enemy : uses
+BossAbility1 --> Boss : uses
+Enemy <|-- BasicEnemy : extends
+BasicEnemy --> Facing : uses
+Boss --> BasicAttackObj : uses
+Boss --> BossAbility1 : uses
+Enemy <|-- Boss : extends
+Boss --> Facing : uses
+MiniBoss --> BasicAttackObj : uses
+Enemy <|-- MiniBoss : extends
+MiniBoss --> Facing : uses

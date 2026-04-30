@@ -123,6 +123,11 @@ public final class Level1CollisionMask
         return INNER_COLLISION_RECTS;
     }
 
+    public static List<Rectangle> getAllCollisionRects()
+    {
+        return ALL_RECTS;
+    }
+
     public static Rectangle getMapBounds() { return MAP_BOUNDS; }
 
     public static void forEachRect(Consumer<Rectangle> action) { ALL_RECTS.forEach(r -> action.accept(r.copy())); }

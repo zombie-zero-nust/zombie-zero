@@ -171,7 +171,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
             this.mousePosition = new Vector2D(mEv.getX(), mEv.getY());
         });
 
-        this.devConsole.setFpsSupplier(() -> gameWorld.getFPS());  // assuming getFPS() exists
+        this.devConsole.setFpsSupplier(gameWorld::getFPS);  // assuming getFPS() exists
         this.devConsole.setObjectsInViewSupplier(() -> objectsInViewCount);
         this.devConsole.setTotalObjectsSupplier(gameObjects::size);
 

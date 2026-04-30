@@ -1,0 +1,22 @@
+---
+title: edu.nust.game.scenes.levelscene.gameobjects.weapon
+config:
+  look: classic
+  layout: dagre
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram
+class AmmoBar
+class Weapon
+class Ammo
+class Bullet
+class BulletImpact
+class ImpactType <<enumeration>>
+AmmoBar --> Ammo : uses
+Bullet --> BulletImpact : uses
+BulletImpact --> ImpactType : uses
+Weapon --> Ammo : uses
+Weapon --> Bullet : uses

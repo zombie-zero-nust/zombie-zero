@@ -1,43 +1,20 @@
-# Zombie Zero
-
-Zombie Zero is a top-down 2D shooter built on a custom Java game engine with JavaFX.
+A top-down 2D shooter built on a custom Java game engine with JavaFX.
 
 ## Game Metadata
 
 - Name: Zombie Zero
 - Genre: Top down 2D Shooter
 
-## Storyline
+## Objective
 
-- The player is a part of a special task force to deal with the ongoing zombie pandemic.
-- The scientists are trying to get the cure, but cure obtained from normal zombies is very weak.
-- They believe that if they can get the blood samples from the first person that was affected (Zombie Zero), a sustainable cure could be extracted.
-- Intel indicates that "Zombie Zero" is hiding inside a facility in a small city.
-- After many unsuccessful attempts, it is noted the missions with the least number of people are most effective, mainly because of the zombies ability to sense human presence.
-- Therefore, only you are sent to get the blood samples from "Zombie Zero".
+- Clear All Zombies in the city
 
-## Game Levels
-
-- Level 1 takes place in a city.
-- The player needs to go through the city fighting zombies, locate and enter the facility.
-- A mini boss will appear at the facility entrance in level 1.
-- Defeat boss and go inside facility.
-- Level 2 is clearing the first facility level to go to next level.
-- Level 3 is clearing the second facility level, killing the main boss (Zombie Zero) and returning back to facility entrance.
-- Level 4 is reaching a safe place for extraction from the city.
-
-## Features
-
-- Gun Pickup
-- Ammo Pickup
-- Boss for Each Level
-- Arrow on screen guiding the player
+## Technical Overview
 
 ## What This Project Contains
 
 - A reusable engine layer (`GameWorld`, `GameScene`, `GameObject`, components, math, logging, resources)
 - A game layer (start/menu scenes, level scene, enemy/player systems, collision, pathfinding, assets, audio)
-- A consolidated class/file reference in `docs/PROJECT_CLASS_FILE_PURPOSES.md`
 
 ## Quick Start
 
@@ -46,31 +23,26 @@ Zombie Zero is a top-down 2D shooter built on a custom Java game engine with Jav
 - Java (with JavaFX support through Gradle plugin setup)
 - Gradle Wrapper (`gradlew.bat` on Windows)
 
-### Run
+### Gradle Configurations
+
+#### Run Configs
 
 ```powershell
-.\gradlew.bat run
+.\gradlew.bat run               # Runs the game with default logging
+.\gradlew.bat runNoLogs         # Runs the game with logging disabled
+.\gradlew.bat runTestLogger     # Tests the logger by different types
 ```
 
-### Run Without Logs
+### Package into `exe`, `dmg`, `deb` or `jar` installers
 
 ```powershell
-.\gradlew.bat runNoLogs
+.\gradlew.bat packageWindows
+.\gradlew.bat packageMac
+.\gradlew.bat packageLinux
+.\gradlew.bat buildExecutableJar
 ```
 
-### Run Logger Test Harness
-
-```powershell
-.\gradlew.bat runTestLogger
-```
-
-### Execute Tests
-
-```powershell
-.\gradlew.bat test
-```
-
-## Architecture Snapshot
+## Architecture
 
 ### Engine Core (`src/engine/java`)
 
@@ -83,31 +55,59 @@ Zombie Zero is a top-down 2D shooter built on a custom Java game engine with Jav
 
 - Entry flow: `Launcher` -> `Main` -> `MainWorld`.
 - Scene flow includes start menu, level selection, gameplay level scene, demo scene, and high scores.
-- Gameplay systems include player/enemy objects, HUD bars, weapons/ammo, collision, pathfinding, and score/session state.
+- Gameplay systems include player/enemy objects, HUD bars, weapons/ammo, collision, pathfinding, and score/session
+  state.
 
 ## Source Layout
 
 - `src/engine/java` - engine framework code
+- `src/engine/resources` - engine runtime resources
+
+
 - `src/game/java` - game implementation code
-- `src/main/java` - additional/support source set content
+- `src/game/resources` - game runtime resources
+
+
 - `src/tests` - test and harness code
-- `src/engine/resources` and `src/game/resources` - runtime resources
-- `docs` - design and technical documentation
-
-## Documentation Index
-
-- `docs/PROJECT_CLASS_FILE_PURPOSES.md` - single-file purpose/use guide for project classes/files
-- `PROJECT_INFO.md` - detailed architecture and conventions
-- `IMPLEMENTATION_GUIDE.md` - implementation notes and guidance
-- `docs/AUDIO_API_ADDITION.md` - audio API extension notes
-
-## Notes
-
-- High scores are persisted in `highscores.txt`.
-- Build and packaging behavior is defined in `build.gradle`.
 
 
-##  Screenshots
+- `uml/generate_src_uml_assets.py` - UML generation script
+- `uml/generated` - generated Mermaid (`.mmd`) and rendered (`.pdf`, `.png`) UML assets
+
+## UML Generation
+
+### Prerequisites
+
+- Python CLI
+- Python dependency: `javalang`
+- Mermaid CLI for rendering PDF/PNG (`mmdc` or `npx`)
+
+### Install Dependencies
+
+```zsh
+python -m pip install javalang
+```
+
+### Generate Mermaid Files Only (`.mmd`)
+
+```zsh
+python uml/generate_src_uml_assets.py --skip-render
+```
+
+### Generate Mermaid + Rendered Assets (`.pdf`, `.png`)
+
+```zsh
+python uml/generate_src_uml_assets.py
+```
+
+### Custom source/output paths
+
+```zsh
+python uml/generate_src_uml_assets.py --source-dir src --output-dir uml/generated
+```
+
+## Screenshots
+
 Main Menu
 <img width="1263" height="706" alt="image" src="https://github.com/user-attachments/assets/0140ad4c-94a9-4d41-a059-f4ef651792d7" />
 Level

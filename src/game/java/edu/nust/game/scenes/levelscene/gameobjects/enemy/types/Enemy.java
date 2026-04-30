@@ -236,7 +236,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
             Audios.randomZombieBasicHurtRef().ifPresent(SoundEffectReference::play);
         }
         else{
-            Audios.randomZombieBossHurtRef();
+            Audios.randomZombieBossHurtRef().ifPresent(SoundEffectReference::play);
         }
         if (!health.isAlive() && !isDying)
         {

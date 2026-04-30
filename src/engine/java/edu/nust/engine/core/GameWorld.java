@@ -152,6 +152,7 @@ public abstract class GameWorld
     {
         logger.trace("Stopping GameWorld and game loop");
         gameLoop.stop();
+        audioManager.unloadAll();
         stage.close();
         logger.success("Game stopped");
     }
@@ -164,6 +165,19 @@ public abstract class GameWorld
         logger.trace("setScene({}) called", newScene.getClass().getSimpleName());
         LogProgress sceneSwitchLogger = LogProgress.create("SCENE_SWITCH", logger);
         sceneSwitchLogger.begin("Switching Scene to {}", newScene.getClass().getSimpleName());
+
+        int soundEffectCountBeforeCleanup = audioManager.getLoadedSoundEffectCount();
+        int soundEffectClipCountBeforeCleanup = audioManager.getLoadedSoundEffectClipCount();
+
+        audioManager.unloadSoundEffectsExcept(path -> path.startsWith("ui/"));
+
+        logger.debug(
+                "Scene audio cleanup: soundEffects {} -> {}, clips {} -> {}",
+                soundEffectCountBeforeCleanup,
+                audioManager.getLoadedSoundEffectCount(),
+                soundEffectClipCountBeforeCleanup,
+                audioManager.getLoadedSoundEffectClipCount()
+        );
 
         this.currentGameScene = newScene;
 

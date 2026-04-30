@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'edu.nust'
-version = '1.2'
+version = '1.2.1'
 
 repositories {
     mavenCentral()
@@ -295,13 +295,12 @@ def registerPackageTask = { String name, String targetOs, String installerType -
                     '--app-version', normalizedAppVersion,
                     '--vendor', 'edu.nust',
                     '--icon', iconPath,
-                    '--java-options', '--enable-native-access=ALL-UNNAMED',
-                    '--java-options', "-Dlogback.configurationFile=${projectDir}/src/engine/resources/edu/nust/engine/logger/logback-off.xml"
+                    '--java-options', '--enable-native-access=ALL-UNNAMED'
         ]
 
         // Windows-only options
         if (targetOs == 'windows') {
-            args += ['--win-shortcut', '--win-menu', '--win-dir-chooser', '--win-console']
+            args += ['--win-shortcut', '--win-menu', '--win-dir-chooser']
         }
 
         commandLine([jpackageExecutable] + args)
