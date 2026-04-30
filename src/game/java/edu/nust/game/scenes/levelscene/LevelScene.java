@@ -472,6 +472,8 @@ public class LevelScene extends GameScene
     private void exitToMainMenu()
     {
         playButtonClickSound();
+        if (gameOverState)
+            saveWinningScoreIfNeeded();
         MusicManager.resumeMusic();
         this.getWorld().setScene(new StartScene(this.getWorld()));
     }
@@ -516,6 +518,8 @@ public class LevelScene extends GameScene
         }
 
         clearWinNameStatus();
+        // Persist winning score immediately so it is available even if the player does not open High Scores.
+        saveWinningScoreIfNeeded();
         setPaused(true);
     }
 
@@ -541,28 +545,20 @@ public class LevelScene extends GameScene
 
     private boolean saveWinningScoreIfNeeded()
     {
-        if (!playerWon || scoreSaved)
+        if (scoreSaved)
             return true;
 
-        if (winNameField == null)
-            return false;
+        String playerName = "";
+        if (winNameField != null && winNameField.getText() != null)
+            playerName = winNameField.getText().trim();
 
-        String playerName = winNameField.getText() != null ? winNameField.getText().trim() : "";
         if (playerName.isEmpty())
-        {
-            if (winNameStatusLabel != null)
-                winNameStatusLabel.setText("Enter your name to save your score.");
-            winNameField.requestFocus();
-            return false;
-        }
+            playerName = PlayerSession.getPlayerName();
 
-        if (playerName.contains(","))
-        {
-            if (winNameStatusLabel != null)
-                winNameStatusLabel.setText("Name cannot contain commas.");
-            winNameField.requestFocus();
-            return false;
-        }
+        if (playerName == null || playerName.trim().isEmpty())
+            playerName = "Player";
+
+        playerName = playerName.replace(",", " ").trim();
 
         PlayerSession.setPlayerName(playerName);
         scoreSaved = true;
@@ -630,6 +626,8 @@ public class LevelScene extends GameScene
     private void retryLevel()
     {
         playButtonClickSound();
+        if (gameOverState)
+            saveWinningScoreIfNeeded();
         gameOverState = false;
         this.getWorld().setScene(new LevelScene(this.getWorld()));
     }
