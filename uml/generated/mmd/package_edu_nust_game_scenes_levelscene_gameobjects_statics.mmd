@@ -10,19 +10,19 @@ config:
 ---
 classDiagram
 class Flower
+class Garbage
+class Bush
+class Stick
 class Tree
 class Grass
-class SerializablePlacement
-class Bush
-class Rock
-class TreeStump
-class FallenTree
-class GroundGrass
-class Stick
-class Garbage
 class StaticObjectFactory
-class StaticObject
+class Rock
+class SerializablePlacement
+class GroundGrass
+class FallenTree
+class TreeStump
 class StaticObjectType <<enumeration>>
+class StaticObject
 StaticObject <|-- Bush : extends
 StaticObject <|-- FallenTree : extends
 StaticObject <|-- Flower : extends

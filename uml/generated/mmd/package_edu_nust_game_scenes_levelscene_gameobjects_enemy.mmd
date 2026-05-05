@@ -9,15 +9,15 @@ config:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class EnemySpawner
-class MiniBoss
 class EnemySpawnPointGameObject
 class BasicEnemy
-class Enemy
-class BossAbility1
+class MiniBoss
+class EnemySpawner
 class Facing <<enumeration>>
 class BasicAttackObj
 class Boss
+class Enemy
+class BossAbility1
 class EnemyConfig <<enumeration>>
 EnemySpawnPointGameObject --> Enemy : uses
 EnemySpawner --> Boss : uses

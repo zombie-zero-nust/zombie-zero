@@ -9,24 +9,24 @@ config:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class AssetManager
-class CollisionManager
-class Audios
-class Damaging <<interface>>
-class Asset
-class Damageable <<interface>>
-class MusicManager
-class Score
 class ConcreteWall
+class CollisionManager
+class Damaging <<interface>>
+class MusicManager
+class Damageable <<interface>>
+class AssetManager
+class Asset
+class Audios
 class PathFinder
-class TilesetAsset <<enumeration>>
+class Score
+class Concrete <<interface>>
+class EnemyAsset <<enumeration>>
 class AssetEnum <<interface>>
 class CharacterAsset <<enumeration>>
-class EnemyAsset <<enumeration>>
-class Concrete <<interface>>
+class TilesetAsset <<enumeration>>
 class MapNodeSetter
-class AssetType <<enumeration>>
 class HitBox
+class AssetType <<enumeration>>
 class Node
 class PlayerSession
 class WeaponAsset <<enumeration>>
