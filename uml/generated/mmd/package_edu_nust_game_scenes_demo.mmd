@@ -2,13 +2,17 @@
 title: edu.nust.game.scenes.demo
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class MovingTag
-class DemoScene
-class MovingObject
+  class DemoScene
+namespace edu.nust.game.scenes.demo.gameobjects {
+  class MovingObject
+}
+namespace edu.nust.game.scenes.demo.tags {
+  class MovingTag
+}

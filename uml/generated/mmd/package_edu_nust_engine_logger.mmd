@@ -2,22 +2,26 @@
 title: edu.nust.engine.logger
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class LogFormats
-class Format
-class LogProgressType <<enumeration>>
-class LogLevel <<enumeration>>
-class ColorPair
-class LogProgress
-class GameLogger
-class ANSIStripper
-class ColoredConsoleAppender
+  class GameLogger
+  class ColorPair
+  class LogProgress
+namespace edu.nust.engine.logger.enums {
+  class LogFormats
+  class Format
+  class LogLevel <<enumeration>>
+  class LogProgressType <<enumeration>>
+}
+namespace edu.nust.engine.logger.logback {
+  class ANSIStripper
+  class ColoredConsoleAppender
+}
 GameLogger --> LogProgress : uses
 GameLogger --> LogLevel : uses
 GameLogger --> LogProgressType : uses

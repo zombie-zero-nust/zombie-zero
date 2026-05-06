@@ -2,16 +2,16 @@
 title: edu.nust.engine.math
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class Rectangle
-class TimeSpan
-class Vector2D
-class Angle
+  class Rectangle
+  class TimeSpan
+  class Vector2D
+  class Angle
 Rectangle --> Vector2D : uses
 Vector2D --> Angle : uses

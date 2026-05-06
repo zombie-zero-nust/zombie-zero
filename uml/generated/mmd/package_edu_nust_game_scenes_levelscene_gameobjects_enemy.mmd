@@ -2,23 +2,29 @@
 title: edu.nust.game.scenes.levelscene.gameobjects.enemy
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class EnemySpawnPointGameObject
-class BasicEnemy
-class MiniBoss
-class EnemySpawner
-class Facing <<enumeration>>
-class BasicAttackObj
-class Boss
-class Enemy
-class BossAbility1
-class EnemyConfig <<enumeration>>
+  class EnemyConfig <<enumeration>>
+namespace edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner {
+  class EnemySpawnPointGameObject
+  class EnemySpawner
+}
+namespace edu.nust.game.scenes.levelscene.gameobjects.enemy.types {
+  class MiniBoss
+  class BasicEnemy
+  class Facing <<enumeration>>
+  class Boss
+  class Enemy
+}
+namespace edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Attacks {
+  class BossAbility1
+  class BasicAttackObj
+}
 EnemySpawnPointGameObject --> Enemy : uses
 EnemySpawner --> Boss : uses
 BasicAttackObj --> Enemy : uses

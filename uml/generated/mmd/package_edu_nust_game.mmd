@@ -2,14 +2,14 @@
 title: edu.nust.game
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class MainWorld
+  class MainWorld
 class Package_edu_nust_game_scenes <<package>>
 class Package_edu_nust_game_systems <<package>>
 Package_edu_nust_game_scenes --> Package_edu_nust_game_systems : uses

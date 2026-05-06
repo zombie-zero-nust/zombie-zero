@@ -2,14 +2,16 @@
 title: edu.nust.game.scenes.highscores
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class HighScoresScene
-class HighScoreStorage
-class HighScoreEntry
+  class HighScoresScene
+namespace edu.nust.game.scenes.highscores.highscores {
+  class HighScoreStorage
+  class HighScoreEntry
+}
 HighScoreStorage --> HighScoreEntry : uses

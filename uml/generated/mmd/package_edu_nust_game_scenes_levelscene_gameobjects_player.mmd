@@ -2,18 +2,18 @@
 title: edu.nust.game.scenes.levelscene.gameobjects.player
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class Player
-class Health
-class Facing <<enumeration>>
-class Character
-class CharacterAnimAssets <<enumeration>>
+  class Player
+  class Health
+  class Character
+  class Facing <<enumeration>>
+  class CharacterAnimAssets <<enumeration>>
 Character <|-- Player : extends
 Player --> Facing : uses
 Player --> Health : uses

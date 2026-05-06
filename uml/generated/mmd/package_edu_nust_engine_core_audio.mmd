@@ -2,17 +2,17 @@
 title: edu.nust.engine.core.audio
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class GameAudioManager
-class MusicTrackReference
-class SoundEffectReference
-class AudioReference
+  class GameAudioManager
+  class SoundEffectReference
+  class MusicTrackReference
+  class AudioReference
 GameAudioManager --> MusicTrackReference : uses
 GameAudioManager --> SoundEffectReference : uses
 AudioReference <|-- MusicTrackReference : extends

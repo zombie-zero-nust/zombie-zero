@@ -2,15 +2,15 @@
 title: edu.nust.engine.core.interfaces
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class Updatable <<interface>>
-class Initiable <<interface>>
-class Renderable <<interface>>
-class InputHandler <<interface>>
-class WorldBoundsProvider <<interface>>
+  class WorldBoundsProvider <<interface>>
+  class Initiable <<interface>>
+  class Updatable <<interface>>
+  class Renderable <<interface>>
+  class InputHandler <<interface>>

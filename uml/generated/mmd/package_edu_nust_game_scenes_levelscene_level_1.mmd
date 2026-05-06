@@ -2,16 +2,16 @@
 title: edu.nust.game.scenes.levelscene.level_1
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class SpawnPoint
-class Level1Background
-class SpawnZone
-class Level1SpawnPoints
-class Level1CollisionMask
+  class Level1Background
+  class Level1SpawnPoints
+  class SpawnPoint
+  class SpawnZone
+  class Level1CollisionMask
 Level1SpawnPoints --> Level1CollisionMask : uses

@@ -2,17 +2,19 @@
 title: edu.nust.engine.core.components
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class Transform
-class CircleRenderer
-class BoxRenderer
-class SpriteRenderer
-class ShapeRenderer
+  class Transform
+namespace edu.nust.engine.core.components.renderers {
+  class BoxRenderer
+  class CircleRenderer
+  class SpriteRenderer
+  class ShapeRenderer
+}
 ShapeRenderer <|-- BoxRenderer : extends
 ShapeRenderer <|-- CircleRenderer : extends

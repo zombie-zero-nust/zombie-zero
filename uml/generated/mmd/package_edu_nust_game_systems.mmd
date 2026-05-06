@@ -2,34 +2,42 @@
 title: edu.nust.game.systems
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class ConcreteWall
-class CollisionManager
-class Damaging <<interface>>
-class MusicManager
-class Damageable <<interface>>
-class AssetManager
-class Asset
-class Audios
-class PathFinder
-class Score
-class Concrete <<interface>>
-class EnemyAsset <<enumeration>>
-class AssetEnum <<interface>>
-class CharacterAsset <<enumeration>>
-class TilesetAsset <<enumeration>>
-class MapNodeSetter
-class HitBox
-class AssetType <<enumeration>>
-class Node
-class PlayerSession
-class WeaponAsset <<enumeration>>
+  class Score
+  class PlayerSession
+namespace edu.nust.game.systems.assets {
+  class Asset
+  class AssetManager
+  class EnemyAsset <<enumeration>>
+  class CharacterAsset <<enumeration>>
+  class AssetEnum <<interface>>
+  class TilesetAsset <<enumeration>>
+  class AssetType <<enumeration>>
+  class WeaponAsset <<enumeration>>
+}
+namespace edu.nust.game.systems.audio {
+  class Audios
+  class MusicManager
+}
+namespace edu.nust.game.systems.collision {
+  class Damaging <<interface>>
+  class CollisionManager
+  class Damageable <<interface>>
+  class ConcreteWall
+  class Concrete <<interface>>
+  class HitBox
+}
+namespace edu.nust.game.systems.pathfinder {
+  class PathFinder
+  class MapNodeSetter
+  class Node
+}
 Asset --> AssetType : uses
 AssetEnum --> AssetType : uses
 AssetManager ..> AssetEnum : uses

@@ -2,22 +2,22 @@
 title: edu.nust.engine.core
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class DevCommand
-class GameObject
-class DevCommandExecutor <<interface>>
-class DevConsole
-class Component
-class GameWorld
-class GameCamera
-class GameScene
-class GameURLs
+  class DevCommand
+  class GameCamera
+  class GameObject
+  class GameScene
+  class Component
+  class GameWorld
+  class DevConsole
+  class DevCommandExecutor <<interface>>
+  class GameURLs
 class Package_edu_nust_engine_core_audio <<package>>
 class Package_edu_nust_engine_core_components <<package>>
 class Package_edu_nust_engine_core_debug <<package>>

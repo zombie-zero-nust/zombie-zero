@@ -2,14 +2,14 @@
 title: edu.nust.game.scenes.levelscene.hud
 config:
   look: classic
-  layout: dagre
+  layout: elk
   flowchart:
     curve: linear
   class:
     defaultRenderer: dagre-wrapper
 ---
 classDiagram
-class HealthBar
-class ScoreDisplayController
-class Bar
+  class ScoreDisplayController
+  class HealthBar
+  class Bar
 Bar <|-- HealthBar : extends
