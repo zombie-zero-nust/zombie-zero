@@ -82,65 +82,65 @@ public class BossAbility1 {
             );
             Audios.randomZombieBossGrowlRef().ifPresent(SoundEffectReference::play);
 
-            BasicAttackObj axeAttack1 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack1 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack2 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack2 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack3 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack3 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack4 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack4 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack5 =  new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack5 =  new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack6 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack6 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack7 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack7 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack8 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack8 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
-            BasicAttackObj axeAttack9  = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
-                    notDamageObj, 5, projectile, 9, 1,
-                    TimeSpan.fromMilliseconds(300), axeSpeed);
-
-            BasicAttackObj axeAttack10 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack9  = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack11 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack10 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack12 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack11 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack13 =  new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
-                    notDamageObj, 5, projectile, 9, 1,
-                    TimeSpan.fromMilliseconds(300), axeSpeed);
-            BasicAttackObj axeAttack14 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack12 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack15 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack13 =  new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+            BasicAttackObj axeAttack14 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
-            BasicAttackObj axeAttack16 = new BasicAttackObj(damage / 2, boss, projectile.getWidth(), projectile.getHeight(), 300,
+            BasicAttackObj axeAttack15 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
+                    notDamageObj, 5, projectile, 9, 1,
+                    TimeSpan.fromMilliseconds(300), axeSpeed);
+
+            BasicAttackObj axeAttack16 = new BasicAttackObj(damage / 2, boss, projectile.getWidth()/9, projectile.getHeight(), 300,
                     notDamageObj, 5, projectile, 9, 1,
                     TimeSpan.fromMilliseconds(300), axeSpeed);
 
