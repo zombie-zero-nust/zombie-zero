@@ -10,6 +10,7 @@ import edu.nust.engine.resources.Resources;
 import edu.nust.game.systems.audio.Audios;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 import java.io.FileNotFoundException;
 
@@ -23,6 +24,7 @@ public class Weapon extends GameObject
     private double width = 12;
     private double height = 8;
     private int damage;
+    private int range = 100;
 
     private static final int GUN_IDLE_FRAMES = 6;
     private SpriteRenderer muzzleFlashRenderer;
@@ -33,6 +35,7 @@ public class Weapon extends GameObject
     private double muzzleElapsed;
     private boolean muzzlePlaying;
     private Ammo ammo;
+    private RangeIndicator rangeIndicator;
 
 
     private Image gunIdleRightSheet;
@@ -54,6 +57,7 @@ public class Weapon extends GameObject
         muzzlePlaying = false;
         ammo = new Ammo();
         damage = 10;
+        rangeIndicator= new RangeIndicator();
     }
 
     private void loadWeaponAimAssets()
@@ -75,12 +79,15 @@ public class Weapon extends GameObject
             weaponRenderer = null;
             this.addComponent(new BoxRenderer(36, 36, javafx.scene.paint.Color.CYAN));
         }
-
         weaponRenderer = new SpriteRenderer(width, height, gunIdleRightSheet, GUN_IDLE_FRAMES, 1);
         weaponRenderer.setAnimationTime(TimeSpan.fromMilliseconds(60)).startAnimation();
         this.addComponent(weaponRenderer);
     }
 
+    @Override
+    public void onInit(){
+        this.getScene().addGameObject(rangeIndicator);
+    }
     @Override
     public void onUpdate(TimeSpan deltaTime)
     {
@@ -167,7 +174,7 @@ public class Weapon extends GameObject
                 weaponRenderer.setImage(directionalGunSheet, GUN_IDLE_FRAMES, 1).setFrame(0, 0).startAnimation();
             }
         }
-
+        rangeIndicator.showRange(this.getTransform().getPosition(),Bullet.getHeight(),this.width,range,aimDirection,rotation);
         this.getTransform().setPosition(playerPos.add(orbitingDistance));
         this.getTransform().setRotationRadians(rotation);
 
@@ -204,7 +211,7 @@ public class Weapon extends GameObject
             ammo.decreaseAmmo();
             triggerMuzzleFlash();
             Audios.randomPlayerGunShotRef().ifPresent(SoundEffectReference::play);
-            return new Bullet(playerCenterPos, 1000, shotTarget, damage);
+            return new Bullet(playerCenterPos, range, shotTarget, damage);
         }
 
         fireCooldown -= deltaTime.asSeconds();
@@ -214,7 +221,7 @@ public class Weapon extends GameObject
             ammo.decreaseAmmo();
             triggerMuzzleFlash();
             Audios.randomPlayerGunShotRef().ifPresent(SoundEffectReference::play);
-            return new Bullet(playerCenterPos, 1000, shotTarget, damage);
+            return new Bullet(playerCenterPos, range, shotTarget, damage);
         }
 
         return null;
@@ -246,8 +253,6 @@ public class Weapon extends GameObject
     {
         try
         {
-
-
             fireRightSheet = Resources.loadImageOrThrow(
                     "assets",
                     "raw",
@@ -291,4 +296,12 @@ public class Weapon extends GameObject
     public int getDamage() { return damage; }
 
     public void setDamage(int damage) { this.damage = damage; }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
 }

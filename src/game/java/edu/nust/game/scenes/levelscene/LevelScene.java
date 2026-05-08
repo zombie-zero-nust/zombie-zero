@@ -13,10 +13,7 @@ import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.levelscene.gameobjects._tags.PlayerTag;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.spawner.EnemySpawnPointGameObject;
 import edu.nust.game.scenes.levelscene.gameobjects.player.Player;
-import edu.nust.game.scenes.levelscene.gameobjects.weapon.Ammo;
-import edu.nust.game.scenes.levelscene.gameobjects.weapon.AmmoBar;
-import edu.nust.game.scenes.levelscene.gameobjects.weapon.Bullet;
-import edu.nust.game.scenes.levelscene.gameobjects.weapon.Weapon;
+import edu.nust.game.scenes.levelscene.gameobjects.weapon.*;
 import edu.nust.game.scenes.levelscene.hud.HealthBar;
 import edu.nust.game.scenes.levelscene.hud.ScoreDisplayController;
 import edu.nust.game.scenes.levelscene.level_1.Level1Background;
@@ -415,12 +412,14 @@ public class LevelScene extends GameScene
     public void onMousePressed(MouseEvent event)
     {
         if (event.getButton() == MouseButton.PRIMARY) weapon.setFiring(true);
+        if(event.getButton() == MouseButton.SECONDARY) RangeIndicator.toggleRange(true);
     }
 
     @Override
     public void onMouseReleased(MouseEvent event)
     {
         if (event.getButton() == MouseButton.PRIMARY) weapon.setFiring(false);
+        if(event.getButton() == MouseButton.SECONDARY) RangeIndicator.toggleRange(false);
     }
 
 

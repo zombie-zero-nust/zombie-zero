@@ -153,11 +153,7 @@ public class Player extends Character implements Damageable, Concrete
         if (activeKeys.contains(KeyCode.A) || activeKeys.contains(KeyCode.LEFT)) horizontalInput -= 1;
         if (activeKeys.contains(KeyCode.D) || activeKeys.contains(KeyCode.RIGHT)) horizontalInput += 1;
 
-        // Player movement is intentionally axis-locked (no diagonal movement).
-        if (horizontalInput != 0 && verticalInput != 0)
-        {
-            horizontalInput = 0;
-        }
+
 
         double speed = getMovementSpeed() * deltaTime.asSeconds();
         double dx = horizontalInput * speed;
@@ -179,7 +175,7 @@ public class Player extends Character implements Damageable, Concrete
             Vector2D slideY = new Vector2D(getX(), getY() + dy);
 
             if (isWalkable(slideX)) setX(getX() + dx);
-            else if (isWalkable(slideY)) setY(getY() + dy);
+            if (isWalkable(slideY)) setY(getY() + dy);
         }
         boolean moving = dx != 0 || dy != 0;
 
@@ -369,4 +365,5 @@ public class Player extends Character implements Damageable, Concrete
         if (spriteRenderer != null) spriteRenderer.clearTint();
         if (handsRenderer != null) handsRenderer.clearTint();
     }
+
 }

@@ -22,14 +22,13 @@ public final class Level1SpawnPoints
 
     public static final Vector2D PLAYER_SPAWN_POINT = new Vector2D(40, 50);
 
-    // disallow spawning in spawn area
     private static final Rectangle NON_SPAWNABLE_AREA = new Rectangle(0, 0, 110, 200);
     private static final double SPAWN_GRID_STEP = 40;
     private static final double RANDOM_SPAWN_OFFSET = 7;
     private static final double SPAWN_CHANCE = 0.7;
     private static final double SPAWN_PADDING = 2;
     private static final double SPAWN_MOVE_CHECK_DISTANCE = 12;
-
+    private static final double BOSS_EXCLUSION_RADIUS = 200;
 
     private static final List<SpawnPoint> BOSS_SPAWN_POINTS = List.of(
             SpawnPoint.enabled(
@@ -82,8 +81,9 @@ public final class Level1SpawnPoints
                 double offsetX = random.nextDouble(-RANDOM_SPAWN_OFFSET, RANDOM_SPAWN_OFFSET);
                 double offsetY = random.nextDouble(-RANDOM_SPAWN_OFFSET, RANDOM_SPAWN_OFFSET);
                 Vector2D point = new Vector2D(x, y).add(offsetX, offsetY);
-                if (!NON_SPAWNABLE_AREA.contains(point) // not in spawn area
-                        && isValidSpawnPoint(point, BasicEnemy.class, collisionMask) && // valid spawn
+                if (!NON_SPAWNABLE_AREA.contains(point)
+                        && !isNearBoss(point)
+                        && isValidSpawnPoint(point, BasicEnemy.class, collisionMask) &&
                         random.nextDouble() < SPAWN_CHANCE)
                 {
                     candidates.add(point);
@@ -91,9 +91,19 @@ public final class Level1SpawnPoints
             }
         }
 
-        // shuffle to
         Collections.shuffle(candidates, random);
         return candidates;
+    }
+
+    private static boolean isNearBoss(Vector2D point)
+    {
+        for (SpawnPoint bossPoint : BOSS_SPAWN_POINTS)
+        {
+            double dx = point.getX() - bossPoint.position().getX();
+            double dy = point.getY() - bossPoint.position().getY();
+            if (Math.sqrt(dx * dx + dy * dy) < BOSS_EXCLUSION_RADIUS) return true;
+        }
+        return false;
     }
 
     private static boolean isValidSpawnPoint(Vector2D point, Class<? extends Enemy> enemyType, Level1CollisionMask collisionMask)
@@ -150,4 +160,3 @@ public final class Level1SpawnPoints
         public SpawnPoint copy() { return new SpawnPoint(position.copy(), enemyType, enabled); }
     }
 }
-

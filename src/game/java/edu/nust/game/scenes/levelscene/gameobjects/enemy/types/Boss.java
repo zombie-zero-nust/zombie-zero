@@ -49,7 +49,7 @@ public class Boss extends Enemy
     private int width = 24;
     private int height = 36;
     private Facing facing = Facing.DOWN;
-    private TimeSpan deathAnimationTime = TimeSpan.fromMilliseconds(1000);
+    private final TimeSpan deathAnimationTime = TimeSpan.fromMilliseconds(1000);
     private double elapsed = 0;
     private double attack1Range = 30;
     private double attack1Time = 600;
@@ -266,7 +266,6 @@ public class Boss extends Enemy
                         attack1Range
                 );
                 Audios.randomZombieBossAttackRef().ifPresent(SoundEffectReference::play);
-
                 this.getScene().addGameObject(attack1);
             }
             if (attackTimeElapsed >= attack1Time) {
@@ -319,7 +318,7 @@ public class Boss extends Enemy
     }
 
     public void resetBoss() {
-        Health health = new Health(10000);
+        Health health = new Health(5000);
         this.setHealth(health);
         this.setMovementSpeed(this.getMovementSpeed()*3);
         this.attackTimeElapsed = 0;

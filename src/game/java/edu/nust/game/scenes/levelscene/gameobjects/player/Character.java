@@ -9,7 +9,7 @@ public abstract class Character extends GameObject
     private Vector2D prePos;
     private Vector2D movePos;
     private int health = 100;
-    private int movementSpeed = 40;
+    private int movementSpeed = 50;
     private boolean moveable;
 
 

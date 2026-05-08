@@ -13,6 +13,7 @@ import edu.nust.game.systems.collision.Damageable;
 import edu.nust.game.systems.collision.Damaging;
 import edu.nust.game.systems.collision.HitBox;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -31,8 +32,8 @@ public class Bullet extends GameObject implements Damaging, Concrete
     private final double range;
     private boolean outOfRange = false;
     private HitBox hitbox;
-    private static final double COLLISION_HALF_WIDTH = 4;
-    private static final double COLLISION_HALF_HEIGHT = 4;
+    private static final double WIDTH = 3;
+    private static final double HEIGHT = 1;
 
     public Bullet(Vector2D pos, double range, Vector2D mousePos, int damage)
     {
@@ -47,16 +48,19 @@ public class Bullet extends GameObject implements Damaging, Concrete
             image = Resources.loadImageOrThrow("assets", "player", "weapon", "bullet.png");
         }
         catch (FileNotFoundException ignored) { }
-        this.addComponent(new SpriteRenderer(image));
+        this.addComponent((new SpriteRenderer(image).setSize(WIDTH,HEIGHT)));
         this.getTransform().setPosition(pos);
     }
 
-    public Bullet(Vector2D pos, Image image, double range)
+    public Bullet(Vector2D pos, Image image,double range, Vector2D mousePos, int damage)
     {
+        this.setRenderLayer(100);
         this.startPos = pos;
         this.image = image;
         totalDistance = 0;
         this.range = range;
+        direction = mousePos.subtract(pos).normalize();
+        this.damage = damage;
         this.addComponent(new SpriteRenderer(image));
         this.getTransform().setPosition(pos);
     }
@@ -65,7 +69,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     @Override
     public void onInit()
     {
-        hitbox = new HitBox(startPos.copy(), COLLISION_HALF_HEIGHT, COLLISION_HALF_WIDTH);
+        hitbox = new HitBox(startPos.copy(), HEIGHT /2, WIDTH /2);
         this.addComponent(hitbox);
     }
 
@@ -108,7 +112,7 @@ public class Bullet extends GameObject implements Damaging, Concrete
     {
         if (this.hitbox == null)
         {
-            hitbox = new HitBox(startPos, COLLISION_HALF_HEIGHT, COLLISION_HALF_WIDTH);
+            hitbox = new HitBox(startPos, HEIGHT /2, WIDTH /2);
             this.addComponent(hitbox);
         }
     }
@@ -131,5 +135,12 @@ public class Bullet extends GameObject implements Damaging, Concrete
     {
         BulletImpact impact = new BulletImpact(this.getTransform().getPosition().copy(), impactType);
         this.getScene().addGameObject(impact);
+    }
+
+    public static double getHeight(){
+        return HEIGHT;
+    }
+    public static double getWidth(){
+        return WIDTH;
     }
 }

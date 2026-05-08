@@ -95,7 +95,7 @@ public class BasicAttackObj extends GameObject implements Damaging {
 
         this.animationTime = animationTime;
 
-        spriteRenderer = new SpriteRenderer(width, height, image, numFrameX, numFrameY);
+        spriteRenderer = new SpriteRenderer(image.getWidth(), image.getHeight(), image, numFrameX, numFrameY);
         spriteRenderer.setAnimationTime(animationTime);
     }
 

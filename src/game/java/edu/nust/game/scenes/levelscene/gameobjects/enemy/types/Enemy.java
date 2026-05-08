@@ -63,6 +63,9 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
 
     private double followRadius = getBaseFollowRadius();
 
+    private double                                                                                                                                                                                                                                                                                               triggerHurtSound = 0;
+    private static final long HURT_SOUND_COOLDOWN_MS = 300;
+
     public Enemy(Vector2D startPosition, double speed, int health)
     {
         this(startPosition, speed, EnemyAsset.ZOMBIE_SMALL, health);
@@ -144,6 +147,7 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
             if (!moved && !isAttacking()) updateSprite(0, 0);
         }
         attack(deltaTime);
+        triggerHurtSound += deltaTime.asMilliseconds();
 
     }
 
@@ -197,7 +201,6 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
             Vector2D velocity = direction.normalize().multiply(moveDist);
             this.getTransform().setPosition(currentPos.add(velocity));
         }
-
         return true;
     }
 
@@ -232,11 +235,17 @@ public abstract class Enemy extends GameObject implements Concrete, Damageable
     {
         health.takeDamage(damage);
         onHealthChanged();
-        if(this.getClass() == BasicEnemy.class) {
-            Audios.randomZombieBasicHurtRef().ifPresent(SoundEffectReference::play);
-        }
-        else{
-            Audios.randomZombieBossHurtRef().ifPresent(SoundEffectReference::play);
+        if (triggerHurtSound >= HURT_SOUND_COOLDOWN_MS)
+        {
+            triggerHurtSound = 0;
+            if (this.getClass() == BasicEnemy.class)
+            {
+                Audios.randomZombieBasicHurtRef().ifPresent(SoundEffectReference::play);
+            }
+            else if(this.getClass() == Boss.class|| this.getClass() == MiniBoss.class)
+            {
+                Audios.randomZombieBossHurtRef().ifPresent(SoundEffectReference::play);
+            }
         }
         if (!health.isAlive() && !isDying)
         {
