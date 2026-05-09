@@ -2,6 +2,7 @@ package edu.nust.game.scenes.levelselect;
 
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
+import edu.nust.game.scenes.ClickableButtonSound;
 import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.scenes.start.StartScene;
 import edu.nust.game.systems.PlayerSession;
@@ -12,7 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
-public class LevelSelectScene extends GameScene
+public class LevelSelectScene extends GameScene implements ClickableButtonSound
 {
     @FXML private TextField playerNameField;
     @FXML private Label nameErrorLabel;

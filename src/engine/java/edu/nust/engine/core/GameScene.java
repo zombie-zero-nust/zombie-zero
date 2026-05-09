@@ -15,7 +15,6 @@ import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
-import edu.nust.game.systems.audio.Audios;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -253,12 +252,6 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
      * @return The same {@link GameObject} that was created, for chaining
      */
     public GameObject addGameObject(Supplier<GameObject> gameObject) { return addGameObject(gameObject.get()); }
-
-    protected void playButtonClickSound()
-    {
-        Audios.clickNeutralRef().ifPresent(ref -> ref.play());
-    }
-
 
     /**
      * <b>Syntax:</b> {@code spawnGameObject(new Player(), new Vector2D(100, 200))}

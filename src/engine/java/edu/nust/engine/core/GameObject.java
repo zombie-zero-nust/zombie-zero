@@ -89,7 +89,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      * <br><br>
      * Adds the specified {@link Component} to this {@link GameObject} if a {@link Component} of the same type doesn't
      * already exist, and returns the added {@link Component}. If a {@link Component} of the same type already exists,
-     * {@code null} is returned and the new {@link Component<T>} is discarded.
+     * {@code null} is returned and the new {@link Component} is discarded.
      * <br><br>
      * <b>{@code DO NOT USE}</b> : For checking if a component exists; use
      * {@link GameObject#hasAnyComponentOfType(Class)} instead.
@@ -126,7 +126,7 @@ public abstract class GameObject implements Initiable, Updatable<GameObject>, Re
      * <br><br>
      * Adds a new {@link Component} created using the provided constructor to this {@link GameObject} if a
      * {@link Component} of the same type doesn't already exist, and returns the added {@link Component}. If a
-     * {@link Component} of the same type already exists, {@code null} is returned and the new {@link Component<T>} is
+     * {@link Component} of the same type already exists, {@code null} is returned and the new {@link Component} is
      * discarded.
      * <br><br>
      * <b>{@code DO NOT USE}</b> : For checking if a component exists; use

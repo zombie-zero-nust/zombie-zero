@@ -7,6 +7,7 @@ import edu.nust.engine.math.Rectangle;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.scenes.ClickableButtonSound;
 import edu.nust.game.scenes.highscores.HighScoresScene;
 import edu.nust.game.scenes.levelscene.gameobjects.enemy.types.Enemy;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
@@ -46,7 +47,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-public class LevelScene extends GameScene
+public class LevelScene extends GameScene implements ClickableButtonSound
 {
     private static final Vector2D WEAPON_NON_FOLLOW_AREA_SIZE = new Vector2D(8, 12);
     private static final Vector2D GROWN_CAMERA_VIEW = new Vector2D(160, 120);

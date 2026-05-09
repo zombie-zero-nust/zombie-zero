@@ -295,8 +295,7 @@ def registerPackageTask = { String name, String targetOs, String installerType -
                     '--app-version', normalizedAppVersion,
                     '--vendor', 'edu.nust',
                     '--icon', iconPath,
-                    '--java-options', '--enable-native-access=ALL-UNNAMED'
-        ]
+                    '--java-options', '--enable-native-access=ALL-UNNAMED']
 
         // Windows-only options
         if (targetOs == 'windows') {
@@ -338,3 +337,32 @@ registerPackageTask('packageWindows', 'windows', 'exe')
 registerPackageTask('packageLinux', 'linux', 'deb')
 // packageMac, buildMac: creates a macOS installer using jpackage (must run on macOS)
 registerPackageTask('packageMac', 'mac', 'dmg')
+tasks.register('javadocEngine', Javadoc) {
+    group = 'documentation'
+    description = 'Generates Javadoc documentation for the engine module only.'
+    source = sourceSets.main.allJava.matching {
+        include '**/edu/nust/engine/**'
+    }
+    destinationDir = file("${buildDir}/docs/javadoc-engine")
+    classpath = sourceSets.main.compileClasspath
+
+    // Only include public members
+    options.memberLevel = JavadocMemberLevel.PUBLIC
+
+    // Custom theme configuration
+    options.header = '''
+        <div class="custom-header">
+            Zombie Zero Engine Module API Reference
+        </div>
+    '''
+    // Remove the footer option (deprecated) and use bottom instead
+    options.bottom = '''
+        <a target="blank" href="https://github.com/zombie-zero-nust/zombie-zero">https://github.com/zombie-zero-nust/zombie-zero</a>
+    '''
+
+    // Set window title
+    options.windowTitle = 'Engine Module API'
+
+    // Set document title
+    options.docTitle = 'Zombie Zero Engine Module API Reference'
+}

@@ -9,6 +9,7 @@ import edu.nust.engine.core.components.renderers.SpriteRenderer;
 import edu.nust.engine.math.TimeSpan;
 import edu.nust.engine.math.Vector2D;
 import edu.nust.engine.resources.Resources;
+import edu.nust.game.scenes.ClickableButtonSound;
 import edu.nust.game.scenes.demo.gameobjects.MovingObject;
 import edu.nust.game.scenes.demo.tags.MovingTag;
 import edu.nust.game.scenes.start.StartScene;
@@ -23,7 +24,7 @@ import javafx.scene.paint.Color;
 
 import java.io.FileNotFoundException;
 
-public class DemoScene extends GameScene
+public class DemoScene extends GameScene implements ClickableButtonSound
 {
     @FXML private StackPane pauseOverlay;
     @FXML private VBox helpTextContainer;

@@ -2,6 +2,7 @@ package edu.nust.game.scenes.highscores;
 
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
+import edu.nust.game.scenes.ClickableButtonSound;
 import edu.nust.game.scenes.highscores.highscores.HighScoreEntry;
 import edu.nust.game.scenes.highscores.highscores.HighScoreStorage;
 import edu.nust.game.scenes.start.StartScene;
@@ -14,7 +15,7 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
-public class HighScoresScene extends GameScene
+public class HighScoresScene extends GameScene implements ClickableButtonSound
 {
     private static final int MAX_ROWS = 5;
 

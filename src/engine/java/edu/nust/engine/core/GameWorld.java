@@ -1,6 +1,5 @@
 package edu.nust.engine.core;
 
-import edu.nust.Main;
 import edu.nust.engine.core.audio.GameAudioManager;
 import edu.nust.engine.core.audio.MusicTrackReference;
 import edu.nust.engine.core.audio.SoundEffectReference;
@@ -27,7 +26,7 @@ import java.util.function.Supplier;
  * and running the main game loop.
  * <br><br>
  * To use, create a subclass of GameWorld and implement the {@link GameWorld#initStage} method to set up window
- * properties. Then, in the program entry point (e.g., {@link Main#start(Stage stage)}), create an instance of your
+ * properties. Then, in the program entry point, create an instance of your
  * GameWorld subclass and call {@link GameWorld#start }to begin the game loop.
  */
 public abstract class GameWorld
@@ -138,7 +137,7 @@ public abstract class GameWorld
         logger.success("Game World initialized successfully");
     }
 
-    /// Call in program entry point i.e. [Main#start(Stage stage)], Starts the Game Loop
+    /// Call in program entry point, Starts the Game Loop
     public void start()
     {
         logger.trace("Starting GameWorld and game loop");

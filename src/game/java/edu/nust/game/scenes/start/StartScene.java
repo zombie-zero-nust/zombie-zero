@@ -2,13 +2,14 @@ package edu.nust.game.scenes.start;
 
 import edu.nust.engine.core.GameScene;
 import edu.nust.engine.core.GameWorld;
+import edu.nust.game.scenes.ClickableButtonSound;
 import edu.nust.game.scenes.highscores.HighScoresScene;
 import edu.nust.game.scenes.levelscene.LevelScene;
 import edu.nust.game.systems.audio.MusicManager;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 
-public class StartScene extends GameScene
+public class StartScene extends GameScene implements ClickableButtonSound
 {
     public StartScene(GameWorld world) { super(world); }
 
