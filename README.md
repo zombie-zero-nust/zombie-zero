@@ -71,7 +71,10 @@ A top-down 2D shooter built on a custom Java game engine with JavaFX.
 - `src/tests` - test and harness code
 
 
-- `uml/generate_src_uml_assets.py` - UML generation script
+- `uml/generate_src_mermaid.py` - generates Mermaid UML (`.mmd`) from the Java source tree
+- `uml/render_mermaid_assets.py` - renders Mermaid files to `.png` and `.pdf`
+- `uml/generate_src_uml_assets.py` - orchestration entrypoint for generation + rendering
+- `uml/generate_src_uml_assets.sh` - shell wrapper for the full UML workflow
 - `uml/generated` - generated Mermaid (`.mmd`) and rendered (`.pdf`, `.png`) UML assets
 
 ## UML Generation
@@ -91,7 +94,13 @@ python -m pip install javalang
 ### Generate Mermaid Files Only (`.mmd`)
 
 ```zsh
-python uml/generate_src_uml_assets.py --skip-render
+python uml/generate_src_mermaid.py
+```
+
+### Render Mermaid to PNG/PDF
+
+```zsh
+python uml/render_mermaid_assets.py
 ```
 
 ### Generate Mermaid + Rendered Assets (`.pdf`, `.png`)
@@ -100,10 +109,23 @@ python uml/generate_src_uml_assets.py --skip-render
 python uml/generate_src_uml_assets.py
 ```
 
+Or via the shell wrapper:
+
+```zsh
+./uml/generate_src_uml_assets.sh
+```
+
 ### Custom source/output paths
 
 ```zsh
 python uml/generate_src_uml_assets.py --source-dir src --output-dir uml/generated
+```
+
+### Target a specific package/directory
+
+```zsh
+python uml/generate_src_mermaid.py --target-dir src/game/java/edu/nust/game/systems
+python uml/generate_src_uml_assets.py --target-dir src/game/java/edu/nust/game/systems --formats png
 ```
 
 ## Screenshots

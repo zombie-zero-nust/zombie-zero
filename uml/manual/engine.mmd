@@ -1,0 +1,67 @@
+---
+title: edu.nust.engine.core
+config:
+  look: classic
+  layout: elk
+  flowchart:
+    curve: linear
+  class:
+    defaultRenderer: dagre-wrapper
+---
+classDiagram        
+  class GameWorld                                                       
+  class GameScene                                                            
+  class Component
+  class GameObject
+namespace edu.nust.engine.core.audio {
+  class AudioReference
+  class GameAudioManager
+  class MusicTrackReference
+  class SoundEffectReference
+}
+namespace edu.nust.engine.core.components {
+  class Transform
+}
+namespace edu.nust.engine.core.components.renderers {
+  class BoxRenderer
+  class SpriteRenderer
+  class CircleRenderer
+  class ShapeRenderer
+}
+namespace edu.nust.engine.core.interfaces {
+  class WorldBoundsProvider <<interface>>
+  class Updatable <<interface>>
+  class Initiable <<interface>>
+  class Renderable <<interface>>
+  class InputHandler <<interface>>
+}
+
+GameScene --> GameWorld : uses
+Component --> GameObject : uses
+Component ..|> Initiable : implements
+Component ..|> Renderable : implements
+Component ..|> Updatable : implements
+GameObject --> Component : uses
+GameObject --> GameScene : uses
+GameObject --> Transform : uses
+GameObject ..|> Initiable : implements
+GameObject ..|> Renderable : implements
+GameObject ..|> Updatable : implements
+GameScene --> GameObject : uses
+GameScene ..|> Initiable : implements
+GameScene ..|> InputHandler : implements
+GameScene ..|> Updatable : implements
+GameWorld --> GameScene : uses
+Component <|-- Transform : extends
+ShapeRenderer <|-- BoxRenderer : extends
+BoxRenderer ..|> WorldBoundsProvider : implements
+ShapeRenderer <|-- CircleRenderer : extends
+CircleRenderer ..|> WorldBoundsProvider : implements
+Component <|-- ShapeRenderer : extends
+Component <|-- SpriteRenderer : extends
+SpriteRenderer ..|> WorldBoundsProvider : implements
+GameWorld --> GameAudioManager : uses
+GameAudioManager --> MusicTrackReference : uses
+GameAudioManager --> SoundEffectReference : uses
+AudioReference <|-- MusicTrackReference : extends
+AudioReference <|-- SoundEffectReference : extends

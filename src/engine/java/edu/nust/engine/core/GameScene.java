@@ -462,7 +462,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         // Debug Grid
         devConsole.registerDevCommand(
                 "/debugGrid", //
-                "/debugGrid true|false|number", //
+                "/debugGrid true|false|number|empty", //
                 "Toggle grid, with given size if number specified", //
                 (args) -> {
                     // toggle if no argument provided
@@ -514,7 +514,7 @@ public abstract class GameScene implements Initiable, Updatable<GameScene>, Inpu
         devConsole.registerDevCommand(
                 "/setCameraZoom",
                 "/setCameraZoom <zoom>",
-                "Set camera zoom level (default 1.0, must be > 0)",
+                "Set camera zoom level (default 4.0, must be > 0)",
                 (args) -> {
                     try
                     {

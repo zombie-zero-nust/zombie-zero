@@ -34,43 +34,41 @@
         - MusicTrackReference
     - GameAudioManager (cache + volume)
 
-### Systems & Deployment
+### Game Systems & Deployment
 
 1. AssetManager cache
 2. CollisionManager
-3. HitBox component
-4. PathFinder (A* grid)
+    - HitBox component
+3. PathFinder (A* grid)
     - MapNodeSetter (solid grid build)
-5. Weapon system (Weapon + Ammo + Bullet)
-6. HUD bars (Bar + HealthBar + AmmoBar)
-7. ScoreDisplayController (sprite digits)
-8. Audio Management
+4. Weapon system (Weapon + Ammo + Bullet)
+5. HUD bars (Bar + HealthBar + AmmoBar)
+6. Audio Management
     - MusicManager
     - Audios registry
-9. Gradle packaging
+7. Gradle packaging
     - packageWindows
     - packageLinux
     - packageMac
     - buildExecutableJar
-10. Build/run tasks
+8. Build/run tasks
     - run
     - runNoLogs
     - runTestLogger
-11. UML generation pipeline
-    - Generate UML using Python
-    - Generate Separate for each file
-    - 
+9. UML generation pipeline
+   - Generate UML using Python
+   - Generate Separate for each file
 
 ### Scenes
 
 1. StartScene
-2. LevelSelectScene
-3. LevelScene (core gameplay)
+2. LevelScene (core gameplay)
     - CollisionMask
     - SpawnPoints generation
     - Background Objects + placements file
     - StaticObjectFactory + SerializablePlacement
-4. HighScoresScene
+    - ScoreDisplayController (sprite digits)
+3. HighScoresScene
     - HighScoreStorage
     - PlayerSession
     - Score system
